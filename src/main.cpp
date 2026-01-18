@@ -1,6 +1,8 @@
-#include "../libs/engine/app.h"
 #include <iostream>
-#include "../libs/state_machine/game_states.h"
+
+
+#include "../libs/engine/app_logic/app.h"
+#include "../libs/game_logic/game_states/game_states.h"
 
 int main()
 {
