@@ -1,1 +1,1 @@
--IC:/creator/it/programs/games/miyoo_square/libs/state_machine -IC:/creator/it/programs/games/miyoo_square/libs/lang_state -IC:/creator/it/programs/games/miyoo_square/libs/engine -isystem C:/msys64/ucrt64/include -isystem C:/msys64/ucrt64/include/SDL2
+-IC:/creator/it/programs/games/miyoo_square/libs/state_machine -IC:/creator/it/programs/games/miyoo_square/libs/lang_state -IC:/creator/it/programs/games/miyoo_square/libs/engine -isystem C:/msys64/ucrt64/include/SDL2

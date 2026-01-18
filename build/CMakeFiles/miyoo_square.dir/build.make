@@ -76,75 +76,75 @@ CMakeFiles/miyoo_square.dir/src/main.cpp.obj: CMakeFiles/miyoo_square.dir/includ
 CMakeFiles/miyoo_square.dir/src/main.cpp.obj: C:/creator/it/programs/games/miyoo_square/src/main.cpp
 CMakeFiles/miyoo_square.dir/src/main.cpp.obj: CMakeFiles/miyoo_square.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\creator\it\programs\games\miyoo_square\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/miyoo_square.dir/src/main.cpp.obj"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/src/main.cpp.obj -MF CMakeFiles\miyoo_square.dir\src\main.cpp.obj.d -o CMakeFiles\miyoo_square.dir\src\main.cpp.obj -c C:\creator\it\programs\games\miyoo_square\src\main.cpp
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/src/main.cpp.obj -MF CMakeFiles\miyoo_square.dir\src\main.cpp.obj.d -o CMakeFiles\miyoo_square.dir\src\main.cpp.obj -c C:\creator\it\programs\games\miyoo_square\src\main.cpp
 
 CMakeFiles/miyoo_square.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miyoo_square.dir/src/main.cpp.i"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\src\main.cpp > CMakeFiles\miyoo_square.dir\src\main.cpp.i
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\src\main.cpp > CMakeFiles\miyoo_square.dir\src\main.cpp.i
 
 CMakeFiles/miyoo_square.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miyoo_square.dir/src/main.cpp.s"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\src\main.cpp -o CMakeFiles\miyoo_square.dir\src\main.cpp.s
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\src\main.cpp -o CMakeFiles\miyoo_square.dir\src\main.cpp.s
 
 CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj: CMakeFiles/miyoo_square.dir/flags.make
 CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj: CMakeFiles/miyoo_square.dir/includes_CXX.rsp
 CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj: C:/creator/it/programs/games/miyoo_square/libs/state_machine/state_machine.cpp
 CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj: CMakeFiles/miyoo_square.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\creator\it\programs\games\miyoo_square\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\state_machine\state_machine.cpp
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\state_machine\state_machine.cpp
 
 CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.i"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\state_machine\state_machine.cpp > CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.i
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\state_machine\state_machine.cpp > CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.i
 
 CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.s"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\state_machine\state_machine.cpp -o CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.s
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\state_machine\state_machine.cpp -o CMakeFiles\miyoo_square.dir\libs\state_machine\state_machine.cpp.s
 
 CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj: CMakeFiles/miyoo_square.dir/flags.make
 CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj: CMakeFiles/miyoo_square.dir/includes_CXX.rsp
 CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj: C:/creator/it/programs/games/miyoo_square/libs/state_machine/game_states.cpp
 CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj: CMakeFiles/miyoo_square.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\creator\it\programs\games\miyoo_square\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\state_machine\game_states.cpp
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\state_machine\game_states.cpp
 
 CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.i"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\state_machine\game_states.cpp > CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.i
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\state_machine\game_states.cpp > CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.i
 
 CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.s"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\state_machine\game_states.cpp -o CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.s
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\state_machine\game_states.cpp -o CMakeFiles\miyoo_square.dir\libs\state_machine\game_states.cpp.s
 
 CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj: CMakeFiles/miyoo_square.dir/flags.make
 CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj: CMakeFiles/miyoo_square.dir/includes_CXX.rsp
 CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj: C:/creator/it/programs/games/miyoo_square/libs/lang_state/lang_state.cpp
 CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj: CMakeFiles/miyoo_square.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\creator\it\programs\games\miyoo_square\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\lang_state\lang_state.cpp
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\lang_state\lang_state.cpp
 
 CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.i"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\lang_state\lang_state.cpp > CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.i
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\lang_state\lang_state.cpp > CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.i
 
 CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.s"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\lang_state\lang_state.cpp -o CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.s
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\lang_state\lang_state.cpp -o CMakeFiles\miyoo_square.dir\libs\lang_state\lang_state.cpp.s
 
 CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj: CMakeFiles/miyoo_square.dir/flags.make
 CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj: CMakeFiles/miyoo_square.dir/includes_CXX.rsp
 CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj: C:/creator/it/programs/games/miyoo_square/libs/engine/app.cpp
 CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj: CMakeFiles/miyoo_square.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\creator\it\programs\games\miyoo_square\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\engine\app.cpp
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj -MF CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.obj.d -o CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.obj -c C:\creator\it\programs\games\miyoo_square\libs\engine\app.cpp
 
 CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.i"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\engine\app.cpp > CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.i
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\creator\it\programs\games\miyoo_square\libs\engine\app.cpp > CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.i
 
 CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.s"
-	C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\engine\app.cpp -o CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.s
+	C:\msys64\ucrt64\bin\c++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\creator\it\programs\games\miyoo_square\libs\engine\app.cpp -o CMakeFiles\miyoo_square.dir\libs\engine\app.cpp.s
 
 # Object files for target miyoo_square
 miyoo_square_OBJECTS = \
