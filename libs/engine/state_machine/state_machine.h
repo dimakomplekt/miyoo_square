@@ -77,6 +77,7 @@ public:
      */
     State_ID parent() const;
 
+
     /**
      * @brief Checks if this State_ID is the parent of another.
      *
@@ -180,10 +181,11 @@ public:
     /**
      * @brief Constructor to create a state with an ID and name.
      *
-     * @param i Hierarchical State_ID for this state.
-     * @param n Human-readable name of the state.
+     * 
+     * @param state_id Hierarchical State_ID for this state.
+     * @param state_name Human-readable name of the state.
      */
-    State(const State_ID& i, const std::string& n);
+    State(const State_ID& state_id, const std::string& state_name);
 
     /**
      * @brief Destructor.
@@ -227,21 +229,6 @@ private:
 
     // Pointer to the currently active state.
     State* current_state = nullptr;
-    
-    /**
-     * @brief Checks if a State_ID already exists in the machine.
-     *
-     * @param id State_ID to check.
-     * @return true if a state with the given ID exists, false otherwise.
-     */
-    bool id_exists(const State_ID& id) const;
-
-public:
-
-    // Default constructor. 
-    State_machine() = default;
-    // Default destructor.
-    ~State_machine() = default;
 
 
     /**
@@ -252,6 +239,55 @@ public:
      *         with the same ID already exists.
      */
     bool add_state(std::unique_ptr<State> s);
+    
+    /**
+     * @brief Checks if a State_ID already exists in the machine.
+     *
+     * @param id State_ID to check.
+     * @return true if a state with the given ID exists, false otherwise.
+     */
+    bool id_exists(const State_ID& id) const;
+
+
+public:
+
+    // Default constructor. 
+    State_machine() = default;
+    // Default destructor.
+    ~State_machine() = default;
+
+    
+    /**
+     * @brief State constructor wrapper to create a state with an ID and name by the 
+     * state_machine herself and put this state inside the state_machine
+     * 
+     * @param state_id Hierarchical State_ID for this state.
+     * @param state_name Human-readable name of the state.
+     */
+    void initiate_state(const State_ID& state_id, const std::string& state_name);
+
+
+
+    /**
+     * @brief State smart pointer getter from state machine
+     * for performing actions with state by state ID
+     * 
+     * @param state_id Hierarchical State_ID for this state.
+     */
+    State* get_state(const State_ID& state_id);
+
+
+    /**
+     * @brief Specific state destructor by the state_machine herself.
+     *
+     * @param state_id Hierarchical State_ID for this state.
+     * 
+     */
+    void clear_state(const State_ID& state_id);
+
+
+    // Destructor for all of the states inside the state_machine.
+    void clear_states();
 
 
     /**

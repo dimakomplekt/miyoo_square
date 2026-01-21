@@ -40,6 +40,7 @@ int main()
         // Update and render
         if (!SDL_app_cycle(&app_test))
         {
+            app_test.app_sm.get_current_state()->on_exit();
             break;
         }
     }
