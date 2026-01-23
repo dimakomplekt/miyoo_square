@@ -6,8 +6,7 @@
 // =========================================================================================== IMPORT
 
 #include <string>
-
-#include "../../engine/platform/platform.h" // SDL linkin
+#include <vector>
 
 // =========================================================================================== IMPORT
 
@@ -19,7 +18,7 @@
  * @brief Kinds of assets supported by the engine.
  *
  * This enum class categorizes all loadable resources in the game:
- * textures, sounds, fonts, video, etc.
+ * textures, audios, fonts, video, etc.
  *
  * It allows the engine to reason about what kind of resource it is working with
  * without knowing the concrete implementation.
@@ -28,7 +27,7 @@ enum class Asset_type {
 
     IMAGE,      // 2D texture rendered via SDL
     VIDEO,      // Animated or streamed media
-    SOUND,      // Audio resource
+    AUDIO,      // Audio resource
     FONT,       // Bitmap or vector font
     UNKNOWN     // Placeholder for invalid or not-yet-loaded assets
 
@@ -44,7 +43,7 @@ enum class Asset_type {
  * @brief Abstract base class for all assets in the engine.
  *
  * An Asset represents any external resource used by the game:
- * images, sounds, fonts, video, etc.
+ * images, audios, fonts, video, etc.
  *
  * The base class intentionally contains only generic information
  * that applies to all asset types:
@@ -64,7 +63,7 @@ class Asset
         /**
          * @brief Construct a generic asset.
          *
-         * @param type Type of the asset (image, sound, etc.)
+         * @param type Type of the asset (image, audio, etc.)
          * @param path File path to the asset on disk.
          */
         Asset(Asset_type type, const std::string& path);
@@ -76,28 +75,21 @@ class Asset
 
 
         /**
-         * @brief Abstract "use" method for all assets.
+         * @brief Use method for all assets.
          *
-         * Each concrete asset decides what "using" means:
-         *
-         * - Image: render to screen
-         * 
-         * - Sound: play audio
-         * 
-         * - Font: prepare glyphs
-         * 
-         * - Video: start playback
+         * Returns the type and path for players by the
+         * get_type() and get_path() calls.
          *
          * This method defines a common interface for the engine.
          */
-        virtual void use() = 0;
+        void use() const;
 
 
         // Asset type getter
-        Asset_type get_type();
+        Asset_type get_type() const;
 
         // Asset path getter
-        std::string get_path();
+        const std::string& get_path() const;
 
 
     protected:
@@ -119,18 +111,8 @@ class Asset
 /**
  * @brief Concrete asset representing a 2D image (texture).
  *
- * This class wraps an SDL_Texture and adds:
- *
- * - Scaling support
+ * Images are expected to be used primarily by image_renderer
  * 
- * - Automatic size tracking
- * 
- * - Anchor points for positioning
- * 
- * - A rendering helper method
- *
- * Images are expected to be used primarily by game objects,
- * such as characters, UI elements, or tiles.
  */
 class Image_asset : public Asset {
 
@@ -142,117 +124,71 @@ class Image_asset : public Asset {
          * @param renderer SDL renderer used to create the texture.
          * @param path Path to the image file.
          */
-        Image_asset(SDL_Renderer* renderer, const std::string& path);
+        Image_asset(const std::string& path);
 
         // Destructor.
-        // Releases the SDL texture if it exists.
-        ~Image_asset();
+        ~Image_asset() override;
              
 
-        // Default override for image asset type
-        void use() override {
-            // Render with default settings 
-            render_image_at_point({0,0}, this->anchors.center_center);
-        }
-    
-        /**
-         * @brief Override for image asset type with parameters 
-         * 
-         * Render the image at a given point.
-         * 
-         * The point is interpreted as a base reference location
-         * (for example, center, top-left, etc., depending on future design).
-         *
-         * @param drawing_point Base position in screen space.
-         * @param asset_basic_point Base asset anchor.
-         */
-        void use(SDL_FPoint drawing_point, SDL_FPoint asset_anchor) {
+        // Get initial width of the image.
+        unsigned int get_width() const;
 
-            render_image_at_point(drawing_point, asset_anchor);
-
-        }
-
-        // Get current scaled width of the image.
-        int get_width();
-
-        // Get current scaled height of the image.
-        int get_height();
-
-
-        /**
-         * @brief Change image scale.
-         *
-         * Recomputes current width and height based on the original size.
-         *
-         * @param new_scaler Scale factor (1.0 = original size).
-         */
-        void set_scaler(float new_scaler);
-
-
-        // Access raw SDL texture. Useful for advanced rendering operations.
-        SDL_Texture* get_texture();
+        // Get initial height of the image.
+        unsigned int get_height() const;
 
 
     private:
 
-        // Underlying SDL texture
-        SDL_Texture* texture = nullptr;
-
         // Original image w-dimension
-        int initial_width;
+        unsigned int initial_width;
         // Original image h-dimension
-        int initial_height;
-
-        // Current image scale factor
-        float scaler = 1.0f;
-        
-        // Scaled w-dimension
-        int current_width;
-
-        // Scaled h-dimension
-        int current_height;
-
-
-        /**
-         * @brief Nine key anchor points of the image.
-         *
-         * These points allow flexible alignment:
-         *
-         *  [TL]---[TC]---[TR]
-         *   |      |      |
-         *  [CL]---[CC]---[CR]
-         *   |      |      |
-         *  [BL]---[BC]---[BR]
-         *
-         * This is useful for positioning sprites relative to
-         * characters, physics bodies, or UI layout.
-         */
-        struct Anchor_points {
-
-            SDL_FPoint top_left;
-            SDL_FPoint top_center;
-            SDL_FPoint top_right;
-            SDL_FPoint center_left;
-            SDL_FPoint center_center;
-            SDL_FPoint center_right;
-            SDL_FPoint bottom_left;
-            SDL_FPoint bottom_center;
-            SDL_FPoint bottom_right;
-
-        } anchors;
-
-
-        /**
-         * @brief Render the image at a given point.
-         * 
-         * The point is interpreted as a base reference location
-         * (for example, center, top-left, etc., depending on future design).
-         *
-         * @param drawing_point Base position in screen space.
-         * @param asset_basic_point Base asset anchor.
-         */
-        void render_image_at_point(SDL_FPoint drawing_point, SDL_FPoint asset_basic_point);
+        unsigned int initial_height;
 };
 
+
+/**
+ * @brief Concrete asset representing a audio.
+ *
+ * Audio are expected to be used primarily by audio_player
+ * 
+ */
+class Audio_asset : public Asset {
+
+    public:
+
+        /**
+         * @brief Constructor - load an audio asset.
+         * It could be audio or music with different input and output
+         * bitrate and sample rate.
+         *
+         * @param path Path to the audio file.
+         */
+        Audio_asset(const std::string& path);
+
+        // Destructor.
+        // Stop playing, deallocate and nullptr 
+        ~Audio_asset() override;
+
+
+        // Sample rate getter - returns the current sample rate
+        unsigned int get_sample_rate() const;
+
+
+        // Bitrate getter - returns the current bitrate
+        unsigned int get_bitrate() const;
+
+
+        // Audio length getter - returns the audio length (by link without copy),
+        // as a vector with size of [4] and format: <h, m, s, ms>
+        const std::vector<unsigned int>& get_length() const;
+
+
+    private:
+
+        unsigned int initial_sample_rate;
+        unsigned int initial_bitrate;
+
+        std::vector<unsigned int> initial_audio_length; // <h, m, s, ms>
+};
 
 // =========================================================================================== ASSETS SUBCLASSES

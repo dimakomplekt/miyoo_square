@@ -1,0 +1,110 @@
+// 
+
+        // Underlying SDL texture
+        SDL_Texture* texture = nullptr;
+
+
+        // Current image scale factor
+        float scaler = 1.0f;
+        
+        // Scaled w-dimension
+        unsigned int current_width;
+
+        // Scaled h-dimension
+        unsigned int current_height;
+
+
+        /**
+         * @brief Render the image at a given point.
+         * 
+         * The point is interpreted as a base reference location
+         * (for example, center, top-left, etc., depending on future design).
+         *
+         * @param drawing_point Base position in screen space.
+         * @param asset_basic_point Base asset anchor.
+         */
+        void render_image_at_point(SDL_FPoint drawing_point, SDL_FPoint asset_basic_point);
+
+                /**
+         * @brief Change image scale.
+         *
+         * Recomputes current width and height based on the original size.
+         *
+         * @param new_scaler Scale factor (1.0 = original size).
+         */
+        void set_scaler(float new_scaler);
+
+
+        // Access raw SDL texture. Useful for advanced rendering operations.
+        SDL_Texture* get_texture();
+
+
+            /**
+         * @brief Nine key anchor points of the image for the initial scale.
+         *
+         * These points allow flexible alignment:
+         *
+         *  [TL]---[TC]---[TR]
+         *   |      |      |
+         *  [CL]---[CC]---[CR]
+         *   |      |      |
+         *  [BL]---[BC]---[BR]
+         *
+         * This is useful for positioning sprites relative to
+         * characters, physics bodies, or UI layout.
+         */
+        struct Anchor_points {
+
+            SDL_FPoint top_left;
+            SDL_FPoint top_center;
+            SDL_FPoint top_right;
+            SDL_FPoint center_left;
+            SDL_FPoint center_center;
+            SDL_FPoint center_right;
+            SDL_FPoint bottom_left;
+            SDL_FPoint bottom_center;
+            SDL_FPoint bottom_right;
+
+        } anchors;
+
+
+
+
+
+
+
+
+        std::vector<unsigned int> audio_length(4, 0); // h, m, s, ms
+
+        std::vector<unsigned int> current_playtime(4, 0); // h, m, s, ms
+
+        unsigned int audio_volume; // from 0% to 100%
+
+
+        // Plays audio from the current_playtime
+        void play_audio();
+
+        // Pause - stop playing and not reset the playtime
+        void pause_audio();
+
+        // Stop - stop playing and reset the playtime on {0, 0, 0, 0}
+        void stop_audio();
+
+        /**
+         * @brief Audio current_playtime setter.
+         * 
+         * Rewinds the audio by setting up the new value for current_playtime
+         *
+         * @param new_play_time new playtime with format <h, m, s, ms> (by unsigned integers)
+         */
+        void rewind_audio(std::vector<unsigned int> new_play_time);
+
+
+        /**
+         * @brief Audio volume percentage value setter.
+         * 
+         * Setup's the audio playing volume, by changing of the audio_volume variable
+         *          *
+         * @param volume new volume value from 0% to 100% (by unsigned integers)
+         */
+        void set_volume(unsigned int volume);
