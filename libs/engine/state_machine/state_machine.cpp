@@ -15,13 +15,16 @@
 
 State_ID::State_ID(std::initializer_list<int> lvl) : levels(lvl) {}
 
+
 // Vector equality already checks both size and each element in order.
 
 bool State_ID::operator==(const State_ID &other) const { return levels == other.levels; }
 
+
 // Implemented in terms of operator== to avoid duplicating logic.
 
 bool State_ID::operator!=(const State_ID &other) const { return !(*this == other); }
+
 
 State_ID State_ID::parent() const
 {
@@ -38,6 +41,7 @@ State_ID State_ID::parent() const
     return parent_copy; // Copy as parent
 }
 
+
 bool State_ID::is_parent_of(const State_ID &child) const
 {
     // Quick fail if size mismatch
@@ -53,6 +57,7 @@ bool State_ID::is_parent_of(const State_ID &child) const
     return true; // All levels match
 }
 
+
 // We copy the current object to avoid modifying it, then push_back
 // the new level. This allows chaining calls like: game.child(2).child
 
@@ -62,6 +67,7 @@ State_ID State_ID::child(int i) const
     curr.levels.push_back(i); // Add new child level
     return curr;              // Return new object
 }
+
 
 // We iterate over all levels and insert dots between them.
 // This creates a human-readable hierarchical representation.
@@ -73,14 +79,15 @@ std::string State_ID::string() const
 
     for (size_t i = 0; i < levels.size(); ++i)
     {
-        if (i > 0)
-            oss << ".";   // Insert dot between levels
+        if (i > 0) oss << ".";   // Insert dot between levels
         oss << levels[i]; // Add level number
     }
+
     return oss.str(); // Buffered string return
 }
 
 // =========================================================================================== STATE_ID
+
 
 // =========================================================================================== STATE
 
@@ -100,6 +107,7 @@ State::State(const State_ID &state_id, const std::string &state_name)
     : id(state_id), name(state_name), on_enter(nullptr), on_exit(nullptr), state_update(nullptr),
       state_handle_event(nullptr), state_render(nullptr), parent(nullptr) {}
 
+
 // Default destructor is sufficient because:
 // We do not own child states (they are managed externally, e.g., by State_machine)
 // std::function automatically cleans up any assigned callable objects
@@ -108,6 +116,7 @@ State::State(const State_ID &state_id, const std::string &state_name)
 State::~State() = default;
 
 // =========================================================================================== STATE
+
 
 // =========================================================================================== STATE MACHINE
 
@@ -151,9 +160,7 @@ bool State_machine::add_state(std::unique_ptr<State> s)
 bool State_machine::id_exists(const State_ID &id) const
 {
     // Iterate through all states to check if the given ID already exists
-    for (const auto &s : states)
-        if (s->id == id)
-            return true;
+    for (const auto &s : states) if (s->id == id) return true;
 
     return false; // Not found
 }
@@ -169,14 +176,13 @@ void State_machine::initiate_state(const State_ID &state_id, const std::string &
     // Memory for the state will deallocate automatically
 }
 
+
 // State getter by ID from state machine
 
 State *State_machine::get_state(const State_ID &state_id)
 {
     // Iterative search of the state by ID
-    for (auto &s : this->states)
-        if (s->id == state_id)
-            return s.get(); // Smart pointer return
+    for (auto &s : this->states) if (s->id == state_id) return s.get(); // Smart pointer return
 
     return nullptr; // No state by state_id case
 }
@@ -187,8 +193,7 @@ State *State_machine::get_state(const State_ID &state_id)
 void remove_state_recursive(State *s, std::vector<std::unique_ptr<State>> &states)
 {
     // Recursive childrens removing by the std::vector<State*> children container
-    for (State *child : s->children)
-        remove_state_recursive(child, states);
+    for (State *child : s->children) remove_state_recursive(child, states);
 
     // Remove the state from the state parent's std::vector<State*> children container
     if (s->parent)
@@ -210,12 +215,17 @@ void remove_state_recursive(State *s, std::vector<std::unique_ptr<State>> &state
     // - (const std::unique_ptr<State>& sp) : each element of the container (a unique_ptr<State>) is passed in.
     // - return sp.get() == s : returns true if the raw pointer inside the unique_ptr matches the target pointer 's'.
     //   Essentially, it checks whether this is the specific state we want to find or remove.
-    auto it = std::find_if(states.begin(), states.end(),
-                           [&](const std::unique_ptr<State> &sp)
-                           { return sp.get() == s; });
+    auto it = std::find_if(
 
-    if (it != states.end())
-        states.erase(it); // unique_ptr will call destructor automatically
+        states.begin(), states.end(),
+
+        [&](const std::unique_ptr<State> &sp)
+
+        { return sp.get() == s; }
+
+    );
+
+    if (it != states.end()) states.erase(it); // unique_ptr will call destructor automatically
 }
 
 void State_machine::clear_state(const State_ID &id)
@@ -223,14 +233,16 @@ void State_machine::clear_state(const State_ID &id)
     // Find the state pointer
     auto it = std::find_if(
 
-        states.begin(),
-        states.end(),
+        states.begin(), states.end(),
 
         [&](const std::unique_ptr<State> &s)
-        { return s->id == id; });
 
-    if (it == states.end())
-        return; // If there is no state with passed ID - do nothing
+        { return s->id == id; }
+
+    );
+
+    if (it == states.end()) return; // If there is no state with passed ID - do nothing
+
 
     // Get the deleted state pointer by the unique_ptr.h function
     State *target = it->get();
@@ -239,10 +251,10 @@ void State_machine::clear_state(const State_ID &id)
     // and nullptr current state
     if (current_state && current_state == target)
     {
-        if (current_state->on_exit)
-            current_state->on_exit();
+        if (current_state->on_exit) current_state->on_exit();
         current_state = nullptr;
     }
+
 
     // Recursive state clear
     remove_state_recursive(target, states);
@@ -289,36 +301,37 @@ bool State_machine::go_to(const State_ID &id)
         // Call exit callback on current state if exists
         if (s->id == id)
         {
-            if (current_state && current_state->on_exit)
-                current_state->on_exit();
+            if (current_state && current_state->on_exit) current_state->on_exit();
 
             current_state = s.get(); // Switch to the new state
 
             // Call enter callback on new state if exists
-            if (current_state->on_enter)
-                current_state->on_enter();
+            if (current_state->on_enter) current_state->on_enter();
 
+            
             return true;
         }
     }
 
     // State not found handler
     std::cerr << "State not found: " << id.string() << "\n";
+
     return false;
 }
+
 
 // Simply return pointer to the currently active state
 
 State *State_machine::get_current_state() const { return current_state; }
 
+
 // Using function pointer (std::function) in State allows flexible per-state behavior.
 
 void State_machine::state_handle_event(SDL_Event &e)
 {
-
-    if (current_state && current_state->state_handle_event)
-        current_state->state_handle_event(e);
+    if (current_state && current_state->state_handle_event) current_state->state_handle_event(e);
 }
+
 
 // Delegates all rendering to the current state.
 // Each state knows how to draw itself: menus, game objects, UI elements, text, etc.
@@ -326,10 +339,9 @@ void State_machine::state_handle_event(SDL_Event &e)
 
 void State_machine::state_render(SDL_Renderer *r)
 {
-
-    if (current_state && current_state->state_render)
-        current_state->state_render(r);
+    if (current_state && current_state->state_render) current_state->state_render(r);
 }
+
 
 // Updates the logic of the current state.
 // Only the current state is updated; parent or sibling states are ignored.
@@ -337,9 +349,9 @@ void State_machine::state_render(SDL_Renderer *r)
 
 void State_machine::state_update()
 {
-    if (current_state && current_state->state_update)
-        current_state->state_update();
+    if (current_state && current_state->state_update) current_state->state_update();
 }
+
 
 // Returns the human-readable name of the current state.
 // If no state is active, returns "NONE".
