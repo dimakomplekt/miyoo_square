@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 // =========================================================================================== IMPORT
 
@@ -39,6 +40,13 @@ enum class Asset_type {
 // =========================================================================================== ASSET BASE CLASS
 
 
+
+// Asset instance class forward declaration
+// (realized inside the asset_instance.h and asset_instance.cpp)
+
+class Asset_instance;
+
+
 /**
  * @brief Abstract base class for all assets in the engine.
  *
@@ -58,6 +66,12 @@ enum class Asset_type {
  */
 class Asset
 {
+
+    // Instance is the fried-class for the asset class for the protected methods 
+    // permission - "add_instance(Asset_instance* instance)" and "delete_instance(Asset_instance* instance)"
+    friend class Asset_instance;
+
+
     public:
 
         /**
@@ -99,6 +113,37 @@ class Asset
 
         // Path to the file on disk
         std::string source_path;
+
+        
+        /**
+         * @brief Create and register an asset instance.
+         *
+         * This method creates a new Asset_instance and registers it
+         * inside the asset's internal instance list.
+         *
+         * Asset fully owns the lifetime of created instances.
+         */
+        Asset_instance* add_instance();
+
+        /**
+         * @brief Unregister an asset instance.
+         *
+         * Removes the given Asset_instance pointer from the internal list
+         * of active instances associated with this asset.
+         *
+         * This method is called automatically by the Asset_instance
+         * destructor and should never be called manually.
+         *
+         * @param instance Pointer to the asset instance to unregister.
+         */
+        void delete_instance(Asset_instance* instance);
+
+
+    private:
+        
+        // List of active asset instance addresses.
+        // The container is empty on asset creation and fully owned by Asset.
+        std::unordered_set<Asset_instance*> instances;
 };
 
 

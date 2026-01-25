@@ -5,8 +5,8 @@
 
 #include <iostream>
 
-
-#include "asset.h"
+#include "asset_instance.h"         // Automatically #include "asset.h"
+#include <algorithm>                // For std::remove
 
 // =========================================================================================== IMPORT
 
@@ -18,7 +18,19 @@
 Asset::Asset(Asset_type type, const std::string& path) : type(type), source_path(path) {};
 
 
-Asset::~Asset() = default;              // Default destructor realization 
+// Destructor - deletes class data and all active instances
+
+Asset::~Asset()
+{
+    while (!instances.empty())
+    {
+        // Destroy all instances safely
+        auto* instance = *instances.begin();
+        delete_instance(instance);
+    }
+
+    // Destroy the other data automatically
+}
 
 
 void Asset::use() const {};             // Empty basic use
@@ -40,6 +52,32 @@ const std::string& Asset::get_path() const
     // Returns the asset path
     return source_path;
 }
+
+
+// Instances workflow by the unordered_set methods
+
+Asset_instance* Asset::add_instance()
+{
+    // Create an instance by the friendly class constructor
+    auto* instance = new Asset_instance(this);
+
+    // Insert the instance inside the instances list
+    instances.insert(instance);
+
+
+    return instance; // Return and adress for the class-object (variable) to use
+}
+
+void Asset::delete_instance(Asset_instance* instance)
+{
+    if (!instance) return;
+
+    instances.erase(instance);
+
+    delete instance;
+}
+
+// Instances workflow by the unordered_set methods
 
 
 // =========================================================================================== ASSET CLASS
