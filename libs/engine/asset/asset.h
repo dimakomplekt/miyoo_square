@@ -9,6 +9,8 @@
 #include <vector>
 #include <unordered_set>
 
+#include "../platform/platform.h"
+
 // =========================================================================================== IMPORT
 
 
@@ -193,6 +195,21 @@ class Image_asset : public Asset {
 };
 
 
+
+
+
+// Timecode structure for audio time representation
+struct timecode
+{
+
+    uint8_t h;
+    uint8_t m;
+    uint8_t s;
+    uint16_t ms;
+
+};
+
+
 /**
  * @brief Concrete asset representing a audio.
  *
@@ -200,6 +217,8 @@ class Image_asset : public Asset {
  * 
  */
 class Audio_asset : public Asset {
+
+    friend class Audio_instance;
 
     public:
 
@@ -235,7 +254,7 @@ class Audio_asset : public Asset {
         unsigned int initial_sample_rate;
         unsigned int initial_bitrate;
 
-        std::vector<unsigned int> initial_audio_length; // <h, m, s, ms>
+        timecode initial_audio_length; // <h, m, s, ms>
 };
 
 // =========================================================================================== ASSETS SUBCLASSES
