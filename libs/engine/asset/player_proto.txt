@@ -25,7 +25,7 @@
          */
         void render_image_at_point(SDL_FPoint drawing_point, SDL_FPoint asset_basic_point);
 
-                /**
+        /**
          * @brief Change image scale.
          *
          * Recomputes current width and height based on the original size.

@@ -161,6 +161,8 @@ class Asset
  */
 class Image_asset : public Asset {
 
+    friend class Image_instance;
+
     public:
 
         /**
