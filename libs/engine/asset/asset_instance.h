@@ -124,7 +124,9 @@ class Image_instance : public Asset_instance
         // === CROP METHODS ===
 
         /**
-         * @brief Setup the image cropmap by cropmap link.
+         * @brief Image cropmap setter 1 
+         * 
+         * Setup the image cropmap by cropmap link.
          * Automatically updates the current width and height,
          * then recalculates the anchor points.
          * 
@@ -137,7 +139,9 @@ class Image_instance : public Asset_instance
         void set_crop_map(const crop_map_2D& new_crop_map);
 
         /**
-         * @brief Setup the image cropmap by 2 points.
+         * @brief Image cropmap setter 2 
+         * 
+         * Setup the image cropmap by 2 points.
          * Automatically updates the current width and height,
          * then recalculates the anchor points.
          * 
@@ -324,10 +328,13 @@ uint64_t time_to_samples(timecode current_timecode, unsigned int sample_rate);
 timecode samples_to_time(uint64_t sample, unsigned int sample_rate);
 
 
-
+// Audio instance subclass for copies of audio assets
+// This class could work with Audio_asset specific parameters and methods
+// It stores main_asset pointer by the heritage from Asset_instance base class -
+// by the protected getter get_main_asset_link()
 class Audio_instance : public Asset_instance
 {
-
+    // To use the Audio_asset protected methods and parameters
     friend class Audio_asset;
 
     public:
@@ -348,24 +355,122 @@ class Audio_instance : public Asset_instance
         ~Audio_instance() override;
 
 
+        // === MAIN SETTINGS ===
+
+        /**
+         * @brief Sample rate setter.
+         * 
+         * Swithes the current_sample_rate value
+         * 
+         * @param sample_rate New sample rate value
+         * 
+         */
+        void set_sample_rate(unsigned int sample_rate);
+
+        // Current sample_rate getter
+        unsigned int get_sample_rate() const;
+
+
+        /**
+         * @brief Bitrate setter.
+         * 
+         * Swithes the current_bitrate value
+         * 
+         * @param bitrate New sample rate value
+         * 
+         */
+        void set_bitrate(unsigned int bitrate);
+
+        // Current bitrate getter
+        unsigned int get_bitrate() const;
+
+        // === MAIN SETTINGS ===
+
+
         // === TRIM METHODS ===
 
 
         /**
-         * @brief Start sample value setter
+         * @brief Start sample value setter 1
          * 
-         * Setup the start_sample by the time-sample translator.
+         * Setup the start_sample by the sample or time-sample translator.
          * 
          * Use like:
          * 
-         * set_start_sample(time_to_samples(timecode, sample_rate));
+         * set_start_sample(current_sample);
+         * 
+         * set_start_sample(time_to_samples(current_timecode, current_instance.current_sample_rate));
          * 
          */
         void set_start_sample(uint64_t sample);
 
+        
+        /**
+         * @brief Start sample value setter 2
+         * 
+         * Setup the start_sample by the timecode and current sample rate.
+         * 
+         * Use like:
+         * 
+         * set_start_sample(timecode);
+         * 
+         */
+        void set_start_sample(timecode current_timecode);
+
+
+        // Start sample value getter
         uint64_t get_start_sample() const;
 
+
+        /**
+         * @brief End sample value setter 1
+         * 
+         * Setup the end_sample by the sample or time-sample translator.
+         * 
+         * Use like:
+         * 
+         * set_end_sample(current_sample);
+         * 
+         * set_end_sample(time_to_samples(current_timecode, current_instance.current_sample_rate));
+         * 
+         */
+        void set_end_sample(uint64_t sample);
+
         
+        /**
+         * @brief End sample value setter 2
+         * 
+         * Setup the end_sample by the timecode and current sample rate.
+         * 
+         * Use like:
+         * 
+         * set_end_sample(timecode);
+         * 
+         */
+        void set_end_sample(timecode current_timecode);
+
+
+        // End sample value getter
+        uint64_t get_end_sample() const;
+
+
+        // === TRIM METHODS ===
+
+
+        // === UPDATE ===
+
+        /**
+         * @brief Update playback cursor by the sample delta 
+         * 
+         * Called by the audio player to update the current playback
+         * position, while playing the audio instance
+         * 
+         * @param sample_delta Number of samples to advance the playback cursor
+         * 
+         */
+        uint64_t playback_update(uint64_t sample_delta);
+
+        // === UPDATE ===
 
 
     private:
@@ -386,9 +491,15 @@ class Audio_instance : public Asset_instance
         // Cached length
         uint64_t length_samples;
 
-
         // Last known playback cursor
         uint64_t current_playtime_sample;
+
+
+        // Length calculator
+        // Called automatically inside the start sample 
+        // and end sample setters
+        uint64_t calculate_length();
+
 };
 
 // =========================================================================================== AUDIO INSTANCE

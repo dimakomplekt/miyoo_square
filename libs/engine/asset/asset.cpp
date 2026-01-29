@@ -24,12 +24,30 @@ Asset::~Asset()
 {
     while (!instances.empty())
     {
-        // Destroy all instances safely
         auto* instance = *instances.begin();
-        delete_instance(instance);
-    }
 
-    // Destroy the other data automatically
+        // Delete instances from the instances list 
+        unregister_instance(instance);
+
+        // Switch the logic for different asset types
+        switch (type)
+        {
+            case Asset_type::IMAGE:
+
+                static_cast<Image_asset*>(this)->delete_instance(static_cast<Image_instance*>(instance));
+                break;
+
+            case Asset_type::AUDIO:
+
+                static_cast<Audio_asset*>(this)->delete_instance(static_cast<Audio_instance*>(instance));
+                break;
+
+            default:
+
+                delete instance;
+                break;
+        }
+    }
 }
 
 
@@ -56,26 +74,17 @@ const std::string& Asset::get_path() const
 
 // Instances workflow by the unordered_set methods
 
-Asset_instance* Asset::add_instance()
-{
-    // Create an instance by the friendly class constructor
-    auto* instance = new Asset_instance(this);
 
-    // Insert the instance inside the instances list
+void Asset::register_instance(Asset_instance* instance)
+{
     instances.insert(instance);
-
-
-    return instance; // Return and adress for the class-object (variable) to use
 }
 
-void Asset::delete_instance(Asset_instance* instance)
+void Asset::unregister_instance(Asset_instance* instance)
 {
-    if (!instance) return;
-
     instances.erase(instance);
-
-    delete instance;
 }
+
 
 // Instances workflow by the unordered_set methods
 
@@ -127,6 +136,34 @@ unsigned int Image_asset::get_height() const
 {
     return initial_height;
 }
+
+
+// Instance create and delete methods
+
+
+Image_instance* Image_asset::add_instance()
+{
+    // Create an instance by the friendly class constructor
+    auto* instance = new Image_instance(this);
+
+    // Insert the instance inside the instances list
+    register_instance(instance);
+
+    return instance; // Return and adress for the class-object (variable) to use
+}
+
+void Image_asset::delete_instance(Image_instance* instance)
+{
+    // Error handler
+    if (!instance) return;
+
+    // Remove the instance from the instances list
+    unregister_instance(instance);
+
+    // Delete from the memory
+    delete instance;
+}
+
 
 // =========================================================================================== IMAGE ASSET CLASS
 
@@ -183,10 +220,36 @@ unsigned int Audio_asset::get_bitrate() const
 
 // Initial length getter
 
-const std::vector<unsigned int>& Audio_asset::get_length() const
+const timecode& Audio_asset::get_length() const
 {
     return initial_audio_length;
 }
 
+
+// Instance create and delete methods
+
+
+Audio_instance* Audio_asset::add_instance()
+{
+    // Create an instance by the friendly class constructor
+    auto* instance = new Audio_instance(this);
+
+    // Insert the instance inside the instances list
+    register_instance(instance);
+
+    return instance; // Return and adress for the class-object (variable) to use
+}
+
+void Audio_asset::delete_instance(Audio_instance* instance)
+{
+    // Error handler
+    if (!instance) return;
+
+    // Remove the instance from the instances list
+    unregister_instance(instance);
+
+    // Delete from the memory
+    delete instance;
+}
 
 // =========================================================================================== AUDIO ASSET CLASS

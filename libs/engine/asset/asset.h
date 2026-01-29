@@ -117,28 +117,11 @@ class Asset
         std::string source_path;
 
         
-        /**
-         * @brief Create and register an asset instance.
-         *
-         * This method creates a new Asset_instance and registers it
-         * inside the asset's internal instance list.
-         *
-         * Asset fully owns the lifetime of created instances.
-         */
-        Asset_instance* add_instance();
+        // Registration of asset instance inside the instances list
+        void register_instance(Asset_instance* instance);
 
-        /**
-         * @brief Unregister an asset instance.
-         *
-         * Removes the given Asset_instance pointer from the internal list
-         * of active instances associated with this asset.
-         *
-         * This method is called automatically by the Asset_instance
-         * destructor and should never be called manually.
-         *
-         * @param instance Pointer to the asset instance to unregister.
-         */
-        void delete_instance(Asset_instance* instance);
+        // Delete instanse from instances list
+        void unregister_instance(Asset_instance* instance);
 
 
     private:
@@ -184,6 +167,34 @@ class Image_asset : public Asset {
 
         // Get initial height of the image.
         unsigned int get_height() const;
+
+
+        // === INSTANCE WORKFLOW === 
+
+        /**
+         * @brief Create and register an asset instance.
+         *
+         * This method creates a new Asset_instance and registers it
+         * inside the asset's internal instance list.
+         *
+         * Asset fully owns the lifetime of created instances.
+         */
+        Image_instance* add_instance();
+
+        /**
+         * @brief Unregister an asset instance.
+         *
+         * Removes the given Asset_instance pointer from the internal list
+         * of active instances associated with this asset.
+         *
+         * This method is called automatically by the Asset_instance
+         * destructor and should never be called manually.
+         *
+         * @param instance Pointer to the asset instance to unregister.
+         */
+        void delete_instance(Image_instance* instance);
+
+        // === INSTANCE WORKFLOW
 
 
     private:
@@ -245,8 +256,36 @@ class Audio_asset : public Asset {
 
 
         // Audio length getter - returns the audio length (by link without copy),
-        // as a vector with size of [4] and format: <h, m, s, ms>
-        const std::vector<unsigned int>& get_length() const;
+        // as a timecode struct: h, m, s, ms
+        const timecode& get_length() const;
+
+
+        // === INSTANCE WORKFLOW === 
+
+        /**
+         * @brief Create and register an asset instance.
+         *
+         * This method creates a new Asset_instance and registers it
+         * inside the asset's internal instance list.
+         *
+         * Asset fully owns the lifetime of created instances.
+         */
+        Audio_instance* add_instance();
+
+        /**
+         * @brief Unregister an asset instance.
+         *
+         * Removes the given Asset_instance pointer from the internal list
+         * of active instances associated with this asset.
+         *
+         * This method is called automatically by the Asset_instance
+         * destructor and should never be called manually.
+         *
+         * @param instance Pointer to the asset instance to unregister.
+         */
+        void delete_instance(Audio_instance* instance);
+
+        // === INSTANCE WORKFLOW
 
 
     private:
@@ -254,7 +293,7 @@ class Audio_asset : public Asset {
         unsigned int initial_sample_rate;
         unsigned int initial_bitrate;
 
-        timecode initial_audio_length; // <h, m, s, ms>
+        timecode initial_audio_length; // h, m, s, ms
 };
 
 // =========================================================================================== ASSETS SUBCLASSES
