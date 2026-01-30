@@ -29,7 +29,8 @@ class Asset_instance
            /**
          * @brief Construct an asset instance.
          *
-         * This constructor creates a new instance of an asset and automatically
+         * This constructor calls from the instance_type constructor,
+         * creates a new instance of an asset and automatically
          * associates it with its parent Asset. The instance stores a pointer
          * to the main Asset (`main_asset`) and immediately registers itself
          * in the asset's internal list of active instances by calling:
@@ -43,12 +44,14 @@ class Asset_instance
          * @param asset Pointer to the Asset this instance is derived from.
          */    
         explicit Asset_instance(Asset* asset);
+    
 
+    public:
 
         virtual ~Asset_instance(); // Only called by the Asset::delete_instance(instance);
 
         // Main asset link getter
-        Asset* get_main_asset_link() const;
+        const Asset* get_main_asset_link() const;
 
         
     private:
@@ -105,7 +108,7 @@ class Image_instance : public Asset_instance
 
     friend class Image_asset;
 
-    public:
+    protected: // Call only by Image_asset class
 
         // Image_instance constructor, which calls the Asset_instance constructor and 
         // pass the Image_asset pointer to the main_asset link, then registers itself 
@@ -113,12 +116,17 @@ class Image_instance : public Asset_instance
         //
         // After that it initializes the scale factors to 1.0 (original size) and calculates
         // the current_width, current_height and anchor points
-        Image_instance(Image_asset* asset);
+        explicit Image_instance(Image_asset* asset);
+
+
+    public:
 
         // Image_instance destructor which calls the Asset_instance destructor - delete
         // the object data and unregister itself from the asset's internal list of active asset
         // instances
         ~Image_instance() override;
+
+        const Image_asset* get_main_asset_link() const;
 
 
         // === CROP METHODS ===
@@ -224,14 +232,6 @@ class Image_instance : public Asset_instance
         // === ROTATION METHODS ===
 
 
-    protected:
-
-        Image_asset* get_main_asset_link() const
-        {
-            return static_cast<Image_asset*>(Asset_instance::get_main_asset_link());
-        }
-
-
     private:
 
         // Current crop map by 2 points
@@ -249,7 +249,7 @@ class Image_instance : public Asset_instance
         // Scaled h-dimension
         unsigned int current_height;
 
-
+                                                    
         /**
          * @brief Nine key anchor points of the image in local (unrotated) space.
          *
@@ -337,7 +337,7 @@ class Audio_instance : public Asset_instance
     // To use the Audio_asset protected methods and parameters
     friend class Audio_asset;
 
-    public:
+    protected:
 
         
         // Audio_instance constructor, which calls the Asset_instance constructor and 
@@ -354,6 +354,10 @@ class Audio_instance : public Asset_instance
         // instances
         ~Audio_instance() override;
 
+
+    public:
+
+        const Audio_asset* get_main_asset_link() const;
 
         // === MAIN SETTINGS ===
 

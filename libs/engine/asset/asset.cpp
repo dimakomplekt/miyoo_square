@@ -8,6 +8,9 @@
 #include "asset_instance.h"         // Automatically #include "asset.h"
 #include <algorithm>                // For std::remove
 
+
+#include <cassert>                  // assert include
+
 // =========================================================================================== IMPORT
 
 
@@ -26,10 +29,9 @@ Asset::~Asset()
     {
         auto* instance = *instances.begin();
 
-        // Delete instances from the instances list 
-        unregister_instance(instance);
-
         // Switch the logic for different asset types
+        // This logic choosed for the precise control of the destructors selection,
+        // by the reason, that Asset_instance could have some exlusive destructors logic
         switch (type)
         {
             case Asset_type::IMAGE:
@@ -48,6 +50,8 @@ Asset::~Asset()
                 break;
         }
     }
+
+    assert(instances.empty());
 }
 
 
@@ -157,10 +161,12 @@ void Image_asset::delete_instance(Image_instance* instance)
     // Error handler
     if (!instance) return;
 
+    assert(instance->get_main_asset_link() == this);
+
     // Remove the instance from the instances list
     unregister_instance(instance);
 
-    // Delete from the memory
+    // Delete from the memory - CALL ONLY BY delete_instance()
     delete instance;
 }
 
