@@ -22,20 +22,22 @@
 class Asset_instance
 {   
 
-    friend class Asset; // Asset could call the ~Asset_instance()
+    friend class Asset; // Methods providing
 
+
+    // Call only by Asset class
     protected:
 
            /**
          * @brief Construct an asset instance.
          *
-         * This constructor calls from the instance_type constructor,
-         * creates a new instance of an asset and automatically
+         * This constructor calls from the instance_type constructors.
+         * It creates a new instance of an asset and automatically
          * associates it with its parent Asset. The instance stores a pointer
          * to the main Asset (`main_asset`) and immediately registers itself
          * in the asset's internal list of active instances by calling:
          *
-         *     main_asset->add_instance(this);
+         *      type_asset->add_instance(this);
          *
          * This ensures that the Asset is aware of all its instances and can
          * properly manage their lifetimes, including destruction when the
@@ -44,11 +46,16 @@ class Asset_instance
          * @param asset Pointer to the Asset this instance is derived from.
          */    
         explicit Asset_instance(Asset* asset);
-    
+
+
+        /* Basic asset instance destructor.
+         * Called automatically by the childrens destructors 
+         * (which called by the Asset::delete_instance(instance);)
+         */
+        virtual ~Asset_instance();
+
 
     public:
-
-        virtual ~Asset_instance(); // Only called by the Asset::delete_instance(instance);
 
         // Main asset link getter
         const Asset* get_main_asset_link() const;
@@ -71,8 +78,8 @@ class Asset_instance
 // =========================================================================================== IMAGE INSTANCE
 
 
-// Decart coordinate for 2D space.
-struct dec_c_2D
+// Descartes coordinate for 2D space.
+struct desc_c_2D
 {
 
     float x;    // Coordinate by x-axes (width).
@@ -93,77 +100,73 @@ struct size_2D
 // Crop map for 2D space
 struct crop_map_2D {
 
-    dec_c_2D top_left;
-    dec_c_2D bottom_right;
+    desc_c_2D top_left;
+    desc_c_2D bottom_right;
 
 };
 
 
-// Image instance subclass for copies of image assets
-// This class could work with Image_asset specific parameters and methods
-// It stores main_asset pointer by the heritage from Asset_instance base class
-// by the protected getter get_main_asset_link()
+/*
+ * Image instance subclass for copies of image assets
+ * This class could work with Image_asset specific parameters and methods
+ * It stores main_asset pointer by the heritage from Asset_instance base class
+ * by the protected getter get_main_asset_link()
+ * 
+ * Image instance contains the most common parameters
+ * for image refactoring - scale, flip, rotation angle, crop map.
+ * 
+ * Image instance data uses for quick access to the common image asset parameters
+ * without calculation on every render step. 
+ * 
+ * Asset player works faster with using of these parameters. 
+ * 
+ * More memory, but less CPU usage. 
+ * 
+ */ 
 class Image_instance : public Asset_instance
 {
 
-    friend class Image_asset;
+    friend class Image_asset;   // Methods providing
 
-    protected: // Call only by Image_asset class
+    // Call only by Image_asset class
+    protected:
 
-        // Image_instance constructor, which calls the Asset_instance constructor and 
-        // pass the Image_asset pointer to the main_asset link, then registers itself 
-        // in the asset's internal list of active instances.
-        //
-        // After that it initializes the scale factors to 1.0 (original size) and calculates
-        // the current_width, current_height and anchor points
+        /**
+         * Image_instance constructor, which calls the Asset_instance constructor and 
+         * pass the Image_asset pointer to the main_asset link, then registers itself 
+         * in the asset's internal list of active instances.
+         *
+         * After that it initializes the scale factors to 1.0 (original size) and calculates
+         * the current_width, current_height and anchor points
+         * 
+         * Calls from:
+         * 
+         *      Image_asset::add_instance();
+         * 
+         */
         explicit Image_instance(Image_asset* asset);
 
+        /*
+         * Image_instance destructor which called by the Assets class instance indestructor method.
+         * Delete the object data and unregister instance from the asset's internal list of active asset
+         * instances
+         * 
+         * Calls from:
+         * 
+         *      Image_asset::delete_instance(instance);
+         * 
+         * or
+         * 
+         *      Asset::~Asset();
+         * 
+         */
+        ~Image_instance() override;
 
     public:
 
-        // Image_instance destructor which calls the Asset_instance destructor - delete
-        // the object data and unregister itself from the asset's internal list of active asset
-        // instances
-        ~Image_instance() override;
-
+        // Basic asset link getter override.
+        // Returns the link to the main Image_asset
         const Image_asset* get_main_asset_link() const;
-
-
-        // === CROP METHODS ===
-
-        /**
-         * @brief Image cropmap setter 1 
-         * 
-         * Setup the image cropmap by cropmap link.
-         * Automatically updates the current width and height,
-         * then recalculates the anchor points.
-         * 
-         * @param new_crop_map Crop map by the crop_map_2D link
-         * 
-         * Use like:
-         * 
-         * image_instance.set_crop_map(crop);
-         */
-        void set_crop_map(const crop_map_2D& new_crop_map);
-
-        /**
-         * @brief Image cropmap setter 2 
-         * 
-         * Setup the image cropmap by 2 points.
-         * Automatically updates the current width and height,
-         * then recalculates the anchor points.
-         * 
-         * @param top_left Top left crop point by the dec_c_2D link
-         * @param bottom_right Bottom rigth crop point by the dec_c_2D link
-         * 
-         * Use like:
-         * 
-         * set_crop_map({{x_1, y_1}, {x_2, y_2}});
-         * 
-         */
-        void set_crop_map(const dec_c_2D& top_left, const dec_c_2D& bottom_right);
-
-        // === CROP METHODS ===
 
 
         // === SCALER METHODS ===
@@ -178,6 +181,29 @@ class Image_instance : public Asset_instance
          * 
          */
         void set_scaler(float x_scaler, float y_scaler);
+
+
+        /**
+         * @brief Change image width size.
+         *
+         * Recalculates the instance parameters by the new width data.
+         *
+         * @param new_width New width value
+         * 
+         */
+        void set_width(unsigned int new_width);
+
+        
+        /**
+         * @brief Change image width size.
+         *
+         * Recalculates the instance parameters by the new height data.
+         *
+         * @param new_height New height value
+         * 
+         */
+        void set_height(unsigned int new_height);
+
 
         // === SCALER METHODS ===
 
@@ -232,10 +258,44 @@ class Image_instance : public Asset_instance
         // === ROTATION METHODS ===
 
 
-    private:
+        // === CROP METHODS ===
 
-        // Current crop map by 2 points
-        crop_map_2D crop_map;
+        /**
+         * @brief Image crop map setter 1 
+         * 
+         * Setup the image crop map by crop_map link.
+         * Automatically updates the current width and height,
+         * then recalculates the anchor points.
+         * 
+         * @param new_crop_map Crop map by the crop_map_2D link
+         * 
+         * Use like:
+         * 
+         * image_instance.set_crop_map(crop);
+         */
+        void set_crop_map(const crop_map_2D& new_crop_map);
+
+        /**
+         * @brief Image crop_map setter 2 
+         * 
+         * Setup the image crop_map by 2 points.
+         * Automatically updates the current width and height,
+         * then recalculates the anchor points.
+         * 
+         * @param top_left Top left crop point by the desc_c_2D link
+         * @param bottom_right Bottom right crop point by the desc_c_2D link
+         * 
+         * Use like:
+         * 
+         * set_crop_map({{x_1, y_1}, {x_2, y_2}});
+         * 
+         */
+        void set_crop_map(const desc_c_2D& top_left, const desc_c_2D& bottom_right);
+
+        // === CROP METHODS ===
+
+
+    private:
 
         // Current image scale factor x-axes
         float x_scaler;
@@ -249,9 +309,28 @@ class Image_instance : public Asset_instance
         // Scaled h-dimension
         unsigned int current_height;
 
+        
+        // Image flip flags
+
+        // Horizontal flip (relative to the center point)
+        bool horizontal_flip;
+
+        // Vertical flip (relative to the center point)
+        bool vertical_flip;
+
+
+        // Asset instance rotation
+
+        // Rotation angle in degrees (clockwise)
+        float rotation_angle;
+
+
+        // Current crop map by 2 points
+        crop_map_2D crop_map;
+
                                                     
         /**
-         * @brief Nine key anchor points of the image in local (unrotated) space.
+         * @brief Nine key anchor points of the image in local (not rotated) space.
          *
          * These points allow flexible alignment:
          *
@@ -270,36 +349,31 @@ class Image_instance : public Asset_instance
          */
         struct Anchor_points {
 
-            dec_c_2D top_left;
-            dec_c_2D top_center;
-            dec_c_2D top_right;
-            dec_c_2D center_left;
-            dec_c_2D center_center;
-            dec_c_2D center_right;
-            dec_c_2D bottom_left;
-            dec_c_2D bottom_center;
-            dec_c_2D bottom_right;
+            desc_c_2D top_left;
+            desc_c_2D top_center;
+            desc_c_2D top_right;
+            desc_c_2D center_left;
+            desc_c_2D center_center;
+            desc_c_2D center_right;
+            desc_c_2D bottom_left;
+            desc_c_2D bottom_center;
+            desc_c_2D bottom_right;
 
         } anchors;
 
+
+        // Inner recalculation
+
+        // Recalculate the current_width and current_height
+        void set_new_size();
+
         // Recalculate the anchor points, based on the current width and height
         // Calls at the constructor and inside the set_scaler() method;
-        void get_new_anchor_points();
+        void set_new_anchor_points();
 
+        // Recalculate the crop map dependent parameters
+        void set_new_crop_map();
 
-        // Image flip flags
-
-        // Horizontal flip (relative to the center point)
-        bool horizontal_flip;
-
-        // Vertical flip (relative to the center point)
-        bool vertical_flip;
-
-
-        // Asset instance rotation
-
-        // Rotation angle in degrees (clockwise)
-        float rotation_angle;
 };
 
 
@@ -345,7 +419,7 @@ class Audio_instance : public Asset_instance
         // in the asset's internal list of active instances.
         //
         // After that it initializes the current_sample_rate and current_bitrate (with original size)
-        // and calculates the current_start, current_end and current_length, then set the urrent_playtime
+        // and calculates the current_start, current_end and current_length, then set the current_playtime
         // to {0, 0, 0, 0}.
         Audio_instance(Audio_asset* asset);
 
@@ -364,7 +438,7 @@ class Audio_instance : public Asset_instance
         /**
          * @brief Sample rate setter.
          * 
-         * Swithes the current_sample_rate value
+         * Switches the current_sample_rate value
          * 
          * @param sample_rate New sample rate value
          * 
@@ -378,7 +452,7 @@ class Audio_instance : public Asset_instance
         /**
          * @brief Bitrate setter.
          * 
-         * Swithes the current_bitrate value
+         * Switches the current_bitrate value
          * 
          * @param bitrate New sample rate value
          * 

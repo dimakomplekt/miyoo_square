@@ -30,8 +30,8 @@ Asset::~Asset()
         auto* instance = *instances.begin();
 
         // Switch the logic for different asset types
-        // This logic choosed for the precise control of the destructors selection,
-        // by the reason, that Asset_instance could have some exlusive destructors logic
+        // This logic choosen for the precise control of the destructors selection,
+        // by the reason, that Asset_instance could have some exclusive destructors logic
         switch (type)
         {
             case Asset_type::IMAGE:
@@ -153,7 +153,7 @@ Image_instance* Image_asset::add_instance()
     // Insert the instance inside the instances list
     register_instance(instance);
 
-    return instance; // Return and adress for the class-object (variable) to use
+    return instance; // Return the link of the class-object (variable) to use
 }
 
 void Image_asset::delete_instance(Image_instance* instance)
@@ -243,7 +243,7 @@ Audio_instance* Audio_asset::add_instance()
     // Insert the instance inside the instances list
     register_instance(instance);
 
-    return instance; // Return and adress for the class-object (variable) to use
+    return instance; // Return the link of the class-object (variable) to use
 }
 
 void Audio_asset::delete_instance(Audio_instance* instance)

@@ -120,7 +120,7 @@ class Asset
         // Registration of asset instance inside the instances list
         void register_instance(Asset_instance* instance);
 
-        // Delete instanse from instances list
+        // Delete instance from instances list
         void unregister_instance(Asset_instance* instance);
 
 
