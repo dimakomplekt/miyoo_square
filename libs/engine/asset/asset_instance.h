@@ -83,7 +83,7 @@ struct desc_c_2D
 {
 
     float x;    // Coordinate by x-axes (width).
-    float y;    //Coordinate by y-axes (height).
+    float y;    // Coordinate by y-axes (height).
 
 };
 
@@ -100,8 +100,10 @@ struct size_2D
 // Crop map for 2D space
 struct crop_map_2D {
 
-    desc_c_2D top_left;
-    desc_c_2D bottom_right;
+    // Points choosen for width - height / x - y values coincidence
+
+    desc_c_2D bottom_left;
+    desc_c_2D top_right;
 
 };
 
@@ -271,9 +273,18 @@ class Image_instance : public Asset_instance
          * 
          * Use like:
          * 
-         * image_instance.set_crop_map(crop);
+         * image_instance.set_new_crop_map(crop);
+         * 
+         *      !!!  CROP MAP CONSTRAINS  !!!
+         * 
+         *         x_1 >= 0;   x_2 >= x_1;
+         * 
+         *         y_1 >= 0;   y_2 >= y_1;
+         * 
+         *      !!!  CROP MAP CONSTRAINS  !!!
+         * 
          */
-        void set_crop_map(const crop_map_2D& new_crop_map);
+        void set_new_crop_map(const crop_map_2D& new_crop_map);
 
         /**
          * @brief Image crop_map setter 2 
@@ -282,15 +293,30 @@ class Image_instance : public Asset_instance
          * Automatically updates the current width and height,
          * then recalculates the anchor points.
          * 
-         * @param top_left Top left crop point by the desc_c_2D link
-         * @param bottom_right Bottom right crop point by the desc_c_2D link
+         * @param bottom_left Top left crop point by the desc_c_2D link
+         * @param top_right Bottom right crop point by the desc_c_2D link
          * 
          * Use like:
          * 
-         * set_crop_map({{x_1, y_1}, {x_2, y_2}});
+         * set_new_crop_map({{x_1, y_1}, {x_2, y_2}});
+         * 
+         *      !!!  CROP MAP CONSTRAINS  !!!
+         * 
+         *         x_1 >= 0;   x_2 >= x_1;
+         * 
+         *         y_1 >= 0;   y_2 >= y_1;
+         * 
+         *      !!!  CROP MAP CONSTRAINS  !!!
          * 
          */
-        void set_crop_map(const desc_c_2D& top_left, const desc_c_2D& bottom_right);
+        void set_new_crop_map(const desc_c_2D& bottom_left, const desc_c_2D& top_right);
+
+
+        // Current crop width getter
+        unsigned int get_crop_width() const;
+
+        // Current crop height getter
+        unsigned int get_crop_height() const;
 
         // === CROP METHODS ===
 
@@ -302,6 +328,11 @@ class Image_instance : public Asset_instance
 
         // Current image scale factor y-axes
         float y_scaler;
+
+        // Scalers cache for crop reset
+        float last_x_scaler;
+        float last_y_scaler; 
+
 
         // Scaled w-dimension
         unsigned int current_width;
@@ -362,18 +393,28 @@ class Image_instance : public Asset_instance
         } anchors;
 
 
+        // Crop horizontal dimension
+        unsigned int crop_width;
+
+        // Crop vertical dimension
+        unsigned int crop_height;
+
         // Inner recalculation
 
+
+        // NOTE:
+        // geometry-related setters currently call recalculation methods manually.
+        // Can be unified later into a single rebuild step if dependencies grow.
+
         // Recalculate the current_width and current_height
-        void set_new_size();
+        void reset_size();
+
+        // Recalculate the crop map by the old crop map and dependent parameters
+        void reset_crop_map();
 
         // Recalculate the anchor points, based on the current width and height
         // Calls at the constructor and inside the set_scaler() method;
-        void set_new_anchor_points();
-
-        // Recalculate the crop map dependent parameters
-        void set_new_crop_map();
-
+        void reset_anchor_points();
 };
 
 
