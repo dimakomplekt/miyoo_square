@@ -5,6 +5,7 @@
 // =========================================================================================== IMPORT
 
 #include "asset.h"
+#include <vector>
 
 // =========================================================================================== IMPORT
 
@@ -82,8 +83,8 @@ class Asset_instance
 struct desc_c_2D
 {
 
-    float x;    // Coordinate by x-axes (width).
-    float y;    // Coordinate by y-axes (height).
+    unsigned int x;    // Coordinate by x-axes (width).
+    unsigned int y;    // Coordinate by y-axes (height).
 
 };
 
@@ -102,8 +103,8 @@ struct crop_map_2D {
 
     // Points choosen for width - height / x - y values coincidence
 
-    desc_c_2D bottom_left;
-    desc_c_2D top_right;
+    desc_c_2D point_1;
+    desc_c_2D point_2;
 
 };
 
@@ -115,7 +116,7 @@ struct crop_map_2D {
  * by the protected getter get_main_asset_link()
  * 
  * Image instance contains the most common parameters
- * for image refactoring - scale, flip, rotation angle, crop map.
+ * for image refactoring - scale, mirror, rotation angle, crop map.
  * 
  * Image instance data uses for quick access to the common image asset parameters
  * without calculation on every render step. 
@@ -185,6 +186,13 @@ class Image_instance : public Asset_instance
         void set_scaler(float x_scaler, float y_scaler);
 
 
+        // Current x-axes scaler getter
+        float get_x_scaler() const;
+
+        // Current y-axes scaler getter
+        float get_y_scaler() const;
+
+
         /**
          * @brief Change image width size.
          *
@@ -195,6 +203,7 @@ class Image_instance : public Asset_instance
          */
         void set_width(unsigned int new_width);
 
+        // No need for getter - player works only with cropped size
         
         /**
          * @brief Change image width size.
@@ -206,6 +215,7 @@ class Image_instance : public Asset_instance
          */
         void set_height(unsigned int new_height);
 
+        // No need for getter - player works only with cropped siz
 
         // === SCALER METHODS ===
 
@@ -213,27 +223,35 @@ class Image_instance : public Asset_instance
         // === FLIP METHODS ===
 
         /**
-         * @brief Set horizontal flip for the image.
+         * @brief Set horizontal mirror for the image.
          * 
-         * @param h_f_enable true to flip horizontally, false to disable
+         * @param h_m_enable true to mirror horizontally, false to disable
          */
-        void set_horizontal_flip(bool h_f_enable);
+        void set_horizontal_mirror(bool h_m_enable);
 
         /**
-         * @brief Set vertical flip for the image.
+         * @brief Set vertical mirror for the image.
          * 
-         * @param v_f_enable true to flip vertically, false to disable
+         * @param v_m_enable true to mirror vertically, false to disable
          */
-        void set_vertical_flip(bool v_f_enable);
+        void set_vertical_mirror(bool v_m_enable);
 
         /**
-         * @brief Set both flips at once.
+         * @brief Set both mirrors at once.
          *
-         * @param h_f_enable true to flip horizontally, false to disable
-         * @param v_f_enable true to flip vertically, false to disable
+         * @param h_m_enable true to mirror horizontally, false to disable
+         * @param v_m_enable true to mirror vertically, false to disable
          * 
          */
-        void set_flip(bool h_f_enable, bool v_f_enable);
+        void set_mirror(bool h_m_enable, bool v_m_enable);
+
+
+        // Current horizontal mirror status-flag getter
+        bool get_horizontal_mirror() const;
+
+        // Current vertical mirror status-flag getter
+        bool get_vertical_mirror() const;
+        
         
         // === FLIP METHODS ===
 
@@ -247,12 +265,14 @@ class Image_instance : public Asset_instance
          */
         void set_angle(float angle_deg);
 
+
         /**
          * @brief Add rotation to current angle.
          *
          * @param delta_angle_deg Angle delta in degrees.
          */
         void add_angle(float delta_angle_deg);
+
 
         // Current rotation angle getter
         float get_angle() const;
@@ -275,14 +295,6 @@ class Image_instance : public Asset_instance
          * 
          * image_instance.set_new_crop_map(crop);
          * 
-         *      !!!  CROP MAP CONSTRAINS  !!!
-         * 
-         *         x_1 >= 0;   x_2 >= x_1;
-         * 
-         *         y_1 >= 0;   y_2 >= y_1;
-         * 
-         *      !!!  CROP MAP CONSTRAINS  !!!
-         * 
          */
         void set_new_crop_map(const crop_map_2D& new_crop_map);
 
@@ -293,26 +305,41 @@ class Image_instance : public Asset_instance
          * Automatically updates the current width and height,
          * then recalculates the anchor points.
          * 
-         * @param bottom_left Top left crop point by the desc_c_2D link
-         * @param top_right Bottom right crop point by the desc_c_2D link
+         * @param point_1 Bottom left crop point by the desc_c_2D link
+         * @param point_2 Top right crop point by the desc_c_2D link
          * 
          * Use like:
          * 
          * set_new_crop_map({{x_1, y_1}, {x_2, y_2}});
          * 
-         *      !!!  CROP MAP CONSTRAINS  !!!
+         */
+        void set_new_crop_map(const desc_c_2D& point_1, const desc_c_2D& point_2);
+
+
+        /**
+         * @brief Image crop_map setter 2 
          * 
-         *         x_1 >= 0;   x_2 >= x_1;
+         * Setup the image crop_map by 2 points.
+         * Automatically updates the current width and height,
+         * then recalculates the anchor points.
          * 
-         *         y_1 >= 0;   y_2 >= y_1;
+         * Any points order!
          * 
-         *      !!!  CROP MAP CONSTRAINS  !!!
+         * @param x_1 1st crop point x
+         * @param y_1 1st crop point y
+         * @param x_2 2nd crop point x
+         * @param y_2 2nd crop point y
+         * 
+         * Use like:
+         * 
+         * set_new_crop_map(x_1, y_1, x_2, y_2);
          * 
          */
-        void set_new_crop_map(const desc_c_2D& bottom_left, const desc_c_2D& top_right);
+        void set_new_crop_map(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2);
 
 
         // Current crop width getter
+
         unsigned int get_crop_width() const;
 
         // Current crop height getter
@@ -341,13 +368,13 @@ class Image_instance : public Asset_instance
         unsigned int current_height;
 
         
-        // Image flip flags
+        // Image mirror flags
 
-        // Horizontal flip (relative to the center point)
-        bool horizontal_flip;
+        // Horizontal mirror (relative to the center point)
+        bool horizontal_mirror;
 
-        // Vertical flip (relative to the center point)
-        bool vertical_flip;
+        // Vertical mirror (relative to the center point)
+        bool vertical_mirror;
 
 
         // Asset instance rotation
