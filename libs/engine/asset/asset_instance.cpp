@@ -79,6 +79,11 @@ explicit Image_instance::Image_instance(Image_asset* asset) : Asset_instance(ass
 
     };
 
+    this->crop_width = this->current_width;
+    this->crop_height = this->current_height;
+
+    this->scaled_crop_width = this->crop_width;
+    this->scaled_crop_height = this->crop_height;
 
     // Set the new anchors map
     this->reset_anchor_points();
@@ -126,10 +131,8 @@ void Image_instance::set_scaler(float x_scaler, float y_scaler)
 
 
     // Set the new sizes (current_width and current_height)
+    // here could be fluctuations of the values, because of rounding 
     this->reset_size();
-
-    // Set the new crop map
-    this->reset_crop_map();
 
     // Set the new anchors map
     this->reset_anchor_points();
@@ -153,8 +156,6 @@ float Image_instance::get_y_scaler() const
 
 void Image_instance::set_width(unsigned int new_width)
 {
-    // Data error handling On the development stage
-    assert(new_width > 0);
 
     // Cache the last scalers for crop map recalculation
     this->last_x_scaler = this->x_scaler;
@@ -169,10 +170,6 @@ void Image_instance::set_width(unsigned int new_width)
 
     // No reason to call this->reset_size();
 
-    // Set the new crop map
-    this->reset_crop_map();
-
-
     // Set the new anchors map
     this->reset_anchor_points();
 }
@@ -180,8 +177,6 @@ void Image_instance::set_width(unsigned int new_width)
 
 void Image_instance::set_height(unsigned int new_height)
 {
-    // Data error handling On the development stage
-    assert(new_height > 0);
 
     // Cache the last scalers for crop map recalculation
     this->last_y_scaler = this->y_scaler;
@@ -194,9 +189,6 @@ void Image_instance::set_height(unsigned int new_height)
     this->current_height = new_height;
 
     // No reason to call this->reset_size();
-
-    // Set the new crop map 
-    this->reset_crop_map();
 
     // Set the new anchors map
     this->reset_anchor_points();
@@ -369,11 +361,11 @@ void Image_instance::set_new_crop_map(unsigned int x_1, unsigned int y_1, unsign
 
 
     // Data error handling
-
+    // Assert if crop map range out of the initial asset sizes
     assert(
 
-        point_2.x <= this->current_width &&
-        point_2.y <= this->current_height &&
+        point_2.x <= this->get_main_asset_link()->get_width() &&
+        point_2.y <= this->get_main_asset_link()->get_height() &&
 
         "Crop map exceeds image bounds"
 
@@ -415,9 +407,6 @@ unsigned int Image_instance::get_crop_height() const
 
 // Sizes recalculation
 
-// TODO: Cache on all round operations (like one on the crop) for preventing the values sliding 
-// with long operations chains
-
 void Image_instance::reset_size()
 {
     // Values change by the scalers with rounding and type handling
@@ -425,6 +414,7 @@ void Image_instance::reset_size()
     this->current_width = static_cast<unsigned int>(
 
         // int * float with autocast by compiler
+        // Always same rounding accuracy result, cause we work with initial width and new scaler
         std::round(this->get_main_asset_link()->get_width() * this->x_scaler)
 
     );
@@ -432,66 +422,10 @@ void Image_instance::reset_size()
 
     this->current_height = static_cast<unsigned int>(
 
+        // Always same rounding accuracy result, cause we work with initial width and new scaler
         std::round(this->get_main_asset_link()->get_height() * this->y_scaler)
 
     );
-
-}
-
-
-// Crop map recalculation
-
-void Image_instance::reset_crop_map()
-{
-    /** 
-     * 
-     * Recalculate by the old crop map coordinates and new / cached scalers delta 
-     * 
-     * If we have proportion as:
-     * 
-     * OLD_SCALE -> OLD_COORDINATE
-     * NEW_SCALE -> NEW_COORDINATE
-     * 
-     * we could calculate the NEW_COORDINATE by cross-multiplication formula:
-     * 
-     * NEW_COORDINATE = (NEW_SCALE / OLD_SCALE) * OLD_COORDINATE
-     * 
-     * 
-     */
-
-
-    // Delta-coefficient
-
-    float scaler_delta_x = this->x_scaler / this->last_x_scaler;
-    float scaler_delta_y = this->y_scaler / this->last_y_scaler;
-
-
-    // New crop points with rounding and type handling
-
-    desc_c_2D new_bottom_left = {
-
-        static_cast<unsigned int>(std::round(this->crop_map.point_1.x * scaler_delta_x)), // x
-        static_cast<unsigned int>(std::round(this->crop_map.point_1.y * scaler_delta_y)), // y
-
-    };
-
-    desc_c_2D new_top_right = {
-
-        static_cast<unsigned int>(std::round(this->crop_map.point_2.x * scaler_delta_x)), // x
-        static_cast<unsigned int>(std::round(this->crop_map.point_2.y * scaler_delta_y)), // y
-        
-    };
-
-
-    // Horizontal crop dimension recalculation 
-    unsigned int new_crop_width = new_top_right.x - new_bottom_left.x;
-
-    // Vertical crop dimension recalculation
-    unsigned int new_crop_height = new_top_right.y - new_bottom_left.y;
-
-    // New crop map
-    // NOTE: BE SURE THAT reset_crop_map() ain't called inside set_new_crop_map() !!!
-    this->set_new_crop_map(new_bottom_left, new_top_right);
 }
 
 
@@ -500,79 +434,42 @@ void Image_instance::reset_anchor_points()
     // Uses current crop to set the current anchor points
 
     // Crop width and height scalers
-    unsigned int w = this->crop_width;
-    unsigned int h = this->crop_height;
+    // Always the same rounding accuracy, because we work with crop map in initial scale and new scalers
+    unsigned int w = static_cast<unsigned int>(std::round(this->crop_width * this->get_x_scaler()));
+    unsigned int h = static_cast<unsigned int>(std::round(this->crop_height * this->get_y_scaler()));
 
 
-    // Anchors reset with rounding and type handling
+    // Anchors reset
     
-    this->anchors.top_left = {
+    /**
+     * 
+     * P P P P P
+     * 1 2 3 4 5
+     * 
+     * center is 3 -> (n + 1) / 2
+     *
+     */
 
-        0,                                                      // x
-        static_cast<unsigned int>(std::round(1.0f * h))         // y
+    unsigned int c_w = (w + 1) / 2;         // Horizontal center
+    unsigned int c_h = (h + 1) / 2;         // Vertical center
 
-    };
+    this->anchors.top_left     = { 0,  h };
+    this->anchors.top_center   = { c_w, h };
+    this->anchors.top_right    = { w,  h };
 
-    this->anchors.top_center = {
+    this->anchors.center_left  = { 0,  c_h };
+    this->anchors.center_center= { c_w, c_h };
+    this->anchors.center_right = { w,  c_h };
 
-        static_cast<unsigned int>(std::round(0.5f * w)),
-        static_cast<unsigned int>(std::round(1.0f * h))
-    
-    };
-
-    this->anchors.point_2 = {
-        
-        static_cast<unsigned int>(std::round(1.0f * w)),
-        static_cast<unsigned int>(std::round(1.0f * h))
-
-    };
-
-
-    this->anchors.center_left = {
-
-        0,
-        static_cast<unsigned int>(std::round(0.5f * h))
-    
-    };
-
-    this->anchors.center_center = {
-        
-        static_cast<unsigned int>(std::round(0.5f * w)),
-        static_cast<unsigned int>(std::round(0.5f * h))
-    
-    };
-
-    this->anchors.center_right = {
-        
-        static_cast<unsigned int>(std::round(1.0f * w)), 
-        static_cast<unsigned int>(std::round(0.5f * h))
-    
-    };
-
-
-    this->anchors.point_1 = {
-        
-        0,
-        0
-        
-    };
-
-    this->anchors.bottom_center = {
-        
-        static_cast<unsigned int>(std::round(0.5f * w)),
-        0
-    
-    };
-
-    this->anchors.bottom_right = {
-        
-        static_cast<unsigned int>(std::round(1.0f * w)),
-        0
-
-    };
+    this->anchors.bottom_left  = { 0,  0 };
+    this->anchors.bottom_center= { c_w, 0 };
+    this->anchors.bottom_right = { w,  0 };
 
     // Anchors reset with rounding and type handling
 
+    // New sizes of scaled crop
+    this->scaled_crop_width = w;
+    this->scaled_crop_height = h;
 }
 
 // === Inner recalculation ===

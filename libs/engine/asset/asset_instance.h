@@ -285,6 +285,8 @@ class Image_instance : public Asset_instance
         /**
          * @brief Image crop map setter 1 
          * 
+         * !!! Always setup by the initial asset sizes (scaled size drifting prevention) !!!
+         * 
          * Setup the image crop map by crop_map link.
          * Automatically updates the current width and height,
          * then recalculates the anchor points.
@@ -300,6 +302,8 @@ class Image_instance : public Asset_instance
 
         /**
          * @brief Image crop_map setter 2 
+         * 
+         * !!! Always setup by the initial asset sizes (scaled size drifting prevention) !!!
          * 
          * Setup the image crop_map by 2 points.
          * Automatically updates the current width and height,
@@ -318,6 +322,8 @@ class Image_instance : public Asset_instance
 
         /**
          * @brief Image crop_map setter 2 
+         * 
+         * !!! Always setup by the initial asset sizes (scaled size drifting prevention) !!!
          * 
          * Setup the image crop_map by 2 points.
          * Automatically updates the current width and height,
@@ -339,11 +345,18 @@ class Image_instance : public Asset_instance
 
 
         // Current crop width getter
-
         unsigned int get_crop_width() const;
 
         // Current crop height getter
         unsigned int get_crop_height() const;
+
+
+        // Current scaled crop width getter
+        unsigned int get_scaled_crop_width() const;
+
+        // Current scaled crop height getter
+        unsigned int get_scaled_crop_height() const;
+
 
         // === CROP METHODS ===
 
@@ -426,18 +439,23 @@ class Image_instance : public Asset_instance
         // Crop vertical dimension
         unsigned int crop_height;
 
+
+        // Crop horizontal dimension after scaling
+        unsigned int scaled_crop_width;
+
+        // Crop vertical dimension after scaling
+        unsigned int scaled_crop_height;
+
+
         // Inner recalculation
 
-
         // NOTE:
-        // geometry-related setters currently call recalculation methods manually.
+
+        // Geometry-related setters currently call recalculation methods manually.
         // Can be unified later into a single rebuild step if dependencies grow.
 
         // Recalculate the current_width and current_height
         void reset_size();
-
-        // Recalculate the crop map by the old crop map and dependent parameters
-        void reset_crop_map();
 
         // Recalculate the anchor points, based on the current width and height
         // Calls at the constructor and inside the set_scaler() method;
