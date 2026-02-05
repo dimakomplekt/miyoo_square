@@ -294,6 +294,12 @@ class Audio_asset : public Asset {
         unsigned int initial_bitrate;
 
         timecode initial_audio_length; // h, m, s, ms
+
+    /*
+        TODO:
+            channel count (mono, stereo, ect..)
+            format (mp3, flac, ect...
+    */
 };
 
 // =========================================================================================== ASSETS SUBCLASSES

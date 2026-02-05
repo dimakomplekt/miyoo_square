@@ -664,6 +664,66 @@ class Audio_instance : public Asset_instance
         // and end sample setters
         uint64_t calculate_length();
 
+
+    /*
+        TODO:
+
+            dynamic map {audio_player, [player_speed_scale, current_playtime_sample]} - non same instance copypaste 
+            audio is dynamic format - not static, so we can't act like with images (only one anchor map 
+            for every player) 
+
+    */
+
+    /*
+    AUDIO INSTANCE DESIGN NOTES
+
+        1) Bitrate as a base asset property
+
+            Bitrate is considered a fundamental property of an audio track.
+            It may change as a result of processing or platform limitations.
+            The same audio asset can be used on different systems, some of which
+            may not support the original bitrate.
+
+            In such cases, downscaling can be performed dynamically instead of
+            maintaining multiple preprocessed files. If a processing function
+            exists, duplicating assets is unnecessary.
+
+        2) No playback state inside Audio_instance
+
+            Audio_instance does not track playback state such as
+            stopped / playing / paused.
+
+            The instance is agnostic to how audio players operate.
+            Its only responsibility is to provide reference points
+            for playback (for example, where playback should start).
+
+            Unlike static image instances, audio playback is time-dependent
+            and may be driven by multiple players simultaneously.
+            Therefore, Audio_instance maintains a dynamic map of active
+            players, each with its own playback position.
+
+            This allows multiple players to use the same Audio_instance
+            without duplicating identical instances solely to track
+            independent playback time.
+
+        3) Player-owned playback modifiers
+
+            Parameters such as pitch, playback speed, time stretching,
+            or similar effects are intentionally NOT stored in Audio_instance.
+
+            Storing such data in the instance would lead to uncontrolled
+            growth of responsibilities (for example, EQ, filters, etc.)
+            and would require instance duplication for different playback
+            behaviors.
+
+            Audio players fully own these parameters. Multiple players may
+            use the same Audio_instance while applying different playback
+            modifiers, keeping Audio_instance lightweight and data-oriented.
+
+            Audio_instance only provides access to source data and playback
+            reference points; players decide how the sound is actually rendered.
+    */
+
 };
 
 // =========================================================================================== AUDIO INSTANCE
