@@ -298,7 +298,7 @@ class Audio_asset : public Asset {
     /*
         TODO:
             channel count (mono, stereo, ect..)
-            format (mp3, flac, ect...
+            format (mp3, wav, ect...
     */
 };
 

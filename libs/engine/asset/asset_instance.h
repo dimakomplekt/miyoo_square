@@ -7,6 +7,8 @@
 #include "asset.h"
 #include <vector>
 
+#include <unordered_map>
+
 // =========================================================================================== IMPORT
 
 
@@ -469,6 +471,13 @@ class Image_instance : public Asset_instance
 // =========================================================================================== AUDIO INSTANCE
 
 
+
+// Audio_player class predeclaration
+// (realized inside the asset_player.h and asset_player.cpp)
+
+class Audio_player;
+
+
 /**
  * @brief Convert timecode to samples
  * 
@@ -494,25 +503,139 @@ timecode samples_to_time(uint64_t sample, unsigned int sample_rate);
 // by the protected getter get_main_asset_link()
 class Audio_instance : public Asset_instance
 {
+    /*
+    AUDIO INSTANCE DESIGN NOTES
+
+        1) Bitrate as a base asset property
+
+            Bitrate is considered a fundamental property of an audio track.
+            It may change as a result of processing or platform limitations.
+            The same audio asset can be used on different systems, some of which
+            may not support the original bitrate.
+
+            In such cases, downscaling can be performed dynamically instead of
+            maintaining multiple preprocessed files. If a processing function
+            exists, duplicating assets is unnecessary.
+
+        2) No playback state inside Audio_instance
+
+            Audio_instance does not track playback state such as
+            stopped / playing / paused.
+
+            The instance is agnostic to how audio players operate.
+            Its only responsibility is to provide reference points
+            for playback (for example, where playback should start).
+
+            Unlike static image instances, audio playback is time-dependent
+            and may be driven by multiple players simultaneously.
+            Therefore, Audio_instance maintains a dynamic map of active
+            players, each with its own playback position.
+
+            This allows multiple players to use the same Audio_instance
+            without duplicating identical instances solely to track
+            independent playback time.
+
+        3) Player-owned playback modifiers
+
+            Parameters such as pitch, playback speed, time stretching,
+            or similar effects are intentionally NOT stored in Audio_instance.
+
+            Storing such data in the instance would lead to uncontrolled
+            growth of responsibilities (for example, EQ, filters, etc.)
+            and would require instance duplication for different playback
+            behaviors.
+
+            Audio players fully own these parameters. Multiple players may
+            use the same Audio_instance while applying different playback
+            modifiers, keeping Audio_instance lightweight and data-oriented.
+
+            Audio_instance only provides access to source data and playback
+            reference points; players decide how the sound is actually rendered.
+    */
+
     // To use the Audio_asset protected methods and parameters
     friend class Audio_asset;
 
     protected:
 
-        
-        // Audio_instance constructor, which calls the Asset_instance constructor and 
-        // pass the Audio_asset pointer to the main_asset link, then registers itself 
-        // in the asset's internal list of active instances.
-        //
-        // After that it initializes the current_sample_rate and current_bitrate (with original size)
-        // and calculates the current_start, current_end and current_length, then set the current_playtime
-        // to {0, 0, 0, 0}.
+        /**
+         * 
+         * @brief Audio_instance constructor
+         * 
+         * Calls the Asset_instance constructor and pass the Audio_asset pointer
+         * to the main_asset link, then registers itself in the asset's internal
+         * list of active instances.
+         * 
+         * After that it initializes the current_sample_rate and current_bitrate
+         * (with original size) and calculates the current_start, current_end 
+         * and current_length, then set the current_playtime to {0, 0, 0, 0}.
+         * 
+         * @param asset Main Audio_asset object pointer 
+         * 
+         */
         Audio_instance(Audio_asset* asset);
 
-        // Audio_instance destructor which calls the Asset_instance destructor - delete
-        // the object data and unregister itself from the asset's internal list of active asset
-        // instances
+
+        /**
+         * 
+         * Audio_instance destructor which calls the Asset_instance destructor - 
+         * delete the object data and unregister itself from the asset's internal
+         * list of active asset instances
+         *
+         */
         ~Audio_instance() override;
+        
+
+        // === PLAYER - PLAYBACK MAP === 
+
+        /**
+         * 
+         * @brief player_registry
+         * 
+         * Writes an "Audio_player* - sample" pair inside the player_playback_map  
+         * 
+         * @param Audio_player* audio player pointer
+         * 
+         */
+        void player_registry(Audio_player*);
+
+
+        /**
+         * 
+         * @brief player_removal
+         * 
+         * Deletes the "Audio_player* - sample" pair from the player_playback_map  
+         * 
+         * @param Audio_player* audio player pointer
+         * 
+         */
+        void player_removal(Audio_player*);
+
+        /**
+         * 
+         * @brief set_playback
+         * 
+         * Set the current playback sample value for passed player
+         * from the player_playback_map 
+         * 
+         * @param Audio_player* audio player pointer
+         * 
+         */
+        void set_playback(Audio_player*);
+
+        /**
+         * 
+         * @brief get_playback
+         * 
+         * Returns the current playback sample for passed player
+         * from the player_playback_map 
+         * 
+         * @param Audio_player* audio player pointer
+         * 
+         */
+        uint64_t get_playback(Audio_player*);
+
+        // === PLAYER - PLAYBACK MAP === 
 
 
     public:
@@ -665,64 +788,15 @@ class Audio_instance : public Asset_instance
         uint64_t calculate_length();
 
 
-    /*
-        TODO:
-
-            dynamic map {audio_player, [player_speed_scale, current_playtime_sample]} - non same instance copypaste 
-            audio is dynamic format - not static, so we can't act like with images (only one anchor map 
-            for every player) 
-
-    */
-
-    /*
-    AUDIO INSTANCE DESIGN NOTES
-
-        1) Bitrate as a base asset property
-
-            Bitrate is considered a fundamental property of an audio track.
-            It may change as a result of processing or platform limitations.
-            The same audio asset can be used on different systems, some of which
-            may not support the original bitrate.
-
-            In such cases, downscaling can be performed dynamically instead of
-            maintaining multiple preprocessed files. If a processing function
-            exists, duplicating assets is unnecessary.
-
-        2) No playback state inside Audio_instance
-
-            Audio_instance does not track playback state such as
-            stopped / playing / paused.
-
-            The instance is agnostic to how audio players operate.
-            Its only responsibility is to provide reference points
-            for playback (for example, where playback should start).
-
-            Unlike static image instances, audio playback is time-dependent
-            and may be driven by multiple players simultaneously.
-            Therefore, Audio_instance maintains a dynamic map of active
-            players, each with its own playback position.
-
-            This allows multiple players to use the same Audio_instance
-            without duplicating identical instances solely to track
-            independent playback time.
-
-        3) Player-owned playback modifiers
-
-            Parameters such as pitch, playback speed, time stretching,
-            or similar effects are intentionally NOT stored in Audio_instance.
-
-            Storing such data in the instance would lead to uncontrolled
-            growth of responsibilities (for example, EQ, filters, etc.)
-            and would require instance duplication for different playback
-            behaviors.
-
-            Audio players fully own these parameters. Multiple players may
-            use the same Audio_instance while applying different playback
-            modifiers, keeping Audio_instance lightweight and data-oriented.
-
-            Audio_instance only provides access to source data and playback
-            reference points; players decide how the sound is actually rendered.
-    */
+        /**
+         * 
+         * Main Audio_player - playback_sample map 
+         * 
+         * Use Audio_player pointer and playback sample value (in uint_64) 
+         * for current playtime storage
+         *
+         */
+        std::unordered_map<Audio_player*, uint64_t> player_playback_map;
 
 };
 
