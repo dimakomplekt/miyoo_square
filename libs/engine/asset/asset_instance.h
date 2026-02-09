@@ -598,7 +598,7 @@ class Audio_instance : public Asset_instance
          * 
          */
         void player_registry(Audio_player*);
-
+        
 
         /**
          * 
@@ -610,6 +610,7 @@ class Audio_instance : public Asset_instance
          * 
          */
         void player_removal(Audio_player*);
+
 
         /**
          * 
@@ -642,6 +643,7 @@ class Audio_instance : public Asset_instance
 
         const Audio_asset* get_main_asset_link() const;
 
+        
         // === MAIN SETTINGS ===
 
         /**
@@ -656,8 +658,8 @@ class Audio_instance : public Asset_instance
 
         // Current sample_rate getter
         unsigned int get_sample_rate() const;
-
-
+        
+        
         /**
          * @brief Bitrate setter.
          * 
@@ -670,6 +672,20 @@ class Audio_instance : public Asset_instance
 
         // Current bitrate getter
         unsigned int get_bitrate() const;
+
+
+        /**
+         * @brief Channel mode setter.
+         * 
+         * Switches the current_chanel_mode value
+         * 
+         * @param new_mode New sample rate value
+         * 
+         */
+        void set_channel_mode(channel_mode new_mode);
+
+        // Current channel mode getter
+        channel_mode get_channel_mode() const;
 
         // === MAIN SETTINGS ===
 
@@ -688,6 +704,8 @@ class Audio_instance : public Asset_instance
          * 
          * set_start_sample(time_to_samples(current_timecode, current_instance.current_sample_rate));
          * 
+         * @param sample Starting point in sample-count value
+         * 
          */
         void set_start_sample(uint64_t sample);
 
@@ -700,6 +718,8 @@ class Audio_instance : public Asset_instance
          * Use like:
          * 
          * set_start_sample(timecode);
+         * 
+         * @param current_timecode Starting point in timecode struct value
          * 
          */
         void set_start_sample(timecode current_timecode);
@@ -720,6 +740,8 @@ class Audio_instance : public Asset_instance
          * 
          * set_end_sample(time_to_samples(current_timecode, current_instance.current_sample_rate));
          * 
+         * @param sample Ending point in sample-count value
+         * 
          */
         void set_end_sample(uint64_t sample);
 
@@ -733,6 +755,8 @@ class Audio_instance : public Asset_instance
          * 
          * set_end_sample(timecode);
          * 
+         * @param current_timecode Ending point in timecode struct value
+         * 
          */
         void set_end_sample(timecode current_timecode);
 
@@ -742,8 +766,8 @@ class Audio_instance : public Asset_instance
 
 
         // === TRIM METHODS ===
-
-
+        
+        
         // === UPDATE ===
 
         /**
@@ -768,6 +792,8 @@ class Audio_instance : public Asset_instance
         // Current bitrate rate value
         unsigned int current_bitrate;
 
+        // Current channel mode 
+        channel_mode current_channel_mode;
 
         // Start trim in samples
         uint64_t start_sample;
@@ -792,7 +818,7 @@ class Audio_instance : public Asset_instance
          * 
          * Main Audio_player - playback_sample map 
          * 
-         * Use Audio_player pointer and playback sample value (in uint_64) 
+         * Uses Audio_player pointer and playback sample value (in uint_64) 
          * for current playtime storage
          *
          */

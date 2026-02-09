@@ -138,6 +138,8 @@ class Asset
 // =========================================================================================== ASSETS SUBCLASSES
 
 
+// === Image asset ===
+
 /**
  * @brief Concrete asset representing a 2D image (texture).
  *
@@ -205,9 +207,10 @@ class Image_asset : public Asset {
         unsigned int initial_height;
 };
 
+// === Image asset ===
 
 
-
+// === Audio asset ===
 
 // Timecode structure for audio time representation
 struct timecode
@@ -217,6 +220,29 @@ struct timecode
     uint8_t m;
     uint8_t s;
     uint16_t ms;
+
+};
+
+
+// Audio channel mode logic enum
+enum channel_mode
+{
+
+    MONO,
+    STEREO
+
+};
+
+
+// Audio format logic enum
+enum audio_format 
+{
+
+    MP3,
+    WMA,
+    OGG,
+    WAW,
+    FLAC
 
 };
 
@@ -293,13 +319,14 @@ class Audio_asset : public Asset {
         unsigned int initial_sample_rate;
         unsigned int initial_bitrate;
 
-        timecode initial_audio_length; // h, m, s, ms
+        timecode initial_audio_length;          // h, m, s, ms
 
-    /*
-        TODO:
-            channel count (mono, stereo, ect..)
-            format (mp3, wav, ect...
-    */
+        channel_mode initial_channel_mode;    // Mono, stereo...
+
+        audio_format initial_format;            // WAW, MP3...
 };
+
+// === Audio asset ===
+
 
 // =========================================================================================== ASSETS SUBCLASSES
