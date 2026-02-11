@@ -1,5 +1,5 @@
-#include "platform.h"
-#include "../state_machine/game_states.h"
+#include "../platform/platform.h"
+#include "../../game_logic/game_states/game_states.h"
 
 
 enum SDL_AppResult {

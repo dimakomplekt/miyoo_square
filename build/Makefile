@@ -128,101 +128,101 @@ miyoo_square/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/build
 .PHONY : miyoo_square/fast
 
-libs/engine/app.obj: libs/engine/app.cpp.obj
-.PHONY : libs/engine/app.obj
+libs/engine/app_logic/app.obj: libs/engine/app_logic/app.cpp.obj
+.PHONY : libs/engine/app_logic/app.obj
 
 # target to build an object file
-libs/engine/app.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.obj
-.PHONY : libs/engine/app.cpp.obj
+libs/engine/app_logic/app.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/app_logic/app.cpp.obj
+.PHONY : libs/engine/app_logic/app.cpp.obj
 
-libs/engine/app.i: libs/engine/app.cpp.i
-.PHONY : libs/engine/app.i
+libs/engine/app_logic/app.i: libs/engine/app_logic/app.cpp.i
+.PHONY : libs/engine/app_logic/app.i
 
 # target to preprocess a source file
-libs/engine/app.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.i
-.PHONY : libs/engine/app.cpp.i
+libs/engine/app_logic/app.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/app_logic/app.cpp.i
+.PHONY : libs/engine/app_logic/app.cpp.i
 
-libs/engine/app.s: libs/engine/app.cpp.s
-.PHONY : libs/engine/app.s
+libs/engine/app_logic/app.s: libs/engine/app_logic/app.cpp.s
+.PHONY : libs/engine/app_logic/app.s
 
 # target to generate assembly for a file
-libs/engine/app.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/app.cpp.s
-.PHONY : libs/engine/app.cpp.s
+libs/engine/app_logic/app.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/app_logic/app.cpp.s
+.PHONY : libs/engine/app_logic/app.cpp.s
 
-libs/lang_state/lang_state.obj: libs/lang_state/lang_state.cpp.obj
-.PHONY : libs/lang_state/lang_state.obj
+libs/engine/lang_state/lang_state.obj: libs/engine/lang_state/lang_state.cpp.obj
+.PHONY : libs/engine/lang_state/lang_state.obj
 
 # target to build an object file
-libs/lang_state/lang_state.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.obj
-.PHONY : libs/lang_state/lang_state.cpp.obj
+libs/engine/lang_state/lang_state.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/lang_state/lang_state.cpp.obj
+.PHONY : libs/engine/lang_state/lang_state.cpp.obj
 
-libs/lang_state/lang_state.i: libs/lang_state/lang_state.cpp.i
-.PHONY : libs/lang_state/lang_state.i
+libs/engine/lang_state/lang_state.i: libs/engine/lang_state/lang_state.cpp.i
+.PHONY : libs/engine/lang_state/lang_state.i
 
 # target to preprocess a source file
-libs/lang_state/lang_state.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.i
-.PHONY : libs/lang_state/lang_state.cpp.i
+libs/engine/lang_state/lang_state.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/lang_state/lang_state.cpp.i
+.PHONY : libs/engine/lang_state/lang_state.cpp.i
 
-libs/lang_state/lang_state.s: libs/lang_state/lang_state.cpp.s
-.PHONY : libs/lang_state/lang_state.s
+libs/engine/lang_state/lang_state.s: libs/engine/lang_state/lang_state.cpp.s
+.PHONY : libs/engine/lang_state/lang_state.s
 
 # target to generate assembly for a file
-libs/lang_state/lang_state.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/lang_state/lang_state.cpp.s
-.PHONY : libs/lang_state/lang_state.cpp.s
+libs/engine/lang_state/lang_state.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/lang_state/lang_state.cpp.s
+.PHONY : libs/engine/lang_state/lang_state.cpp.s
 
-libs/state_machine/game_states.obj: libs/state_machine/game_states.cpp.obj
-.PHONY : libs/state_machine/game_states.obj
+libs/engine/state_machine/state_machine.obj: libs/engine/state_machine/state_machine.cpp.obj
+.PHONY : libs/engine/state_machine/state_machine.obj
 
 # target to build an object file
-libs/state_machine/game_states.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.obj
-.PHONY : libs/state_machine/game_states.cpp.obj
+libs/engine/state_machine/state_machine.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/state_machine/state_machine.cpp.obj
+.PHONY : libs/engine/state_machine/state_machine.cpp.obj
 
-libs/state_machine/game_states.i: libs/state_machine/game_states.cpp.i
-.PHONY : libs/state_machine/game_states.i
+libs/engine/state_machine/state_machine.i: libs/engine/state_machine/state_machine.cpp.i
+.PHONY : libs/engine/state_machine/state_machine.i
 
 # target to preprocess a source file
-libs/state_machine/game_states.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.i
-.PHONY : libs/state_machine/game_states.cpp.i
+libs/engine/state_machine/state_machine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/state_machine/state_machine.cpp.i
+.PHONY : libs/engine/state_machine/state_machine.cpp.i
 
-libs/state_machine/game_states.s: libs/state_machine/game_states.cpp.s
-.PHONY : libs/state_machine/game_states.s
+libs/engine/state_machine/state_machine.s: libs/engine/state_machine/state_machine.cpp.s
+.PHONY : libs/engine/state_machine/state_machine.s
 
 # target to generate assembly for a file
-libs/state_machine/game_states.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/state_machine/game_states.cpp.s
-.PHONY : libs/state_machine/game_states.cpp.s
+libs/engine/state_machine/state_machine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/engine/state_machine/state_machine.cpp.s
+.PHONY : libs/engine/state_machine/state_machine.cpp.s
 
-libs/state_machine/state_machine.obj: libs/state_machine/state_machine.cpp.obj
-.PHONY : libs/state_machine/state_machine.obj
+libs/game_logic/game_states/game_states.obj: libs/game_logic/game_states/game_states.cpp.obj
+.PHONY : libs/game_logic/game_states/game_states.obj
 
 # target to build an object file
-libs/state_machine/state_machine.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.obj
-.PHONY : libs/state_machine/state_machine.cpp.obj
+libs/game_logic/game_states/game_states.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/game_logic/game_states/game_states.cpp.obj
+.PHONY : libs/game_logic/game_states/game_states.cpp.obj
 
-libs/state_machine/state_machine.i: libs/state_machine/state_machine.cpp.i
-.PHONY : libs/state_machine/state_machine.i
+libs/game_logic/game_states/game_states.i: libs/game_logic/game_states/game_states.cpp.i
+.PHONY : libs/game_logic/game_states/game_states.i
 
 # target to preprocess a source file
-libs/state_machine/state_machine.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.i
-.PHONY : libs/state_machine/state_machine.cpp.i
+libs/game_logic/game_states/game_states.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/game_logic/game_states/game_states.cpp.i
+.PHONY : libs/game_logic/game_states/game_states.cpp.i
 
-libs/state_machine/state_machine.s: libs/state_machine/state_machine.cpp.s
-.PHONY : libs/state_machine/state_machine.s
+libs/game_logic/game_states/game_states.s: libs/game_logic/game_states/game_states.cpp.s
+.PHONY : libs/game_logic/game_states/game_states.s
 
 # target to generate assembly for a file
-libs/state_machine/state_machine.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/state_machine/state_machine.cpp.s
-.PHONY : libs/state_machine/state_machine.cpp.s
+libs/game_logic/game_states/game_states.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\miyoo_square.dir\build.make CMakeFiles/miyoo_square.dir/libs/game_logic/game_states/game_states.cpp.s
+.PHONY : libs/game_logic/game_states/game_states.cpp.s
 
 src/main.obj: src/main.cpp.obj
 .PHONY : src/main.obj
@@ -257,18 +257,18 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... miyoo_square
-	@echo ... libs/engine/app.obj
-	@echo ... libs/engine/app.i
-	@echo ... libs/engine/app.s
-	@echo ... libs/lang_state/lang_state.obj
-	@echo ... libs/lang_state/lang_state.i
-	@echo ... libs/lang_state/lang_state.s
-	@echo ... libs/state_machine/game_states.obj
-	@echo ... libs/state_machine/game_states.i
-	@echo ... libs/state_machine/game_states.s
-	@echo ... libs/state_machine/state_machine.obj
-	@echo ... libs/state_machine/state_machine.i
-	@echo ... libs/state_machine/state_machine.s
+	@echo ... libs/engine/app_logic/app.obj
+	@echo ... libs/engine/app_logic/app.i
+	@echo ... libs/engine/app_logic/app.s
+	@echo ... libs/engine/lang_state/lang_state.obj
+	@echo ... libs/engine/lang_state/lang_state.i
+	@echo ... libs/engine/lang_state/lang_state.s
+	@echo ... libs/engine/state_machine/state_machine.obj
+	@echo ... libs/engine/state_machine/state_machine.i
+	@echo ... libs/engine/state_machine/state_machine.s
+	@echo ... libs/game_logic/game_states/game_states.obj
+	@echo ... libs/game_logic/game_states/game_states.i
+	@echo ... libs/game_logic/game_states/game_states.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s

@@ -23,7 +23,7 @@
 
 #ifdef PLATFORM_WINDOWS
     // Windows: use SDL2 for Windows
-    #include "../sdl/win_SDL2-2.32.10/include/SDL.h"
+    #include "../../sdl/win_SDL2-2.32.10/include/SDL.h"
     // #include <SDL.h>
 #else
     // Linux / Miyoo Mini+: use SDL2 from Onion OS templates

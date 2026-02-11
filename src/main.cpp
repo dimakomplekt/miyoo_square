@@ -1,6 +1,8 @@
-#include "../libs/engine/app.h"
 #include <iostream>
-#include "../libs/state_machine/game_states.h"
+
+
+#include "../libs/engine/app_logic/app.h"
+#include "../libs/game_logic/game_states/game_states.h"
 
 int main()
 {
@@ -38,6 +40,7 @@ int main()
         // Update and render
         if (!SDL_app_cycle(&app_test))
         {
+            app_test.app_sm.get_current_state()->on_exit();
             break;
         }
     }
