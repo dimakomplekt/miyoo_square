@@ -801,11 +801,8 @@ class Audio_instance : public Asset_instance
         // End trim in samples
         uint64_t end_sample;
 
-        // Cached length
+        // Current length in samples
         uint64_t length_samples;
-
-        // Last known playback cursor
-        uint64_t current_playtime_sample;
 
 
         // Length calculator

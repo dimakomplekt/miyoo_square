@@ -137,8 +137,20 @@ class Asset
 
 // =========================================================================================== ASSETS SUBCLASSES
 
-
 // === Image asset ===
+
+// Predeclare
+class Image_instance;
+
+// Image format logic enum
+enum image_format 
+{
+
+    PNG,
+    JPG,
+    BMP
+    
+};
 
 /**
  * @brief Concrete asset representing a 2D image (texture).
@@ -164,10 +176,14 @@ class Image_asset : public Asset {
         ~Image_asset() override;
              
 
-        // Get initial width of the image.
+        // Get initial image format
+        image_format get_format() const;
+
+
+        // Get initial width of the image
         unsigned int get_width() const;
 
-        // Get initial height of the image.
+        // Get initial height of the image
         unsigned int get_height() const;
 
 
@@ -201,10 +217,24 @@ class Image_asset : public Asset {
 
     private:
 
+        image_format initial_format;
+
         // Original image w-dimension
         unsigned int initial_width;
         // Original image h-dimension
         unsigned int initial_height;
+
+
+        // Set initial image format
+        void set_format();
+
+
+        // Set initial width of the image
+        void set_width();
+
+        // Set initial height of the image
+        void set_height();
+      
 };
 
 // === Image asset ===
@@ -247,6 +277,11 @@ enum audio_format
 };
 
 
+
+
+// Predeclare
+class Audio_instance;
+
 /**
  * @brief Concrete asset representing a audio.
  *
@@ -286,6 +321,14 @@ class Audio_asset : public Asset {
         const timecode& get_length() const;
 
 
+        // Initial channel mode getter
+        channel_mode get_channel_mode();
+
+
+        // Initial format getter
+        audio_format get_audio_format();
+
+
         // === INSTANCE WORKFLOW === 
 
         /**
@@ -321,9 +364,26 @@ class Audio_asset : public Asset {
 
         timecode initial_audio_length;          // h, m, s, ms
 
-        channel_mode initial_channel_mode;    // Mono, stereo...
+        channel_mode initial_channel_mode;      // Mono, stereo...
 
         audio_format initial_format;            // WAW, MP3...
+
+
+
+        // Initial sample rate inner setter
+        void set_sample_rate();
+
+        // Initial bitrate inner setter
+        void set_bitrate();
+
+        // Initial audio length inner setter
+        void set_length();
+
+        // Channel mode initial setter
+        void set_channel_mode();
+
+        // Format initial setter
+        void set_audio_format();
 };
 
 // === Audio asset ===

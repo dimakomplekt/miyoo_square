@@ -109,10 +109,9 @@ Image_asset::Image_asset(const std::string& path) :
     initial_height(0)
 
 {
-    // TODO:
-    // 1. LOAD IMAGE
-    // 2. GET width / height
-    // 3. SAVE PARAMETERS IN initial_width and initial_height
+    this->set_format();
+    this->set_width();
+    this->set_height();
 }
 
 
@@ -121,16 +120,23 @@ Image_asset::Image_asset(const std::string& path) :
 Image_asset::~Image_asset()
 {
     // TODO: 
-    // 1) Instances free logic
-    // 2) Asset free logic
+    // 1) Universal instances free logic by Asset class
+    // 2) Universal asset free logic by Asset class
+    // 3) Universal player free logic by Asset_instance class
 }
 
+
+
+image_format Image_asset::get_format() const
+{
+    return this->initial_format;
+}
 
 // Initial width getter
 
 unsigned int Image_asset::get_width() const
 {
-    return initial_width;
+    return this->initial_width;
 }
 
 
@@ -138,7 +144,27 @@ unsigned int Image_asset::get_width() const
 
 unsigned int Image_asset::get_height() const
 {
-    return initial_height;
+    return this->initial_height;
+}
+
+
+// Set initial image format
+void Image_asset::set_format()
+{
+    // TODO: FILE PARSER
+}
+
+
+// Set initial width of the image
+void Image_asset::set_width()
+{
+    // TODO: FILE PARSER
+}
+
+// Set initial height of the image
+void Image_asset::set_height()
+{
+    // TODO: FILE PARSER
 }
 
 
@@ -189,11 +215,11 @@ Audio_asset::Audio_asset(const std::string& path) :
     initial_audio_length{0, 0, 0, 0}
 
 {
-    // TODO:
-    // 1. LOAD AUDIO
-    // 2. GET the sample rate / bitrate
-    // 3. Count the length (h, m, s, ms)
-    // 4. Setup the parameters
+    this->set_sample_rate();
+    this->set_bitrate();
+    this->set_length();
+    this->set_channel_mode();
+    this->set_audio_format();
 }
 
 
@@ -202,9 +228,9 @@ Audio_asset::Audio_asset(const std::string& path) :
 Audio_asset::~Audio_asset()
 {
     // TODO: 
-    // 0) Stop playing command
-    // 1) Instances free logic
-    // 2) Asset free logic
+    // 1) Universal instances free logic by Asset class
+    // 2) Universal asset free logic by Asset class
+    // 3) Universal player free logic by Asset_instance class
 }
 
 
@@ -232,8 +258,61 @@ const timecode& Audio_asset::get_length() const
 }
 
 
-// Instance create and delete methods
+// Initial channel mode getter
 
+channel_mode Audio_asset::get_channel_mode()
+{
+    // TODO: FILE PARSER
+}
+
+
+// Initial format getter
+
+audio_format Audio_asset::get_audio_format()
+{
+    // TODO: FILE PARSER
+}
+
+
+// Initial sample rate file parser
+
+void Audio_asset::set_sample_rate()
+{
+    // TODO: FILE PARSER
+}
+
+
+// Initial bitrate file parser
+
+void Audio_asset::set_bitrate()
+{
+    // TODO: FILE PARSER
+}
+
+
+// Initial audio length file parser
+
+void Audio_asset::set_length()
+{
+    // TODO: FILE PARSER
+}
+
+// Channel mode initial file parser
+
+void Audio_asset::set_channel_mode()
+{
+    // TODO: FILE PARSER
+}
+
+// Format initial file parser
+
+void Audio_asset::set_audio_format()
+{
+    // TODO: FILE PARSER
+}
+
+
+// Instance create and delete methods
 
 Audio_instance* Audio_asset::add_instance()
 {
