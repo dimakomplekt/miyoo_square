@@ -81,6 +81,13 @@ class Asset_instance
 // =========================================================================================== IMAGE INSTANCE
 
 
+
+// Image_player class predeclaration
+// (realized inside the asset_player.h and asset_player.cpp)
+
+class Image_player;
+
+
 // Descartes coordinate for 2D space.
 struct desc_c_2D
 {
@@ -166,6 +173,35 @@ class Image_instance : public Asset_instance
          * 
          */
         ~Image_instance() override;
+
+
+
+        // === IMAGE PLAYERS LIST === 
+
+        /**
+         * 
+         * @brief player_registry
+         * 
+         * Writes an "Image_player*" to the image_instance_users map  
+         * 
+         * @param Image_player* image player pointer
+         * 
+         */
+        void player_registry(Image_player*);
+        
+
+        /**
+         * 
+         * @brief player_removal
+         * 
+         * Deletes the "Image_player* from the image_instance_users map  
+         * 
+         * @param Image_player* image player pointer
+         * 
+         */
+        void player_removal(Image_player*);
+
+        // === IMAGE PLAYERS LIST === 
 
     public:
 
@@ -462,6 +498,20 @@ class Image_instance : public Asset_instance
         // Recalculate the anchor points, based on the current width and height
         // Calls at the constructor and inside the set_scaler() method;
         void reset_anchor_points();
+
+
+        // === IMAGE PLAYERS LIST === 
+
+        /**
+         * 
+         * Map of Image_players, which uses current asset_instance
+         * 
+         * Uses Image_player pointer for quick access.
+         *
+         */
+        std::unordered_set<Image_player*> image_instance_users;
+
+        // === IMAGE PLAYERS LIST === 
 };
 
 
@@ -506,51 +556,27 @@ class Audio_instance : public Asset_instance
     /*
     AUDIO INSTANCE DESIGN NOTES
 
-        1) Bitrate as a base asset property
+    1) Bitrate as a base asset property
+    - Bitrate is a fundamental property of an audio track.
+    - It may change due to processing or platform limitations.
+    - Downscaling is possible dynamically; duplicating assets is unnecessary.
 
-            Bitrate is considered a fundamental property of an audio track.
-            It may change as a result of processing or platform limitations.
-            The same audio asset can be used on different systems, some of which
-            may not support the original bitrate.
+    2) No playback state inside Audio_instance
+    - Audio_instance does NOT track playback state (stopped/playing/paused).
+    - It only stores reference points for playback (start/end samples).
+    - Playback is fully controlled by Audio_player; multiple players can
+        use the same Audio_instance independently.
 
-            In such cases, downscaling can be performed dynamically instead of
-            maintaining multiple preprocessed files. If a processing function
-            exists, duplicating assets is unnecessary.
+    3) Player-owned playback modifiers
+    - Parameters like pitch, speed, time stretching are owned by Audio_player.
+    - Audio_instance remains lightweight and data-oriented.
 
-        2) No playback state inside Audio_instance
-
-            Audio_instance does not track playback state such as
-            stopped / playing / paused.
-
-            The instance is agnostic to how audio players operate.
-            Its only responsibility is to provide reference points
-            for playback (for example, where playback should start).
-
-            Unlike static image instances, audio playback is time-dependent
-            and may be driven by multiple players simultaneously.
-            Therefore, Audio_instance maintains a dynamic map of active
-            players, each with its own playback position.
-
-            This allows multiple players to use the same Audio_instance
-            without duplicating identical instances solely to track
-            independent playback time.
-
-        3) Player-owned playback modifiers
-
-            Parameters such as pitch, playback speed, time stretching,
-            or similar effects are intentionally NOT stored in Audio_instance.
-
-            Storing such data in the instance would lead to uncontrolled
-            growth of responsibilities (for example, EQ, filters, etc.)
-            and would require instance duplication for different playback
-            behaviors.
-
-            Audio players fully own these parameters. Multiple players may
-            use the same Audio_instance while applying different playback
-            modifiers, keeping Audio_instance lightweight and data-oriented.
-
-            Audio_instance only provides access to source data and playback
-            reference points; players decide how the sound is actually rendered.
+    4) Tracking users
+    - Audio_instance keeps track of which Audio_players currently use it
+        via `audio_instance_users`.
+    - When the instance is destroyed, all registered players are notified
+        to clear their reference.
+    - When a player is destroyed, it unregisters itself from any Audio_instance.
     */
 
     // To use the Audio_asset protected methods and parameters
@@ -586,64 +612,6 @@ class Audio_instance : public Asset_instance
         ~Audio_instance() override;
         
 
-        // === PLAYER - PLAYBACK MAP === 
-
-        /**
-         * 
-         * @brief player_registry
-         * 
-         * Writes an "Audio_player* - sample" pair inside the player_playback_map  
-         * 
-         * @param Audio_player* audio player pointer
-         * 
-         */
-        void player_registry(Audio_player*);
-        
-
-        /**
-         * 
-         * @brief player_removal
-         * 
-         * Deletes the "Audio_player* - sample" pair from the player_playback_map  
-         * 
-         * @param Audio_player* audio player pointer
-         * 
-         */
-        void player_removal(Audio_player*);
-
-
-        /**
-         * 
-         * @brief set_playback
-         * 
-         * Set the current playback sample value for passed player
-         * from the player_playback_map 
-         * 
-         * @param Audio_player* audio player pointer
-         * 
-         */
-        void set_playback(Audio_player*);
-
-        /**
-         * 
-         * @brief get_playback
-         * 
-         * Returns the current playback sample for passed player
-         * from the player_playback_map 
-         * 
-         * @param Audio_player* audio player pointer
-         * 
-         */
-        uint64_t get_playback(Audio_player*);
-
-        // === PLAYER - PLAYBACK MAP === 
-
-
-    public:
-
-        const Audio_asset* get_main_asset_link() const;
-
-        
         // === MAIN SETTINGS ===
 
         /**
@@ -656,10 +624,6 @@ class Audio_instance : public Asset_instance
          */
         void set_sample_rate(unsigned int sample_rate);
 
-        // Current sample_rate getter
-        unsigned int get_sample_rate() const;
-        
-        
         /**
          * @brief Bitrate setter.
          * 
@@ -669,10 +633,6 @@ class Audio_instance : public Asset_instance
          * 
          */
         void set_bitrate(unsigned int bitrate);
-
-        // Current bitrate getter
-        unsigned int get_bitrate() const;
-
 
         /**
          * @brief Channel mode setter.
@@ -684,14 +644,10 @@ class Audio_instance : public Asset_instance
          */
         void set_channel_mode(channel_mode new_mode);
 
-        // Current channel mode getter
-        channel_mode get_channel_mode() const;
-
         // === MAIN SETTINGS ===
 
 
         // === TRIM METHODS ===
-
 
         /**
          * @brief Start sample value setter 1
@@ -709,7 +665,6 @@ class Audio_instance : public Asset_instance
          */
         void set_start_sample(uint64_t sample);
 
-        
         /**
          * @brief Start sample value setter 2
          * 
@@ -723,10 +678,6 @@ class Audio_instance : public Asset_instance
          * 
          */
         void set_start_sample(timecode current_timecode);
-
-
-        // Start sample value getter
-        uint64_t get_start_sample() const;
 
 
         /**
@@ -744,7 +695,6 @@ class Audio_instance : public Asset_instance
          * 
          */
         void set_end_sample(uint64_t sample);
-
         
         /**
          * @brief End sample value setter 2
@@ -759,30 +709,68 @@ class Audio_instance : public Asset_instance
          * 
          */
         void set_end_sample(timecode current_timecode);
+        
+        // === TRIM METHODS ===
 
+
+        // === AUDIO PLAYERS LIST === 
+
+        /**
+         * 
+         * @brief player_registry
+         * 
+         * Writes an "Audio_player* inside the audio_instance_users map  
+         * 
+         * @param Audio_player* audio player pointer
+         * 
+         */
+        void player_registry(Audio_player*);
+        
+
+        /**
+         * 
+         * @brief player_removal
+         * 
+         * Deletes the "Audio_player* from the audio_instance_users map  
+         * 
+         * @param Audio_player* audio player pointer
+         * 
+         */
+        void player_removal(Audio_player*);
+
+        // === AUDIO PLAYERS LIST === 
+
+
+    public:
+
+        const Audio_asset* get_main_asset_link() const;
+
+        
+        // === MAIN SETTINGS ===
+
+
+        // Current sample_rate getter
+        unsigned int get_sample_rate() const;
+
+        // Current bitrate getter
+        unsigned int get_bitrate() const;
+
+        // Current channel mode getter
+        channel_mode get_channel_mode() const;
+
+        // === MAIN SETTINGS ===
+
+
+        // === TRIM METHODS ===
+
+        // Start sample value getter
+        uint64_t get_start_sample() const;
 
         // End sample value getter
         uint64_t get_end_sample() const;
 
 
         // === TRIM METHODS ===
-        
-        
-        // === UPDATE ===
-
-        /**
-         * @brief Update playback cursor by the sample delta 
-         * 
-         * Called by the audio player to update the current playback
-         * position, while playing the audio instance
-         * 
-         * @param sample_delta Number of samples to advance the playback cursor
-         * 
-         */
-        uint64_t playback_update(uint64_t sample_delta);
-
-        // === UPDATE ===
-
 
     private:
 
@@ -801,8 +789,11 @@ class Audio_instance : public Asset_instance
         // End trim in samples
         uint64_t end_sample;
 
-        // Current length in samples
+        // Cached length
         uint64_t length_samples;
+
+        // Last known playback cursor
+        uint64_t current_playtime_sample;
 
 
         // Length calculator
@@ -811,15 +802,18 @@ class Audio_instance : public Asset_instance
         uint64_t calculate_length();
 
 
+        // === AUDIO PLAYERS LIST === 
+
         /**
          * 
-         * Main Audio_player - playback_sample map 
+         * Map of Audio_players which uses current asset_instance/
          * 
-         * Uses Audio_player pointer and playback sample value (in uint_64) 
-         * for current playtime storage
+         * Uses Audio_player pointer for quick access.
          *
          */
-        std::unordered_map<Audio_player*, uint64_t> player_playback_map;
+        std::unordered_set<Audio_player*> audio_instance_users;
+
+        // === AUDIO PLAYERS LIST === 
 
 };
 

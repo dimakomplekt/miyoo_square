@@ -110,8 +110,7 @@ Image_asset::Image_asset(const std::string& path) :
 
 {
     this->set_format();
-    this->set_width();
-    this->set_height();
+    this->set_sizes();
 }
 
 
@@ -156,16 +155,11 @@ void Image_asset::set_format()
 
 
 // Set initial width of the image
-void Image_asset::set_width()
+void Image_asset::set_sizes()
 {
     // TODO: FILE PARSER
 }
 
-// Set initial height of the image
-void Image_asset::set_height()
-{
-    // TODO: FILE PARSER
-}
 
 
 // Instance create and delete methods

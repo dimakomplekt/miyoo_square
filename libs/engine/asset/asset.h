@@ -229,12 +229,8 @@ class Image_asset : public Asset {
         void set_format();
 
 
-        // Set initial width of the image
-        void set_width();
-
-        // Set initial height of the image
-        void set_height();
-      
+        // Set initial width and height of the image
+        void set_sizes();
 };
 
 // === Image asset ===
