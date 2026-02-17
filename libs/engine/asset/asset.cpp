@@ -256,7 +256,7 @@ const timecode& Audio_asset::get_length() const
 
 channel_mode Audio_asset::get_channel_mode()
 {
-    // TODO: FILE PARSER
+    return this->initial_channel_mode;
 }
 
 
@@ -264,7 +264,7 @@ channel_mode Audio_asset::get_channel_mode()
 
 audio_format Audio_asset::get_audio_format()
 {
-    // TODO: FILE PARSER
+    return Audio_asset::initial_format;
 }
 
 

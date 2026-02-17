@@ -401,6 +401,8 @@ class Image_instance : public Asset_instance
 
     private:
 
+        const Image_asset* main_asset;
+
         // Current image scale factor x-axes
         float x_scaler;
 
@@ -774,6 +776,9 @@ class Audio_instance : public Asset_instance
 
     private:
 
+        const Audio_asset* main_asset;
+
+
         // Current sample rate value
         unsigned int current_sample_rate;
 
@@ -784,16 +789,13 @@ class Audio_instance : public Asset_instance
         channel_mode current_channel_mode;
 
         // Start trim in samples
-        uint64_t start_sample;
+        uint64_t current_start_sample;
 
         // End trim in samples
-        uint64_t end_sample;
+        uint64_t current_end_sample;
 
         // Cached length
-        uint64_t length_samples;
-
-        // Last known playback cursor
-        uint64_t current_playtime_sample;
+        uint64_t current_length_samples;
 
 
         // Length calculator

@@ -554,11 +554,26 @@ timecode samples_to_time(uint64_t sample, unsigned int sample_rate)
 
 
 
-Audio_instance::Audio_instance(Audio_asset* asset) : Asset_instance(asset)
+
+Audio_instance::Audio_instance(Audio_asset* asset)
 {
-    // Error handler
+    // TODO: control the main_asset link by polymorphism
+
     assert(asset != nullptr);
-};
+
+    this->main_asset = asset;
+
+
+    this->current_sample_rate =this->main_asset->get_sample_rate();
+    this->current_bitrate = this->main_asset->get_bitrate();
+
+    this->current_length_samples = time_to_samples(this->main_asset->get_length(), this->current_sample_rate);
+
+    this->current_start_sample = 0;
+    this->current_end_sample = this->current_length_samples;
+
+    this->current_channel_mode = this->main_asset->get_channel_mode();
+}
 
 
 Audio_instance::~Audio_instance() {
