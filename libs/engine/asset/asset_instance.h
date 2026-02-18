@@ -1,3 +1,6 @@
+// TODO: WHOLE REBUILD
+
+
 // asset_instance.h
 
 #pragma once
@@ -60,8 +63,8 @@ class Asset_instance
 
     public:
 
-        // Main asset link getter
-        const Asset* get_main_asset_link() const;
+        // Main asset link getter (covariant)
+        virtual const Asset* get_main_asset_link() const;
 
         
     private:
@@ -206,9 +209,9 @@ class Image_instance : public Asset_instance
     public:
 
         // Basic asset link getter override.
-        // Returns the link to the main Image_asset
-        const Image_asset* get_main_asset_link() const;
-
+        // Returns the link to the main Image_asset 
+        // (covariant by virtual parent method)
+        const Image_asset* get_main_asset_link() const override;
 
         // === SCALER METHODS ===
 
@@ -745,7 +748,10 @@ class Audio_instance : public Asset_instance
 
     public:
 
-        const Audio_asset* get_main_asset_link() const;
+        // Basic asset link getter override.
+        // Returns the link to the main Audio_asset 
+        // (covariant by virtual parent method)
+        const Audio_asset* get_main_asset_link() const override;
 
         
         // === MAIN SETTINGS ===

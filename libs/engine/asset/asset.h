@@ -1,3 +1,7 @@
+// TODO: WHOLE REBUILD
+
+
+
 // asset.h
 
 #pragma once
@@ -25,6 +29,7 @@
  *
  * It allows the engine to reason about what kind of resource it is working with
  * without knowing the concrete implementation.
+ * 
  */
 enum class Asset_type {
 
@@ -65,6 +70,7 @@ class Asset_instance;
  * - A virtual interface for "using" the asset
  *
  * Concrete behavior is implemented in derived classes.
+ * 
  */
 class Asset
 {
@@ -81,6 +87,7 @@ class Asset
          *
          * @param type Type of the asset (image, audio, etc.)
          * @param path File path to the asset on disk.
+         * 
          */
         Asset(Asset_type type, const std::string& path);
 
@@ -88,17 +95,6 @@ class Asset
         // Virtual destructor.
         // Ensures proper cleanup when deleting derived assets through a base pointer.
         virtual ~Asset();
-
-
-        /**
-         * @brief Use method for all assets.
-         *
-         * Returns the type and path for players by the
-         * get_type() and get_path() calls.
-         *
-         * This method defines a common interface for the engine.
-         */
-        void use() const;
 
 
         // Asset type getter

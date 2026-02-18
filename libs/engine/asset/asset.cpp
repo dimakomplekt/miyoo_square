@@ -1,3 +1,6 @@
+// TODO: WHOLE REBUILD
+
+
 // asset.cpp
 
 
@@ -54,8 +57,6 @@ Asset::~Asset()
     assert(instances.empty());
 }
 
-
-void Asset::use() const {};             // Empty basic use
 
 
 // Asset type getter
