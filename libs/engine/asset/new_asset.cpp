@@ -53,8 +53,10 @@ Image_asset::Image_asset(const std::string& path) :
     Asset(Asset_type::IMAGE, path), 
 
 {
+
     this->set_format();
     this->set_sizes();
+
 }
 
 
@@ -115,6 +117,26 @@ void Image_asset::set_sizes()
 
 Image_instance* Image_asset::add_instance()
 {
+    /**
+     * Note on instance allocation:
+     * 
+     * Currently, all instances are allocated on the heap and managed via `delete_instance`.
+     * This gives full control over their lifecycle, ensuring proper cleanup.
+     * 
+     * While it would be technically possible to allow stack-based or pool-based allocation
+     * for temporary or high-frequency instances, the practical benefit is minimal in this system:
+     * 
+     * 1. Lifecycle flexibility: temporary "on-the-fly" instances are unnecessary,
+     *    since all instances are tied to their Asset and controlled centrally.
+     * 
+     * 2. Memory management: stack allocation would save a few allocations, and memory pools
+     *    help only when handling thousands of instances where heap allocation becomes a bottleneck.
+     *    In the current scope, heap allocation overhead is negligible.
+     * 
+     * Conclusion: keeping all instances on the heap keeps the code simple, safe, and efficient.
+     *
+     */
+
     // Create an instance by the friendly class constructor
     Image_instance* instance = new Image_instance(this);
 
@@ -136,7 +158,12 @@ void Image_asset::delete_instance(Image_instance* instance)
     // Remove the instance from the instances list
     unregister_instance(instance);
 
-    // Delete from the memory - CALL ONLY BY delete_instance()
+
+    // ~Image_instance();
+    //
+    // and 
+    //
+    // operator delete(ptr);
     delete instance;
 }
 
@@ -205,7 +232,7 @@ const timecode& Audio_asset::get_length() const
 
 // Initial channel mode getter
 
-channel_mode Audio_asset::get_channel_mode()
+channel_mode Audio_asset::get_channel_mode() const
 {
     return this->initial_channel_mode;
 }
@@ -213,9 +240,9 @@ channel_mode Audio_asset::get_channel_mode()
 
 // Initial format getter
 
-audio_format Audio_asset::get_audio_format()
+audio_format Audio_asset::get_format() const
 {
-    return Audio_asset::initial_format;
+    return this->initial_format;
 }
 
 
@@ -261,6 +288,26 @@ void Audio_asset::set_audio_format()
 
 Audio_instance* Audio_asset::add_instance()
 {
+    /**
+     * Note on instance allocation:
+     * 
+     * Currently, all instances are allocated on the heap and managed via `delete_instance`.
+     * This gives full control over their lifecycle, ensuring proper cleanup.
+     * 
+     * While it would be technically possible to allow stack-based or pool-based allocation
+     * for temporary or high-frequency instances, the practical benefit is minimal in this system:
+     * 
+     * 1. Lifecycle flexibility: temporary "on-the-fly" instances are unnecessary,
+     *    since all instances are tied to their Asset and controlled centrally.
+     * 
+     * 2. Memory management: stack allocation would save a few allocations, and memory pools
+     *    help only when handling thousands of instances where heap allocation becomes a bottleneck.
+     *    In the current scope, heap allocation overhead is negligible.
+     * 
+     * Conclusion: keeping all instances on the heap keeps the code simple, safe, and efficient.
+     *
+     */
+
     // Create an instance by the friendly class constructor
     auto* instance = new Audio_instance(this);
 

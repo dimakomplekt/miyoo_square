@@ -142,7 +142,7 @@ class Image_asset : public Asset {
          * @param path Path to the image file.
          * 
          */
-        Image_asset(const std::string& path);
+        explicit Image_asset(const std::string& path);
 
         // Destructor - delete the asset and all instances.
         ~Image_asset();
@@ -285,7 +285,7 @@ class Audio_asset : public Asset {
          *
          * @param path Path to the audio file.
          */
-        Audio_asset(const std::string& path);
+        explicit Audio_asset(const std::string& path);
 
         // Destructor.
         // Stop playing, deallocate and nullptr 
@@ -306,11 +306,11 @@ class Audio_asset : public Asset {
 
 
         // Initial channel mode getter
-        channel_mode get_channel_mode();
+        channel_mode get_channel_mode() const;
 
 
         // Initial format getter
-        audio_format get_format();
+        audio_format get_format() const;
 
 
         // === INSTANCE WORKFLOW === 
