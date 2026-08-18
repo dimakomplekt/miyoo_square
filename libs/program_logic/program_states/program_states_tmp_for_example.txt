@@ -1,0 +1,770 @@
+// game_states.cpp
+
+
+// =========================================================================================== IMPORT
+
+#include "program_states.h"
+
+#include <iostream> // for std::cout, std::cerr
+
+#include "../../program_gui/basic_elements/UI_elements/my_sdl_button/my_sdl_button.h"
+#include "../../program_gui/basic_elements/UI_elements/my_sdl_fader/my_sdl_fader.h"
+#include "../../program_gui/basic_elements/UI_elements/my_sdl_panel/my_sdl_panel.h"
+#include "../../program_gui/basic_elements/UI_elements/my_sdl_texture/my_sdl_texture.h"
+
+// =========================================================================================== IMPORT
+
+/**
+ * Functions called when entering or exiting a specific state.
+ *
+ * These are assigned to the `on_enter` and `on_exit` callbacks of the
+ * corresponding State objects in the state machine.
+ *
+ * Example:
+ * 
+ * app_state_machine.add_state(std::make_unique<State>(START_ID, "START"));
+ * state->on_enter = start_enter;
+ * 
+ */
+
+ void start_enter();
+ void start_exit();
+ void start_render(SDL_Renderer* renderer);
+ 
+ void main_menu_enter();
+ void main_menu_exit();
+ void main_menu_render(SDL_Renderer* renderer);
+ 
+ void file_choose_enter();
+ void file_choose_exit();
+ void file_choose_render(SDL_Renderer* renderer);
+ 
+ void masks_setup_enter();
+ void masks_setup_exit();
+ void masks_setup_render(SDL_Renderer* renderer);
+ 
+ void flow_parameters_calculation_enter();
+ void flow_parameters_calculation_exit();
+ void flow_parameters_calculation_render(SDL_Renderer* renderer);
+ 
+ void report_forming_enter();
+ void report_forming_exit();
+ void report_forming_render(SDL_Renderer* renderer);
+ 
+ 
+ void program_end_enter();
+ void program_end_exit();
+ void program_end_render(SDL_Renderer* renderer);
+
+ 
+// =========================================================================================== CALLBACKS
+
+
+// Это пример, сами функции будут лежать в своих либах или модулях, тут объявление и присвоение коллбеков 
+
+// These are the callbacks executed when entering or exiting a state.
+// Currently, they are simple stubs printing to the console.
+// You can replace the body with more complex logic or calls to other modules.
+
+// RAII + lifecycle management
+My_SDL_button* Button_1 = nullptr;
+My_SDL_button* Button_2 = nullptr;
+
+My_SDL_textbox* Textbox_1 = nullptr;
+
+My_SDL_fader*  Fader_1  = nullptr;
+My_SDL_panel*  Panel_1  = nullptr;
+
+
+
+My_SDL_texture* Blue_texture_test = nullptr;
+bool Blue_texture_test_init = false;
+
+
+// Predeclare
+#include "../app.h"
+
+// App initialization
+
+void cout_on_but_1_click()
+{
+    std::cout << "Button_1 is clicked... Finally." << std::endl;
+    std::cout << Fader_1->get_fader_value() << std::endl;
+
+    this_app.app_sm.request_state_change(PROGRAM_END_ID);
+}
+
+void switch_palette_on_but_2_click()
+{
+    std::cout << "Button_2 is clicked... Finally." << std::endl;
+
+    App_palette.switch_to_the_next_palette();
+}
+
+
+void start_enter()
+{
+    Button_1 = new My_SDL_button();
+    Button_1->set_opacity(150);
+
+
+    Button_2 = new My_SDL_button();
+
+    std::cout << Button_1->get_x_render_point() << std::endl;
+    std::cout << Button_1->get_y_render_point() << std::endl;
+
+    Fader_1 = new My_SDL_fader();
+
+    Panel_1 = new My_SDL_panel();
+
+    Panel_1->add_element(
+
+        Button_1,
+         (Panel_1->get_anchor_points().top_right.x - Panel_1->get_anchor_points().top_left.x) * 0.5,
+          (Panel_1->get_anchor_points().bottom_left.y - Panel_1->get_anchor_points().top_left.y) * 0.75,
+           1
+    );
+
+
+    Panel_1->add_element(
+
+        Button_2,
+         (Panel_1->get_anchor_points().top_right.x - Panel_1->get_anchor_points().top_left.x) * 0.5,
+          (Panel_1->get_anchor_points().bottom_left.y - Panel_1->get_anchor_points().top_left.y) * 0.25,
+           1
+    );
+
+
+
+    std::cout << Panel_1->get_x_render_point() << std::endl;
+    std::cout << Panel_1->get_y_render_point() << std::endl;
+
+    std::cout << Panel_1->get_anchor_points().top_left.x << std::endl;
+    std::cout << Panel_1->get_anchor_points().top_left.y << std::endl;
+
+    std::cout << Button_1->get_x_render_point() << std::endl;
+    std::cout << Button_1->get_y_render_point() << std::endl;
+
+    std::cout << "Entering START\n";
+
+    // Button 1 initialization
+    Button_1->on_click = cout_on_but_1_click;
+
+    Button_2->on_click = switch_palette_on_but_2_click;
+
+    // Button_1->set_font_path(Button_1->get_font_path());
+
+    // Textbox check
+
+    Textbox_1 = new My_SDL_textbox();
+
+    Textbox_1->set_render_point(1000, 800);
+
+    Textbox_1->switch_passed_by_palette_flag(false);
+    
+    Textbox_1->set_content_color(hex_to_sdl_color("#ffcf40", 255));
+
+    Textbox_1->switch_blinking_mode_flag(true);
+
+    // Texture test
+
+    Blue_texture_test = new My_SDL_texture();
+    Blue_texture_test->set_render_point(1200, 500);
+
+
+    // 1. создаём texture target
+
+    SDL_Texture* raw = SDL_CreateTexture(
+
+        this_app.renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_TARGET,
+        200,
+        120
+        
+    );
+
+    // 2. рисуем в неё
+    SDL_SetRenderTarget(this_app.renderer, raw);
+
+    SDL_SetRenderDrawColor(this_app.renderer, 80, 180, 255, 255);
+    SDL_RenderClear(this_app.renderer);
+
+    // вернуть обратно
+    SDL_SetRenderTarget(this_app.renderer, nullptr);
+
+    // 3. оборачиваем
+    
+    Blue_texture_test->set_texture(raw);
+}
+
+
+void start_exit()
+{ 
+    // Delete 
+
+    // Button_1->delete_element();
+    Fader_1->delete_element();
+
+    Panel_1->delete_element();
+
+    Textbox_1->delete_element();
+
+    Blue_texture_test->delete_element();
+    Blue_texture_test_init = false;
+
+    // Nullptr
+
+    Button_1 = nullptr;
+    Button_2 = nullptr;
+    Fader_1 = nullptr;
+    Panel_1 = nullptr;
+    Textbox_1 = nullptr;
+    Blue_texture_test = nullptr;
+
+
+    std::cout << "Exiting START\n"; 
+}
+
+
+
+unsigned int counter_1 = 0;
+
+
+void start_update()
+{
+    App_inputs.update();
+
+    // Button_1->update();
+    Fader_1->update();
+
+    Panel_1->update();
+
+    Textbox_1->update();
+
+
+    if (App_inputs.is_just_released(Key_actions::SPECIAL_1))
+    {
+        // Test
+
+        int new_opacity = Panel_1->get_basic_opacity() - 20;
+
+        new_opacity = std::max(0, new_opacity); // Ensure opacity doesn't go below 0
+
+        Panel_1->set_opacity(new_opacity);
+
+        std::cout << "Panel_1 opacity: " << static_cast<int>(Panel_1->get_opacity()) << std::endl;
+        std::cout << "Panel_1 basic opacity: " << static_cast<int>(Panel_1->get_basic_opacity()) << std::endl;
+    }
+
+
+    if (App_inputs.is_just_released(Key_actions::Decline))
+    {
+        // Test of the texture sizes reset
+        switch (counter_1)
+        {
+            case 0:
+
+                Blue_texture_test->set_x_scaler(2);
+
+                counter_1++;
+
+                break;
+
+            case 1:
+
+                Blue_texture_test->set_y_scaler(2);
+
+                counter_1++;
+
+                break;
+ 
+            case 2:
+
+                Blue_texture_test->set_scalers(3, 1);
+
+                counter_1++;
+
+                break;
+
+            case 3:
+
+                Blue_texture_test->set_height(500);
+
+                counter_1++;
+
+                break;
+
+
+            case 4:
+
+                Blue_texture_test->set_width(500);
+
+                counter_1++;
+
+                break;
+ 
+            case 5:
+
+                Blue_texture_test->set_size(360, 370);
+
+                counter_1++;
+
+                break;
+
+            case 6:
+
+                Blue_texture_test->reset_size();
+
+                counter_1 = 0;
+
+                break;
+
+
+            default:
+                break;
+        }
+    }
+
+
+    if (App_inputs.is_just_released(Key_actions::Confirm))
+    {
+        std::cout << Fader_1->get_fader_value() << std::endl;
+
+        Panel_1->set_render_point(
+
+            Panel_1->get_x_render_point() + 20,
+            Panel_1->get_y_render_point() + 20
+            
+        );  
+
+        App_lang.set_lang(Lang_list::EN);
+    }
+
+
+    if (App_inputs.is_just_released(Key_actions::MENU_FORWARD))
+    {
+        this_app.app_sm.request_state_change(PROGRAM_END_ID);
+    }
+
+
+    if (App_lang.get_lang_reset_flag())
+        Textbox_1->set_content(str_by_dictionary(gd_press_any_key));
+
+
+    // Switch button_1 color by fader
+    if (Button_1)
+    {
+        SDL_Color color_to_switch = App_palette.get_current_palette().basic_background_color;
+
+        SDL_Color new_color = {
+
+            static_cast<Uint8>(color_to_switch.r * Fader_1->get_fader_value()),
+            static_cast<Uint8>(color_to_switch.g * Fader_1->get_fader_value()),
+            static_cast<Uint8>(color_to_switch.b * Fader_1->get_fader_value()),
+            255
+
+        };
+
+        Button_1->set_basic_background_color(new_color);
+    }
+}
+
+void start_render(SDL_Renderer* renderer)
+{
+    // Button 1
+    // Button_1->render(renderer);
+
+    // Fader 1
+    Fader_1->render(renderer);
+
+    // Panel 1
+    Panel_1->render(renderer);
+
+    // Textbox 1
+    Textbox_1->render(renderer);
+
+
+    // Texture test
+    Blue_texture_test->render(renderer);
+}
+
+
+// =========================================================================================== MAIN MENU
+
+/**
+ * @brief Enter MAIN_MENU state.
+ *
+ * Инициализация главного меню:
+ * - сброс временных данных
+ * - подготовка UI
+ */
+void main_menu_enter()
+{
+    // TODO:
+    // - Инициализировать элементы GUI (кнопки: "Начать", "Выход")
+    // - Сбросить временные данные предыдущей сессии (если нужно)
+    // - Подготовить ресурсы (текстуры, шрифты и т.д.)
+}
+
+/**
+ * @brief Exit MAIN_MENU state.
+ *
+ * Очистка ресурсов главного меню.
+ */
+void main_menu_exit()
+{
+    // TODO:
+    // - Освободить UI ресурсы
+    // - Сохранить состояние (если требуется)
+}
+
+/**
+ * @brief Render MAIN_MENU state.
+ *
+ * Отрисовка главного меню:
+ * - кнопки
+ * - фон
+ * - подсказки
+ */
+void main_menu_render(SDL_Renderer* renderer)
+{
+    // TODO:
+    // - Отрисовать фон
+    // - Отрисовать кнопки ("Начать", "Выход")
+    // - Обработать визуальные состояния (hover, click)
+}
+
+
+// =========================================================================================== FILE CHOOSE
+
+/**
+ * @brief Enter FILE_CHOOSE state.
+ *
+ * Подготовка выбора файлов:
+ * - открытие диалога
+ * - сброс выбранных файлов
+ */
+void file_choose_enter()
+{
+    // TODO:
+    // - Открыть файловый диалог (или подготовить кнопку вызова)
+    // - Очистить список выбранных файлов
+    // - Подготовить UI
+}
+
+/**
+ * @brief Exit FILE_CHOOSE state.
+ *
+ * Завершение выбора файлов.
+ */
+void file_choose_exit()
+{
+    // TODO:
+    // - Проверить валидность выбранных файлов
+    // - Сохранить пути и метаданные
+}
+
+/**
+ * @brief Render FILE_CHOOSE state.
+ *
+ * Отрисовка интерфейса выбора файлов:
+ * - список файлов
+ * - кнопки выбора
+ */
+void file_choose_render(SDL_Renderer* renderer)
+{
+    // TODO:
+    // - Отрисовать список выбранных файлов
+    // - Отрисовать кнопку "Добавить файл"
+    // - Отобразить подсказки
+}
+
+
+// =========================================================================================== MASKS SETUP
+
+/**
+ * @brief Enter MASKS_SETUP state.
+ *
+ * Подготовка настройки масок:
+ * - загрузка видео
+ * - инициализация параметров
+ */
+void masks_setup_enter()
+{
+    // TODO:
+    // - Загрузить выбранные видео
+    // - Инициализировать параметры масок
+    // - Подготовить UI (слайдеры, переключатели)
+}
+
+/**
+ * @brief Exit MASKS_SETUP state.
+ *
+ * Сохранение настроек масок.
+ */
+void masks_setup_exit()
+{
+    // TODO:
+    // - Проверить заполненность параметров
+    // - Сохранить настройки (в память или файл)
+}
+
+/**
+ * @brief Render MASKS_SETUP state.
+ *
+ * Отрисовка:
+ * - оригинального видео
+ * - результата маски
+ * - элементов управления
+ */
+void masks_setup_render(SDL_Renderer* renderer)
+{
+    // TODO:
+    // - Отрисовать видео (оригинал)
+    // - Отрисовать маску (результат обработки)
+    // - Отрисовать слайдеры и переключатели
+}
+
+
+// =========================================================================================== FLOW PARAMETERS CALCULATION
+
+/**
+ * @brief Enter FLOW_PARAMETERS_CALCULATION state.
+ *
+ * Запуск расчётов:
+ * - инициализация алгоритмов
+ * - подготовка прогресса
+ */
+void flow_parameters_calculation_enter()
+{
+    // TODO:
+    // - Инициализировать обработку видео
+    // - Запустить расчёт (возможно в отдельном потоке)
+    // - Подготовить структуру прогресса
+}
+
+/**
+ * @brief Exit FLOW_PARAMETERS_CALCULATION state.
+ *
+ * Завершение расчётов.
+ */
+void flow_parameters_calculation_exit()
+{
+    // TODO:
+    // - Проверить завершение обработки
+    // - Сохранить результаты
+    // - Обработать ошибки (если были)
+}
+
+/**
+ * @brief Render FLOW_PARAMETERS_CALCULATION state.
+ *
+ * Отрисовка прогресса:
+ * - progress bar
+ * - статус по этапам
+ */
+void flow_parameters_calculation_render(SDL_Renderer* renderer)
+{
+    // TODO:
+    // - Отрисовать progress bar / status bar для каждого видео
+    // - Отрисовать сигнализацию об успехе или неудаче (вывести лог ошибок при неудаче)
+}
+
+
+// =========================================================================================== REPORT FORMING
+
+/**
+ * @brief Enter REPORT_FORMING state.
+ *
+ * Подготовка отчёта:
+ * - получение результатов
+ * - выбор пути сохранения
+ */
+void report_forming_enter()
+{
+    // TODO:
+    // - Получить результаты расчётов
+    // - Подготовить структуру отчёта
+    // - Запросить путь сохранения
+}
+
+/**
+ * @brief Exit REPORT_FORMING state.
+ *
+ * Завершение формирования отчёта.
+ */
+void report_forming_exit()
+{
+    // TODO:
+    // - Проверить успешность сохранения
+    // - Очистить временные данные
+}
+
+/**
+ * @brief Render REPORT_FORMING state.
+ *
+ * Отрисовка:
+ * - формы сохранения
+ * - статуса генерации
+ */
+void report_forming_render(SDL_Renderer* renderer)
+{
+    // TODO:
+    // - Отрисовать форму ввода имени файла
+    // - Отобразить статус генерации
+}
+
+
+// =========================================================================================== PROGRAM END
+
+/**
+ * @brief Enter PROGRAM_END state.
+ *
+ * Завершение работы:
+ * - уведомление пользователя
+ */
+void program_end_enter()
+{
+    // TODO:
+    // - Показать сообщение о завершении
+    // - Подготовить возврат в MAIN_MENU при нажатии любой кнопки
+    std::cout << "\n";
+    std::cout << "This is the end" << std::endl;
+    std::cout << "Beautiful friend" << std::endl;
+    std::cout << "This is the end" << std::endl;
+    std::cout << "My only friend, the end" << std::endl;
+    std::cout << "Of our elaborate plans, the end" << std::endl;
+    std::cout << "Of everything that stands, the end" << std::endl;
+    std::cout << "No safety or surprise, the end" << std::endl;
+    std::cout << "I'll never look into your eyes again" << std::endl;
+    std::cout << "Can you picture what will be?" << std::endl;
+    std::cout << "So limitless and free" << std::endl;
+    std::cout << "Desperately in need" << std::endl;
+    std::cout << "Of some stranger's hand" << std::endl;
+    std::cout << "In a desperate land" << std::endl;
+    std::cout << "\n";
+}
+
+/**
+ * @brief Exit PROGRAM_END state.
+ *
+ * Очистка перед возвратом.
+ */
+void program_end_exit()
+{
+    // TODO:
+    // - Очистить ресурсы
+}
+
+void program_end_update()
+{
+    App_inputs.update();
+
+    if (App_inputs.is_just_released(Key_actions::MENU_BACK))
+    {
+        this_app.app_sm.request_state_change(START_ID);
+    }
+}
+
+/**
+ * @brief Render PROGRAM_END state.
+ *
+ * Отрисовка финального экрана:
+ * - сообщение
+ * - инструкция (нажмите любую клавишу)
+ */
+void program_end_render(SDL_Renderer* renderer)
+{
+    // TODO:
+    // - Отрисовать сообщение "Работа завершена"
+    // - Отобразить подсказку для возврата в MAIN_MENU при нажатии любой клавиши
+    rectangle_draw_by_color(300, 300, 100, 50, hex_to_sdl_color("#8af520", 250),renderer);
+}
+
+
+// =========================================================================================== CALLBACKS
+
+
+// =========================================================================================== INITIALIZATION
+
+void init_program_states(State_machine& app_state_machine)
+{
+    // Each block below creates a State object, assigns its enter/exit callbacks,
+    // and adds it to the state machine. The hierarchy linking is handled
+    // automatically by State_machine::add_state.
+
+    // === START ===
+
+    // Smart initialization by the state machine
+    app_state_machine.initiate_state(START_ID, "START");
+
+    // Callbacs setting by the state machine
+    if (auto* s = app_state_machine.get_state(START_ID))
+    {
+        s->on_enter = start_enter;          // Actions on the state entering 
+        s->on_exit  = start_exit;           // Actions on the state exit
+        s->state_update = start_update;
+        s->state_render = start_render;     // Rendering for the state
+    }
+
+    /*
+    // === MAIN_MENU ===
+    app_state_machine.initiate_state(MAIN_MENU_ID, "MAIN_MENU");
+
+    if (auto* s = app_state_machine.get_state(MAIN_MENU_ID))
+    {
+        s->on_enter = main_menu_enter;
+        s->on_exit  = main_menu_exit;
+    }
+
+
+    // === GAME ===
+    app_state_machine.initiate_state(GAME_ID, "GAME");
+
+    if (auto* s = app_state_machine.get_state(GAME_ID))
+    {
+        s->on_enter = game_enter;
+        s->on_exit  = game_exit;
+    }
+
+
+    // === LEVEL_GAMEPLAY ===
+    app_state_machine.initiate_state(LEVEL_GAMEPLAY_ID, "LEVEL_GAMEPLAY");
+
+    if (auto* s = app_state_machine.get_state(LEVEL_GAMEPLAY_ID))
+    {
+        s->on_enter = level_gameplay_enter;
+        s->on_exit  = level_gameplay_exit;
+    }
+
+
+    // === SMALL_MENU ===
+    app_state_machine.initiate_state(SMALL_MENU_ID, "SMALL_MENU");
+
+    if (auto* s = app_state_machine.get_state(SMALL_MENU_ID))
+    {
+        s->on_enter = small_menu_enter;
+        s->on_exit  = small_menu_exit;
+    }
+
+
+    */  
+    
+    // === EXIT_PROGRAM ===
+    app_state_machine.initiate_state(PROGRAM_END_ID, "PROGRAM END");
+
+    if (auto* s = app_state_machine.get_state(PROGRAM_END_ID))
+    {
+        s->on_enter = program_end_enter;
+        s->on_exit  = program_end_exit;
+        s->state_update = program_end_update;
+        s->state_render = program_end_render;
+    }
+
+    // At this point, all states are registered in the state machine.
+    // State_machine handles connecting parents and children based on IDs,
+    // so hierarchical updates and callback chaining will work automatically.
+}
+
+// =========================================================================================== INITIALIZATION

@@ -1,0 +1,188 @@
+// 1.1_this_state.cpp
+
+
+// =========================================================================================== IMPORT
+
+#include "1.1_this_state.h"
+
+
+#include "../../../../program_gui/basic_elements/UI_elements/my_sdl_textbox/my_sdl_textbox.h"
+#include "../../../../program_gui/basic_elements/UI_elements/my_sdl_panel/my_sdl_panel.h"
+#include "../../../../program_gui/basic_elements/UI_elements/my_sdl_button/my_sdl_button.h"
+#include "../../../../program_gui/basic_elements/UI_elements/my_sdl_texture/my_sdl_texture.h"
+
+
+// Predeclare for switching states
+#include "../../program_states.h"
+
+#include "../../../app.h"
+
+// Log
+#include <iostream>
+
+// =========================================================================================== IMPORT
+
+
+// =========================================================================================== STATE DATA
+
+
+
+// =========================================================================================== STATE DATA
+
+
+// =========================================================================================== STATE INNER FUNCTIONS PREDECLARATION
+
+void this_state_elements_create();
+
+void this_state_elements_setup();
+
+void this_state_elements_free_and_nullptr();
+
+void this_state_elements_update();
+
+void reset_passed_by_dictionary_textboxes_if_language_switched_this_state();
+
+void this_state_actions();
+
+void this_state_elements_render(SDL_Renderer* renderer);
+
+// =========================================================================================== STATE INNER FUNCTIONS PREDECLARATION
+
+
+// =========================================================================================== MAIN STATE API
+
+
+void this_state_enter()
+{
+    // Log the enter in console
+    std::cout << "Entering this_state\n"; 
+
+    // ===== State allocation =====
+
+    this_state_elements_create();
+
+    // ===== State allocation =====
+
+
+    // Elements setup
+
+    this_state_elements_setup();
+
+}
+
+
+
+void this_state_exit()
+{
+    // ===== State deallocation =====
+
+    this_state_elements_free_and_nullptr();
+
+    // ===== State deallocation =====
+
+
+    // Log the exit in console
+
+    std::cout << "Exiting this_state\n"; 
+
+}
+
+
+void this_state_update()
+{
+    // Update inputs
+    App_inputs.update();
+
+    this_state_elements_update();
+
+    this_state_actions();
+}
+
+
+void this_state_render(SDL_Renderer* renderer)
+{
+    this_state_elements_render(renderer);
+}
+
+
+// =========================================================================================== MAIN STATE API
+
+
+// =========================================================================================== STATE INNER FUNCTIONS REALIZATION
+
+void this_state_elements_create()
+{
+  
+}
+
+
+// ===== SETUP DATA =====
+
+// ===== Main sizes =====
+
+const int BACKGROUND_WIDTH  = MAIN_WINDOW_H_SIZE;
+const int BACKGROUND_HEIGHT  = MAIN_WINDOW_V_SIZE;
+
+// ===== SETUP DATA =====
+
+
+void this_state_elements_setup()
+{     
+    // ===== Setup =====
+
+}
+
+
+void this_state_elements_free_and_nullptr()
+{
+    
+    // ===== Free all elements =====
+
+
+    // ===== Nullptr the pointers =====
+
+}
+
+
+void this_state_elements_update()
+{
+    // ===== Check if textboxes need content renew =====
+
+    reset_passed_by_dictionary_textboxes_if_language_switched_this_state();
+
+
+    // ===== Update all elements =====
+
+}
+
+
+void reset_passed_by_dictionary_textboxes_if_language_switched_this_state()
+{
+    // Repeat content set if language switched
+    if (App_lang.get_lang_reset_flag())
+    {
+        // Textboxes for update
+
+    }
+}
+
+
+void this_state_actions()
+{
+    // State actions
+}
+
+
+void this_state_elements_render(SDL_Renderer* renderer)
+{
+    // Render all elements
+
+}
+
+// =========================================================================================== STATE INNER FUNCTIONS REALIZATION
+
+
+// =========================================================================================== STATE ELEMENTS INNER FUNCTIONS
+
+
+// =========================================================================================== STATE ELEMENTS INNER FUNCTIONS

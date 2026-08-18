@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "../platform/platform.h"
+#include <SDL3/SDL.h>
 
 // =========================================================================================== IMPORT
 
@@ -48,7 +49,6 @@ public:
      * @param lvl Initializer list of integers representing levels.
      */
     State_ID(std::initializer_list<int> lvl);
-
 
     /**
      * @brief Equality operator.
@@ -200,6 +200,129 @@ public:
 
 // =========================================================================================== STATE MACHINE
 
+/**
+ * @brief Lightweight deferred state transition request container.
+ *
+ * This structure acts as a communication bridge between gameplay logic
+ * and the state machine.
+ *
+ * Instead of immediately switching states inside callbacks (such as
+ * button clicks, update loops, or render code), a request is stored
+ * here and executed later in a safe execution point inside the main loop.
+ *
+ * This guarantees:
+ * - no state switching during update/render traversal
+ * - no re-entrancy issues inside callbacks
+ * - safe teardown and initialization of states
+ * 
+ */
+struct state_change_request
+{
+    /**
+     * @brief Target state that should be activated.
+     *
+     * Valid only if 'active == true'.
+     */
+    State_ID next;
+
+    /**
+     * @brief Indicates whether a state transition has been requested.
+     *
+     * If false, the state machine ignores this request.
+     * 
+     * Only real VALIDATOR for change
+     */
+    bool active = false;
+
+    /**
+     * @brief Checks whether a pending state transition exists.
+     *
+     * @return true if a transition request is waiting to be processed.
+     */
+    bool has() const
+    {
+        return active;
+    }
+
+    /**
+     * @brief Sets a new state transition request.
+     *
+     * Marks the request as active and stores the target state.
+     * The actual transition will be executed later by State_machine::go_to().
+     *
+     * @param state Target state to switch to.
+     */
+    void set(const State_ID& state)
+    {
+        next = state;
+        active = true;
+    }
+
+
+    /**
+     * @brief Clears the pending state transition request.
+     *
+     * Called after the state machine has processed the request.
+     */
+    void clear()
+    {
+        active = false;
+    }
+
+    /**
+     * Example: deferred state transition via request system.
+     *
+     * State change is NOT executed immediately inside callbacks.
+     * Instead, it is queued and applied safely inside the main loop.
+     *
+     *
+     * Example: button click triggers a transition request
+     *
+     *      void on_click()
+     *      {
+     *          app_sm.request_state_change(STATE_MENU);
+     *      }
+     *
+     *
+     * Main application loop:
+     *
+     *      bool SDL_app_cycle(SDL_app_ctx* app)
+     *      {
+     *          State_machine& sm = app->app_sm;
+     *
+     *           // STEP 1: apply pending state transition (safe point)
+     * 
+     *           // State change requests handler
+     *           if (app->app_sm.check_state_change())
+     *           {
+     *               // Perform exit/enter here (with inner state_change.clear() call)
+     *               app->app_sm.go_to(app->app_sm.consume_next_state());
+     *
+     *               // state changed -> skip this frame to avoid mixed execution
+     *               return app->app_state == SDL_APP_CONTINUE;
+     *           }
+     *
+     *
+     *          // STEP 2: update active state
+     *          if (sm.get_current_state())
+     *              sm.state_update();
+     *
+     *          // STEP 3: render active state
+     *          if (sm.get_current_state())
+     *          {
+     *              SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, 255);
+     *              SDL_RenderClear(app->renderer);
+     *
+     *              sm.state_render(app->renderer);
+     *
+     *              SDL_RenderPresent(app->renderer);
+     *          }
+     *
+     *          return app->app_state == SDL_APP_CONTINUE;
+     *      }
+     */
+};
+
 
 /**
  * @brief Manages a collection of States and handles transitions between them.
@@ -248,6 +371,23 @@ private:
      */
     bool id_exists(const State_ID& id) const;
 
+
+    
+    /**
+     * @brief Deferred state transition request.
+     *
+     * This field is used as a communication channel between
+     * game logic (UI, input, gameplay) and the state machine.
+     *
+     * Instead of immediately switching states inside callbacks,
+     * components request a transition here.
+     *
+     * The actual transition is executed later in a controlled
+     * point in the main loop, ensuring safe teardown and setup
+     * of states.
+     * 
+     */
+    state_change_request state_change;
 
 public:
 
@@ -302,6 +442,34 @@ public:
 
 
     /**
+     * @brief Requests a transition to another state.
+     *
+     * This function does NOT perform the transition immediately.
+     * Instead, it stores the request in a deferred buffer that is
+     * processed later during the main loop at a safe synchronization point.
+     *
+     * This prevents unsafe transitions inside:
+     * - UI callbacks (e.g. button clicks)
+     * - state_update()
+     * - state_render()
+     *
+     * and guarantees deterministic state lifecycle:
+     * on_exit → go_to → on_enter
+     *
+     * @param id Target state to switch to.
+     * 
+     */
+    void request_state_change(const State_ID& id);
+
+
+    bool check_state_change() const { return this->state_change.has(); }
+
+
+    // Return of the next state with state_change.clear() inside
+    State_ID consume_next_state();
+
+
+    /**
      * @brief Returns a pointer to the currently active state.
      *
      * @return Pointer to the current State, or nullptr if no state is active.
@@ -317,6 +485,8 @@ public:
      * @return std::string Name of the current state or "NONE" if no state is active.
      */
     std::string current_state_name() const;
+
+
 
 
     /**

@@ -17,37 +17,55 @@
 // =========================================================================================== PLATFORM DEFINITION
 
 
-// =========================================================================================== SDL2 INCLUDE
+// =========================================================================================== PLATFORM-SPECIFIC DEFINES
 
-#define SDL_MAIN_HANDLED
+
+enum class Platform {
+
+    Windows,
+    Linux
+
+};
+
+
+// For logic switch use expressions like: "if (current_platform == Platform::Linux)..."
+constexpr Platform current_platform =
 
 #ifdef PLATFORM_WINDOWS
-    // Windows: use SDL2 for Windows
-    #include "../../sdl/win_SDL2-2.32.10/include/SDL.h"
-    // #include <SDL.h>
+
+    Platform::Windows;
+
+#elif defined(PLATFORM_LINUX)
+
+    Platform::Linux;
+
 #else
-    // Linux / Miyoo Mini+: use SDL2 from Onion OS templates
-    #include <SDL2/SDL.h>
+
+    #error "Unknown platform mapping"
+
 #endif
 
-// =========================================================================================== SDL2 INCLUDE
+/*
 
+if (current_platform == Platform::Windows)
+{
+    // Windows-specified defines
+}
+else if (current_platform == Platform::Linux)
+{
+    // Linux-specified defines
+}
+else
+{
+    #error "Unknown platform handling
+}
+
+*/
+
+// =========================================================================================== PLATFORM-SPECIFIC DEFINES
 
 // =========================================================================================== COMMON DEFINES
 
-enum Button {
-
-    START_BTN,
-    SELECT_BTN,
-    LEFT_BTN,
-    UP_BTN,
-    RIGHT_BTN,
-    DOWN_BTN,
-    Y_BTN,
-    X_BTN,
-    A_BTN,
-    B_BTN
-
-};
+#define SDL_MAIN_HANDLED
 
 // =========================================================================================== COMMON DEFINES
