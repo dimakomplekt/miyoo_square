@@ -6,50 +6,84 @@
 
 // =========================================================================================== IMPORT
 
-// Language state management (library contains links to language choose methods
-// for program dictionary workflow)
-
-#include "lang_state/lang_state.h"
-#include "lang_state/lang_utils.h"
-
+// ===== PLATFORM =====
 
 // Current platform by preprocessor directives
+#include "base_modules/platform/platform.h"
 
-#include "platform/platform.h"
-
-
-// State machine include
-
-#include "state_machine/state_machine.h"
+// ===== PLATFORM =====
 
 
-// Includes both the frameworks and translation methods (library contains links 
-// to both SDL3 and OpenCV2)
 
-#include "special/opencv_to_sdl/opencv_to_sdl.h"
+// ===== SDL =====
+
+// Includes framework (library contains links to SDL2
+// TODO: IMPORT? LINUX?
+#include <SDL2/SDL.h>
+
 
 // SDL ttf include
-
-#include "SDL3_ttf-3.2.2/include/SDL3_ttf/SDL_ttf.h"
+// TODO: LINUX?
+#include "base_modules/SDL/SDL_TTF/SDL2_ttf-2.24.0/include/SDL_ttf.h"
 
 // SDL image include
-#include "SDL3_image-3.4.4/include/SDL3_image/SDL_image.h"
+// TODO: LINUX?
+#include "base_modules/SDL/SDL_IMAGE/SDL2_image-2.8.10/include/SDL_image.h"
 
-// Mouse and keyboard read
+// ===== SDL =====
 
-#include "global_inputs/global_inputs.h" 
 
+
+// ===== INPUTS =====
+
+// Global inputs control 
+#include "logic_modules/program_logic/global_inputs/global_inputs.h" 
+
+// ===== INPUTS =====
+
+
+
+// ===== LANGUAGE =====
+
+// Language state management (library contains links to language choose methods
+// for program dictionary workflow)
+#include "logic_modules/program_logic/lang_state/lang_state.h"
+#include "logic_modules/program_logic/lang_state/lang_utils.h"
+
+// ===== LANGUAGE =====
+
+
+
+// ===== STATE MACHINE =====
+
+// State machine include
+#include "logic_modules/program_logic/state_machine/state_machine.h"
+
+// ===== STATE MACHINE =====
+
+
+
+// ===== COMPILER HELPERS =====
 
 // Absolute path by relative path from .exe folder
+#include "special_modules/absolute_by_relative/absolute_by_relative.h"
 
-#include "special/absolute_by_relative/absolute_by_relative.h"
+
+// ===== COMPILER HELPERS =====
+
+
 
 // =========================================================================================== IMPORT
 
 
-// =========================================================================================== DEFINE
+// =========================================================================================== DEFINES
+
+// ===== TESTS =====
+
+#define TEST_MODE false                 // Basic testing
 
 
-#define TEST_MODE false
+// ===== TESTS =====
 
-// =========================================================================================== DEFINE
+
+// =========================================================================================== DEFINES
