@@ -40,7 +40,7 @@ inline Lang_string_type gd_pixels = {
 inline Lang_string_type gd_press_any_key = {
 
     "Press ENTER to continue...",
-    "Нажмите ENTER для продолжения..."
+    u8"Нажмите ENTER для продолжения..."
 
 };
 

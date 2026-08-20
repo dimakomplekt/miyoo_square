@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/libs/engine/base_modules/SDL/SDL/win_SDL2-2.32.10/include/**",
+                "${workspaceFolder}/libs/engine/base_modules/SDL/SDL_TTF/SDL2_ttf-2.24.0/include/**",
+                "${workspaceFolder}/libs/engine/base_modules/SDL/SDL_IMAGE/SDL2_image-2.8.10/include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:/msys64/mingw64/bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}

@@ -19,16 +19,13 @@
 
 // Includes framework (library contains links to SDL2
 // TODO: IMPORT? LINUX?
+
 #include <SDL2/SDL.h>
 
+#include <SDL2/SDL_ttf.h>
 
-// SDL ttf include
-// TODO: LINUX?
-#include "base_modules/SDL/SDL_TTF/SDL2_ttf-2.24.0/include/SDL_ttf.h"
+#include <SDL2/SDL_image.h>
 
-// SDL image include
-// TODO: LINUX?
-#include "base_modules/SDL/SDL_IMAGE/SDL2_image-2.8.10/include/SDL_image.h"
 
 // ===== SDL =====
 

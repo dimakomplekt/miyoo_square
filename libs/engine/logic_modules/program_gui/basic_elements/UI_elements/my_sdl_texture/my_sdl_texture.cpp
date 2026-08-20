@@ -116,15 +116,25 @@ void My_SDL_texture::set_texture(SDL_Texture* new_texture, bool take_ownership)
 
     // Sizes recalculation for not empty (nullptr) texture
 
-    float w = 0.0f;
-    float h = 0.0f;
 
-    SDL_GetTextureSize(this->texture, &w, &h);
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    // float w = 0.0f;
+    // float h = 0.0f;
+    // SDL_GetTextureSize(this->texture, &w, &h);
+
+    int temp_w = 0;
+    int temp_h = 0;
+
+    SDL_QueryTexture(this->texture, nullptr, nullptr, &temp_w, &temp_h);
 
 
     // Reset basic sizes
-    this->basic_width_size = static_cast<int>(std::round(w));
-    this->basic_height_size = static_cast<int>(std::round(h));
+    // this->basic_width_size = static_cast<int>(std::round(w));
+    // this->basic_height_size = static_cast<int>(std::round(h));
+
+    this->basic_width_size = temp_w;
+    this->basic_height_size = temp_h;
 
     // Set the new current sizes by basic sizes on texture pass
     this->width_size = this->basic_width_size;
@@ -184,7 +194,12 @@ void My_SDL_texture::render(SDL_Renderer* renderer)
 
     SDL_SetTextureAlphaMod(this->texture, this->opacity);
 
-    SDL_RenderTexture(renderer, this->texture, nullptr, &dst);
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    // SDL_RenderTexture(renderer, this->texture, nullptr, &dst);
+
+    SDL_RenderCopyF(renderer, this->texture, nullptr, &dst);
 }
 
 

@@ -7,6 +7,7 @@
 #include "../../../../../../engine/engine.h"     // SDL3 and SDL ttf import
 
 #include <algorithm>                       // For std::min()
+#include <math.h>
 
 // =========================================================================================== IMPORT
 
@@ -19,6 +20,38 @@ enum element_form
     CIRCLE_EF       
 
 };
+
+
+/**
+ * @brief Renders a filled rectangle using a solid color.
+ *
+ * Draws a rectangle centered at the given render point using the specified width,
+ * height and color.
+ *
+ * @param x_render_point X coordinate of rectangle center.
+ * @param y_render_point Y coordinate of rectangle center.
+ * @param width Rectangle width.
+ * @param height Rectangle height.
+ * @param line_width Rectangle line width.
+ * @param color Fill color.
+ * @param renderer SDL renderer used for drawing.
+ * 
+ */
+void rectangle_borders_draw_by_color(
+    
+    int x_render_point,
+    int y_render_point,
+
+    unsigned int width,
+    unsigned int height,
+
+    unsigned int line_width,
+    SDL_Color color,
+
+    SDL_Renderer* renderer
+
+);
+
 
 
 /**

@@ -6,10 +6,12 @@
 #include "0.0_START.h"
 
 
-#include "../../../../program_gui/basic_elements/UI_elements/my_sdl_textbox/my_sdl_textbox.h"
-#include "../../../../program_gui/basic_elements/UI_elements/my_sdl_panel/my_sdl_panel.h"
+#include "../../../../engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_textbox/my_sdl_textbox.h"
+#include "../../../../engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_panel/my_sdl_panel.h"
 
-#include "../../../../program_gui/basic_elements/UI_elements/my_sdl_button/my_sdl_button.h"
+#include "../../../../engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_button/my_sdl_button.h"
+
+
 
 
 // Predeclare for switching states
@@ -156,6 +158,7 @@ void start_elements_setup()
     Start_textbox->switch_textbox_type(HEADER_2);
 
     Start_textbox->set_content(str_by_dictionary(gd_press_any_key));
+    Start_textbox->set_content("Нажмите ENTER для продолжения...");
 
     Start_textbox->switch_blinking_mode_flag(true);
 
@@ -192,6 +195,24 @@ void start_elements_update()
     // Check if textboxes need content renew
     reset_passed_by_dictionary_textboxes_if_language_switched();
 
+    // TEST
+    static int counter = 0;
+
+    if (counter % 500 == 0)
+    {
+        // TEST
+        Start_textbox->set_content(u8"ENTER...");
+    }
+
+    if (counter % 1000 == 0)
+    {
+        // TEST
+        Start_textbox->set_content("Нажмите...");
+    }
+
+    counter += 1;
+
+
     // Update all elements
     Start_panel->update();
 
@@ -203,19 +224,15 @@ void reset_passed_by_dictionary_textboxes_if_language_switched()
     // Repeat content set if language switched
     if (App_lang.get_lang_reset_flag())
     {
+        // TEST
         Start_textbox->set_content(str_by_dictionary(gd_press_any_key));
+        Start_textbox->set_content(u8"Нажми...");
     }
 }
 
 
 void start_actions()
 {
-    // Switch the state to EXIT if EXIT pressed
-
-    if (App_inputs.is_just_released(Key_actions::EXIT))
-    {
-        this_app.app_sm.request_state_change(MASKS_SETUP_ID);
-    }
 
     // Switch the state to MAIN MENU if ENTER pressed
 

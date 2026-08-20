@@ -16,7 +16,7 @@ static app_fonts_palette_ctx make_fonts_palette_1()
     app_font_ctx font_1;
     app_font_ctx emoji_font_1;
 
-    font_1.font_path = absolute_by_relative_from_exe("content/ttf_fonts/Miracode.ttf");
+    font_1.font_path = absolute_by_relative_from_exe("content/ttf_fonts/MidnightLetters.ttf");
     emoji_font_1.font_path = absolute_by_relative_from_exe("content/ttf_fonts/NotoEmoji.ttf");
     
     app_fonts_palette_ctx palette;
@@ -68,7 +68,7 @@ static app_fonts_palette_ctx make_fonts_palette_3()
     app_font_ctx font_3;
     app_font_ctx emoji_font_3;
 
-    font_3.font_path = absolute_by_relative_from_exe("content/ttf_fonts/MidnightLetters.ttf");
+    font_3.font_path = absolute_by_relative_from_exe("content/ttf_fonts/Miracode.ttf");
     emoji_font_3.font_path = absolute_by_relative_from_exe("content/ttf_fonts/NotoEmoji.ttf");
 
     app_fonts_palette_ctx palette;

@@ -67,6 +67,10 @@ GI_keyboard& GI_keyboard::Instance()
 
 void GI_keyboard::update()
 {
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    /*
+
     const bool* curr_sdl_k = SDL_GetKeyboardState(nullptr);
 
     // SDL3 AND SDL2 CONFLICT
@@ -75,6 +79,23 @@ void GI_keyboard::update()
         key_prev[i]  = key_state[i];
         key_state[i] = curr_sdl_k[i];
     }
+
+    */
+
+    // SDL2 FIX: SDL_GetKeyboardState in SDL2 returns 'const Uint8*' instead of 'const bool*'
+    const Uint8* curr_sdl_k = SDL_GetKeyboardState(nullptr);
+
+    // SDL2 FIX: Loop using SDL_NUM_SCANCODES as the upper boundary
+    for (int i = 0; i < SDL_NUM_SCANCODES; ++i)
+    {
+        key_prev[i]  = key_state[i];
+        
+        // Implicitly converts Uint8 (0 or 1) from SDL2 array to bool (false or true)
+        key_state[i] = curr_sdl_k[i];
+    }
+
+    
+    // ===== SDL3 AND SDL2 CONFLICT =====
 }
 
 

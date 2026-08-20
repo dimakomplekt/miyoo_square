@@ -6,6 +6,10 @@
 
 #include <iostream>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 // =========================================================================================== IMPORT
 
 
@@ -48,18 +52,39 @@ bool this_app_init()
 {
     // Full application initialization wrapper, including SDL and TTF initialization, window and renderer creation,
 
-    // SDL TTF init
-    if (!SDL_TTF_init()) return false;
-
-    // SDL image init
-    if (!SDL_Image_init()) return false;
-
     // APP init (4rth argument by the new string type, translated to the old string type)
     if (!SDL_app_init(&this_app, MAIN_WINDOW_H_SIZE, MAIN_WINDOW_V_SIZE, this_app.this_app_name.c_str())) 
     {
         std::cerr << "Failed to initialize SDL application." << std::endl;
         return false;
     }
+
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    // SDL TTF init SDL3
+    // if (!SDL_TTF_init()) return false;
+
+    // SDL TTF init SDL2
+    if (SDL_TTF_init()) return false;
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    // SDL image init
+    
+    if (!SDL_Image_init()) return false;
+
+
+
+    std::cout << "\n\nРУССКИЕ ВПЕРЁД";
+
+    #ifdef _WIN32
+    // Настраиваем консоль Windows на работу с UTF-8
+    SetConsoleCP(65001);
+    SetConsoleOutputCP(65001);
+    #endif
+
+    std::cout << "\n\nРУССКИЕ ВПЕРЁД";
 
 
     // Initialize app state machine and states (by initialization function from program_states.cpp)
@@ -76,22 +101,23 @@ bool this_app_init()
     {
         std::cout << this_app.app_sm.get_current_state()->id.string() << std::endl;
     }
-
+    
     return true;
 }
 
 
 bool SDL_TTF_init()
 {
-    if (!TTF_Init()) 
+    // SDL3 and SDL2 CONFLICT
+    if (TTF_Init()) 
     {
         SDL_Log("TTF_Init failed: %s", SDL_GetError());
-        return false;
+        return true;
     }
     else
     {
         SDL_Log("TTF_Init succeeded!");
-        return true;
+        return false;
     }
 }
 
@@ -110,27 +136,62 @@ bool SDL_app_init(SDL_app_ctx* app, int w, int h, const char* title)
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
-        app->app_state = SDL_APP_FAILURE;
+
+        // ===== SDL3 AND SDL2 CONFLICT =====
+        app->app_state = false;
         return false;
     }
 
     // Create an window and renderer
 
-    if (!SDL_CreateWindowAndRenderer(title, w, h, THIS_APP_WINDOW_FLAG , &app->window, &app->renderer))
+    // SDL2 FIX: SDL_CreateWindowAndRenderer doesn't support custom renderer flags (like VSync).
+    // We separate window and renderer creation to explicitly pass the SDL_RENDERER_PRESENTVSYNC flag.
+    app->window = SDL_CreateWindow(
+        title,
+        SDL_WINDOWPOS_CENTERED, // Initial X position
+        SDL_WINDOWPOS_CENTERED, // Initial Y position
+        w,
+        h,
+        THIS_APP_WINDOW_FLAG    // Your global window flags (now Uint32)
+    );
+
+    if (!app->window)
     {
-        // Error handling
-        SDL_Log("SDL_CreateWindowAndRenderer failed: %s", SDL_GetError());
-        app->app_state = SDL_APP_FAILURE;
+        SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
+        app->app_state = false;
         return false;
     }
 
-    SDL_SetRenderVSync(app->renderer, 1);
+    // SDL2 FIX: Creating the renderer with accelerated hardware rendering and built-in VSync.
+    // Index '-1' automatically picks the first graphics driver that matches the requested flags.
+    app->renderer = SDL_CreateRenderer(
+        app->window, 
+        -1, 
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+    );
+
+    if (!app->renderer)
+    {
+        SDL_Log("SDL_CreateRenderer failed: %s", SDL_GetError());
+        
+        // Clean up the window since renderer initialization failed
+        SDL_DestroyWindow(app->window);
+        app->window = nullptr;
+
+        app->app_state = false;
+        return false;
+    }
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+    // SDL_SetRenderVSync(app->renderer, 1);
+
 
     SDL_SetRenderDrawBlendMode(app->renderer, SDL_BLENDMODE_BLEND);
 
     SDL_SetWindowTitle(app->window, title);
 
-    app->app_state = SDL_APP_CONTINUE;
+    // ===== SDL3 AND SDL2 CONFLICT =====
+    app->app_state = true;
     return true;
 }
 
@@ -140,7 +201,7 @@ bool SDL_app_init(SDL_app_ctx* app, int w, int h, const char* title)
 bool this_app_loop()
 {
 
-    while (this_app.app_state == SDL_APP_CONTINUE)
+    while (this_app.app_state == true)
     {
         // Update the timer and check if the execute zones are reached
         App_timer_1.update();
@@ -168,9 +229,10 @@ bool this_app_loop()
 void SDL_app_event(SDL_app_ctx* app, SDL_Event* event)
 {
     // Main SDL events handler
-    if (event->type == SDL_EVENT_QUIT)
+    if (event->type == SDL_QUIT)
     {
-        app->app_state = SDL_APP_SUCCESS;
+        // ===== SDL3 AND SDL2 CONFLICT =====
+        app->app_state = false;
         return;
     }
 
@@ -187,8 +249,11 @@ bool SDL_app_cycle(SDL_app_ctx* app)
         // Perform exit/enter here (with inner state_change.clear() call)
         app->app_sm.go_to(app->app_sm.consume_next_state());
 
+
+        // ===== SDL3 AND SDL2 CONFLICT =====
+
         // state changed -> skip this frame to avoid mixed execution
-        return app->app_state == SDL_APP_CONTINUE;
+        return app->app_state == true;
     }
 
     
@@ -231,7 +296,8 @@ bool SDL_app_cycle(SDL_app_ctx* app)
         SDL_RenderPresent(app->renderer);
     }
 
-    return app->app_state == SDL_APP_CONTINUE;
+    // ===== SDL3 AND SDL2 CONFLICT =====
+    return app->app_state == true;
 }
 
 

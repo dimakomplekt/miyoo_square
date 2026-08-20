@@ -33,7 +33,14 @@ struct SDL_app_ctx
 {
     std::string this_app_name = THIS_APP_NAME;
 
-    SDL_AppResult app_state = SDL_APP_CONTINUE;
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    // SDL_AppResult app_state = SDL_APP_CONTINUE;
+    bool app_state = true; 
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
     
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;

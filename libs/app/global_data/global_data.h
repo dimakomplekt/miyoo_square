@@ -38,6 +38,15 @@ const std::string THIS_APP_NAME = "MIYOO_SQUARE_1.0";
 // Main window vertical size
 #define MAIN_WINDOW_V_SIZE 480
 
-const SDL_WindowFlags THIS_APP_WINDOW_FLAG = 0; // | SDL_WINDOW_ALLOW_HIGHDPI
+
+// ===== SDL3 AND SDL2 CONFLICT =====
+
+// const SDL_WindowFlags THIS_APP_WINDOW_FLAG = 0; // | SDL_WINDOW_ALLOW_HIGHDPI
+
+const Uint32 THIS_APP_WINDOW_FLAG = 0; 
+
+// ===== SDL3 AND SDL2 CONFLICT =====
+
+
 
 // =========================================================================================== GLOBAL WINDOW SETTINGS

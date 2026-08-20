@@ -59,7 +59,7 @@ class My_SDL_texture : public My_SDL_element // SDL_Element
          * @param renderer Renderer for texture
          * 
          */
-        void My_SDL_texture::set_texture_by_image(const std::string& link, SDL_Renderer* renderer);
+        void set_texture_by_image(const std::string& link, SDL_Renderer* renderer);
 
 
         /**

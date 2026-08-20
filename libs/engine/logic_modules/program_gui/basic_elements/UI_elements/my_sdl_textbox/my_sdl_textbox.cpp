@@ -473,7 +473,7 @@ unsigned int My_SDL_textbox::get_height_size() const
 
 void My_SDL_textbox::set_content(const std::string& new_text)
 {
-    if (TEST_MODE) std::cout << "Set content: " << content << std::endl;
+    // if (TEST_MODE) std::cout << "Set content: " << content << std::endl;
 
     this->content = new_text;
 
@@ -856,12 +856,16 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
         this->content_texture = nullptr;
     }
 
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
     SDL_Surface* surface = TTF_RenderText_Blended(
         this->ttf_font_link,
         this->content.c_str(),
-        0,
         new_color
     );
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
 
     if (!surface)
     {
@@ -871,8 +875,19 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
 
     this->content_texture = SDL_CreateTextureFromSurface(renderer, surface);
 
-    SDL_DestroySurface(surface);
 
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    // SDL_DestroySurface(surface);
+    SDL_FreeSurface(surface);
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+
+
+    // ===== SDL3 AND SDL2 CONFLICT =====
+
+    /*
     // Renew sizes before render (autoupdated on the 1st step after init)
     if (this->content_dirty || this->textbox_sizes_initiation_update_flag)
     {
@@ -897,6 +912,34 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
         this->content_width = w; 
         this->content_height = h;
 
+    */
+
+    // Renew sizes before render (autoupdated on the 1st step after init)
+
+    if (this->content_dirty || this->textbox_sizes_initiation_update_flag)
+    {
+        if (TEST_MODE) std::cout << "Try to update textbox: " << this->content << " sizes\n" << std::endl;
+
+        int w = 0, h = 0; 
+
+        if (this->ttf_font_link != nullptr && !this->content.empty())
+        {
+            // SDL2 FIX: TTF_SizeUTF8 returns 0 on success (unlike bool in SDL3), 
+            // and doesn't require string length parameter.
+            if (TTF_SizeUTF8(this->ttf_font_link, this->content.c_str(), &w, &h) != 0)
+            { 
+                std::cerr << "TTF_SizeUTF8 failed\n";
+        
+                this->content_dirty = false; 
+                return; 
+            } 
+        }
+
+        this->content_width = w; 
+        this->content_height = h;
+        
+
+        // ===== SDL3 AND SDL2 CONFLICT =====
         
         reset_anchor_points();
 
@@ -922,7 +965,10 @@ void My_SDL_textbox::text_draw(SDL_Renderer* renderer)
         dst.x = this->x_render_point - dst.w / 2.0f;
         dst.y = this->y_render_point - dst.h / 2.0f;
 
-        SDL_RenderTexture(renderer, content_texture, nullptr, &dst);
+        // ===== SDL3 AND SDL2 CONFLICT =====
+
+        // SDL_RenderTexture(renderer, content_texture, nullptr, &dst);
+        SDL_RenderCopyF(renderer, this->content_texture, nullptr, &dst);
     }
 }
 

@@ -7,8 +7,6 @@
 
 #include <SDL2/SDL.h>
 
-
-
 #include <array>
 #include <vector>
 #include <unordered_map>
@@ -102,8 +100,12 @@ class GI_mouse
 
         // ===== Cached state =====
 
-        float x_pos = 0.0f;
-        float y_pos = 0.0f;
+        // ===== SDL3 AND SDL2 CONFLICT =====
+
+        int x_pos = 0;
+        int y_pos = 0;
+
+        // ===== SDL3 AND SDL2 CONFLICT =====
 
         // Current frame state 
 
@@ -221,10 +223,23 @@ class GI_keyboard
 
         // ===== Data =====
 
-        // SDL3 AND SDL2 CONFLICT
+        
+        // ===== SDL3 AND SDL2 CONFLICT =====
+
+        /*
 
         bool key_state[SDL_SCANCODE_COUNT] = { false };
         bool key_prev[SDL_SCANCODE_COUNT]  = { false };
+
+        */
+
+        // Change the array size from SDL_SCANCODE_COUNT to SDL_NUM_SCANCODES
+        // SDL2 FIX: SDL2 defines the total number of scancodes as SDL_NUM_SCANCODES
+        bool key_state[SDL_NUM_SCANCODES] = { false };
+        bool key_prev[SDL_NUM_SCANCODES]  = { false };
+
+        // ===== SDL3 AND SDL2 CONFLICT =====
+
 
         // ===== Data =====
 
