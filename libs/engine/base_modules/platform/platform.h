@@ -2,34 +2,65 @@
 
 #pragma once
 
-// =========================================================================================== PLATFORM DEFINITION
+// ===========================================================================================
+// PLATFORM VALIDATION
 
-#if defined(_WIN32) || defined(_WIN64)
-    #define PLATFORM_WINDOWS
+// Comes from MAKE-file
+#if !defined(PLATFORM_WINDOWS) && \
+    !defined(PLATFORM_LINUX)   && \
+    !defined(PLATFORM_MIYOO)
 
-#elif defined(__linux__)
-    #define PLATFORM_LINUX
+    #error "No platform selected."
 
-#else   
-    #error "Unsupported platform"
 #endif
 
-// =========================================================================================== PLATFORM DEFINITION
+
+#if defined(PLATFORM_WINDOWS) && \
+    defined(PLATFORM_LINUX)
+
+    #error "Multiple platforms selected."
+
+#endif
 
 
-// =========================================================================================== PLATFORM-SPECIFIC DEFINES
+#if defined(PLATFORM_WINDOWS) && \
+    defined(PLATFORM_MIYOO)
+
+    #error "Multiple platforms selected."
+
+#endif
 
 
-enum class Platform {
+#if defined(PLATFORM_LINUX) && \
+    defined(PLATFORM_MIYOO)
 
+    #error "Multiple platforms selected."
+
+#endif
+
+// ===========================================================================================
+// PLATFORM VALIDATION
+
+
+// ===========================================================================================
+// PLATFORM ENUM
+
+enum class Platform
+{
     Windows,
-    Linux
+    Linux,
+    Miyoo
 
 };
 
+// ===========================================================================================
+// PLATFORM ENUM
 
-// For logic switch use expressions like: "if (current_platform == Platform::Linux)..."
-constexpr Platform current_platform =
+
+// ===========================================================================================
+// CURRENT PLATFORM
+
+constexpr Platform CURRENT_PLATFORM =
 
 #ifdef PLATFORM_WINDOWS
 
@@ -39,33 +70,24 @@ constexpr Platform current_platform =
 
     Platform::Linux;
 
+#elif defined(PLATFORM_MIYOO)
+
+    Platform::Miyoo;
+
 #else
 
     #error "Unknown platform mapping"
 
 #endif
 
-/*
+// ===========================================================================================
+// CURRENT PLATFORM
 
-if (current_platform == Platform::Windows)
-{
-    // Windows-specified defines
-}
-else if (current_platform == Platform::Linux)
-{
-    // Linux-specified defines
-}
-else
-{
-    #error "Unknown platform handling
-}
 
-*/
-
-// =========================================================================================== PLATFORM-SPECIFIC DEFINES
-
-// =========================================================================================== COMMON DEFINES
+// ===========================================================================================
+// COMMON DEFINES
 
 #define SDL_MAIN_HANDLED
 
-// =========================================================================================== COMMON DEFINES
+// ===========================================================================================
+// COMMON DEFINES

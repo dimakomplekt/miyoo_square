@@ -11,6 +11,14 @@
 // =========================================================================================== IMPORT
 
 
+// =========================================================================================== DEFINES
+
+constexpr double SIM_SAMPLE_RATE = 48000.0;
+constexpr int SIM_BUFFER_SIZE = 128;
+
+// =========================================================================================== DEFINES
+
+
 // =========================================================================================== EXECUTE ZONE STRUCT
 
 struct execute_zone
@@ -28,7 +36,6 @@ struct execute_zone
 enum class Execute_zone_ID
 {
 
-    HZ_10000,
     HZ_1000,
     HZ_240,
     HZ_120,
@@ -75,6 +82,8 @@ class App_timer
         // ===== Instance =====
 
 
+        // ===== REAL TIMER =====
+
         // ===== Update and getter =====
 
         /**
@@ -116,6 +125,21 @@ class App_timer
 
         // ===== Execute zone management =====
 
+        // ===== REAL TIMER =====
+
+
+        // ===== SIMULATION TIMER =====
+
+        void simulation_init();
+
+        double get_simulation_time() const;
+
+        double get_simulation_time_step() const;
+
+        double get_simulation_sample_step() const;
+
+        // ===== SIMULATION TIMER =====
+
 
     private:
 
@@ -137,11 +161,31 @@ class App_timer
         // ===== Constructor and Destuctor =====
 
 
+        // ===== Simulation update
+
+        // Calls inside end_cycle();
+        void simulation_update();
+
+        // ===== Simulation update
+
+
         // ===== Data =====
+
+        // REAL TIMER DATA
 
         float current_time = 0.0f; // Current time in seconds since the application started
 
         std::array<execute_zone, static_cast<size_t>(Execute_zone_ID::COUNT)> execute_zones;
+
+
+        // SIMULATION TIMER DATA
+
+        double simulation_current_time = 0.0;
+
+        double simulation_time_step = 0.0;
+
+        double simulation_sample_step = 0.0;
+
 
         // ===== Data =====
 };

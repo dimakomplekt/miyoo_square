@@ -217,12 +217,12 @@ void start_actions()
 
     // Switch the state to MAIN MENU if ENTER pressed
 
-    if (App_inputs.is_just_released(Key_actions::ENTER))
+    if (App_inputs.is_just_released(Key_actions::START_KA))
     {
         this_app.app_sm.request_state_change(MAIN_MENU_ID);
     }
 
-    if (App_inputs.is_just_released(Key_actions::SPECIAL_1))
+    if (App_inputs.is_just_released(Key_actions::SELECT_KA))
     {
         // App_palette.switch_to_the_next_palette();
         // App_lang.switch_to_next_lang();

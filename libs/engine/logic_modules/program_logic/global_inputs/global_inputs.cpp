@@ -131,21 +131,119 @@ GI_input_manager& GI_input_manager::Instance()
     {
         // Actions initialization zone
 
-        instance.bind(Key_actions::ENTER, SDL_SCANCODE_RETURN);
+        // ===== PC =====
 
-        instance.bind(Key_actions::EXIT, SDL_SCANCODE_ESCAPE);
+        #ifdef PLATFORM_WINDOWS
+        
+            // ============================================================ 
+            // SYSTEM
 
-        instance.bind(Key_actions::MENU_FORWARD, SDL_SCANCODE_RIGHT);
+            instance.bind(Key_actions::SELECT_KA, SDL_SCANCODE_F);
+            instance.bind(Key_actions::SELECT_KA, SDL_SCANCODE_SPACE);
 
-        instance.bind(Key_actions::MENU_BACK, SDL_SCANCODE_LEFT);
+            instance.bind(Key_actions::START_KA, SDL_SCANCODE_RETURN);
+
+            instance.bind(Key_actions::EXIT_KA, SDL_SCANCODE_ESCAPE);
 
 
-        instance.bind(Key_actions::SPECIAL_1, SDL_SCANCODE_SPACE);
+            // ============================================================
+            // D-PAD
 
-        instance.bind(Key_actions::LEFT, SDL_SCANCODE_LEFT);
-        instance.bind(Key_actions::UP, SDL_SCANCODE_UP);
-        instance.bind(Key_actions::RIGHT, SDL_SCANCODE_RIGHT);
-        instance.bind(Key_actions::DOWN, SDL_SCANCODE_DOWN);
+            instance.bind(Key_actions::LEFT_KA, SDL_SCANCODE_LEFT);
+            instance.bind(Key_actions::LEFT_KA, SDL_SCANCODE_A);
+
+            instance.bind(Key_actions::UP_KA, SDL_SCANCODE_UP);
+            instance.bind(Key_actions::UP_KA, SDL_SCANCODE_W);
+
+            instance.bind(Key_actions::RIGHT_KA, SDL_SCANCODE_RIGHT);
+            instance.bind(Key_actions::RIGHT_KA, SDL_SCANCODE_D);
+
+            instance.bind(Key_actions::DOWN_KA, SDL_SCANCODE_DOWN);
+            instance.bind(Key_actions::DOWN_KA, SDL_SCANCODE_S);
+
+
+            // ============================================================
+            // FACE BUTTONS
+
+            // Miyoo Y = PC J
+            instance.bind(Key_actions::Y_KA, SDL_SCANCODE_J);
+
+            // Miyoo X = PC I
+            instance.bind(Key_actions::X_KA, SDL_SCANCODE_I);
+
+            // Miyoo A = PC L
+            instance.bind(Key_actions::A_KA, SDL_SCANCODE_L);
+
+            // Miyoo B = PC K
+            instance.bind(Key_actions::B_KA, SDL_SCANCODE_K);
+
+
+            // ============================================================
+            // SHOULDERS
+
+            // Miyoo L1 = PC Z
+            instance.bind(Key_actions::L_1_KA, SDL_SCANCODE_Z);
+
+            // Miyoo L2 = PC X
+            instance.bind(Key_actions::L_2_KA, SDL_SCANCODE_X);
+
+            // Miyoo R1 = PC C
+            instance.bind(Key_actions::R_1_KA, SDL_SCANCODE_C);
+
+            // Miyoo R2 = PC V
+            instance.bind(Key_actions::R_2_KA, SDL_SCANCODE_V);
+
+
+        // ===== PC =====
+
+        
+        // ===== MIYOO =====
+        #elif defined(PLATFORM_MIYOO)
+        
+
+            // ============================================================
+            // SYSTEM
+
+            instance.bind(Key_actions::SELECT_KA, SDL_SCANCODE_RCTRL);
+            instance.bind(Key_actions::START_KA, SDL_SCANCODE_RETURN);
+            instance.bind(Key_actions::EXIT_KA, SDL_SCANCODE_HOME);
+
+
+            // ============================================================
+            // D-PAD
+
+            instance.bind(Key_actions::LEFT_KA, SDL_SCANCODE_LEFT);
+            instance.bind(Key_actions::UP_KA, SDL_SCANCODE_UP);
+            instance.bind(Key_actions::RIGHT_KA, SDL_SCANCODE_RIGHT);
+            instance.bind(Key_actions::DOWN_KA, SDL_SCANCODE_DOWN);
+
+
+            // ============================================================
+            // FACE BUTTONS
+
+            instance.bind(Key_actions::Y_KA, SDL_SCANCODE_LALT);
+            instance.bind(Key_actions::X_KA, SDL_SCANCODE_LSHIFT);
+            instance.bind(Key_actions::A_KA, SDL_SCANCODE_SPACE);
+            instance.bind(Key_actions::B_KA, SDL_SCANCODE_LCTRL);
+
+
+            // ============================================================
+            // SHOULDERS
+
+            instance.bind(Key_actions::L_1_KA, SDL_SCANCODE_E);
+            instance.bind(Key_actions::L_2_KA, SDL_SCANCODE_TAB);
+            instance.bind(Key_actions::R_1_KA, SDL_SCANCODE_T);
+            instance.bind(Key_actions::R_2_KA, SDL_SCANCODE_BACKSPACE);
+        
+
+        // ===== MIYOO =====
+
+        #elif defined(PLATFORM_LINUX)
+
+            // Linux bindings
+
+        #endif
+
 
         initialized = true;
     }
@@ -159,7 +257,13 @@ GI_input_manager& GI_input_manager::Instance()
 void GI_input_manager::update()
 {
     App_keyboard.update();
-    App_mouse.update();
+
+    // No need to
+    #ifndef PLATFORM_MIYOO
+
+        App_mouse.update();
+
+    #endif
 }
 
 

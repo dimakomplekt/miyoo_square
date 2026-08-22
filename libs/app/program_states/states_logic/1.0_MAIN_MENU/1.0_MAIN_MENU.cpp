@@ -23,6 +23,11 @@
 // Log
 #include <iostream>
 
+
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
 // =========================================================================================== IMPORT
 
 
@@ -139,56 +144,401 @@ void main_menu_elements_create()
 const int BACKGROUND_WIDTH  = MAIN_WINDOW_H_SIZE;
 const int BACKGROUND_HEIGHT  = MAIN_WINDOW_V_SIZE;
 
-const int FIRST_ZONE_WIDTH = static_cast<int>(MAIN_WINDOW_H_SIZE * 0.4);
-const int SECOND_ZONE_WIDTH = MAIN_WINDOW_H_SIZE - FIRST_ZONE_WIDTH;
-
-const int SCREEN_MARGIN_1 = 50;
-const int SCREEN_MARGIN_2 = 50;
-
-int mm_buttons_h_size = FIRST_ZONE_WIDTH - 2 * SCREEN_MARGIN_1;
-int mm_buttons_v_size = static_cast<int>((MAIN_WINDOW_V_SIZE - 5 * SCREEN_MARGIN_1) / 4);
-
-int mm_panels_h_size = SECOND_ZONE_WIDTH - 2 * SCREEN_MARGIN_2;
-int mm_panels_v_size = static_cast<int>((MAIN_WINDOW_V_SIZE - 3 * SCREEN_MARGIN_1) * 0.5);
-
-int mini_buttons_h_size = (mm_panels_h_size - 3 * SCREEN_MARGIN_1) * 0.5;
-int mini_buttons_v_size = (mm_panels_v_size - 3 * SCREEN_MARGIN_1) * 0.5;
-
 // ====== Main points ======
 
 int main_menu_background_x = MAIN_WINDOW_H_SIZE * 0.5;
 int main_menu_background_y = MAIN_WINDOW_V_SIZE * 0.5;
 
-int analysis_start_x = FIRST_ZONE_WIDTH * 0.5;
-int analysis_start_y = (SCREEN_MARGIN_1 + mm_buttons_v_size * 0.5) + 0*(mm_buttons_v_size + SCREEN_MARGIN_1);
-
-int information_x = analysis_start_x;
-int information_y = (SCREEN_MARGIN_1 + mm_buttons_v_size * 0.5) + 1*(mm_buttons_v_size + SCREEN_MARGIN_1);
-
-int settings_x = analysis_start_x;
-int settings_y = (SCREEN_MARGIN_1 + mm_buttons_v_size * 0.5) + 2*(mm_buttons_v_size + SCREEN_MARGIN_1);
-
-int exit_x = analysis_start_x;
-int exit_y = (SCREEN_MARGIN_1 + mm_buttons_v_size * 0.5) + 3*(mm_buttons_v_size + SCREEN_MARGIN_1);
 
 
-// PSMVA textbox static position
+// ===== TESTING RECTANGLE =====
 
-int psmva_textbox_x = MAIN_WINDOW_H_SIZE - SECOND_ZONE_WIDTH * 0.5;
-int psmva_textbox_y = (SCREEN_MARGIN_1 + 0.5 * mm_panels_v_size);
+struct test_rectangle
+{
+    int x_rp;
+    int y_rp;
+    int width;
+    int height;
 
-// Upper panel dynamic positions
+    int angle;
 
-int dynamic_panel_x_1 = 2 * (MAIN_WINDOW_H_SIZE - SECOND_ZONE_WIDTH * 0.5);
-int dynamic_panel_y_1 = (SCREEN_MARGIN_1 + 0.5 * mm_panels_v_size);
+    int border_thickness;
 
-int dynamic_panel_x_2 = MAIN_WINDOW_H_SIZE - SECOND_ZONE_WIDTH * 0.5;
-int dynamic_panel_y_2 = (SCREEN_MARGIN_1 + 0.5 * mm_panels_v_size);
+    SDL_Color fill_color;
+    SDL_Color border_color;
+    
+};
 
-// Bottom panel static position
 
-int static_panel_x = dynamic_panel_x_2;
-int static_panel_y = MAIN_WINDOW_V_SIZE - (SCREEN_MARGIN_1 + 0.5 * mm_panels_v_size);
+std::vector<SDL_Color> border_colors =
+{
+    hex_to_sdl_color("#0808d5", 254),
+    hex_to_sdl_color("#babad0", 254),
+    hex_to_sdl_color("#090926", 254),
+    hex_to_sdl_color("#20d90b", 254)
+
+};
+
+std::vector<SDL_Color> fill_colors =
+{
+    hex_to_sdl_color("#1bd79f", 254),
+    hex_to_sdl_color("#02020e", 254),
+    hex_to_sdl_color("#e40a2e", 254),
+    hex_to_sdl_color("#c52ee3", 254)
+
+};
+
+
+test_rectangle my_rectangle;
+
+void rectangle_init()
+{
+    my_rectangle.x_rp = BACKGROUND_WIDTH / 2;
+    my_rectangle.y_rp = BACKGROUND_HEIGHT / 2;
+
+    my_rectangle.width = 200;
+    my_rectangle.height = 200;
+
+    my_rectangle.angle = 0;
+
+    my_rectangle.border_thickness = 5;
+
+    my_rectangle.border_color = border_colors[0];
+    my_rectangle.fill_color = fill_colors[0];
+}
+
+
+void rectangle_render(SDL_Renderer* renderer)
+{
+    if (!renderer)
+        return;
+
+    const float cx = static_cast<float>(my_rectangle.x_rp);
+    const float cy = static_cast<float>(my_rectangle.y_rp);
+
+    const float half_width = my_rectangle.width * 0.5f;
+    const float half_height = my_rectangle.height * 0.5f;
+
+    const float border = static_cast<float>(my_rectangle.border_thickness);
+
+    /*
+        Внешний прямоугольник
+    */
+
+    const float outer_half_width = half_width;
+    const float outer_half_height = half_height;
+
+    /*
+        Внутренний прямоугольник.
+
+        Не даём border уничтожить прямоугольник.
+    */
+
+    const float inner_half_width =
+        std::max(0.0f, half_width - border);
+
+    const float inner_half_height =
+        std::max(0.0f, half_height - border);
+
+
+    /*
+        Функция вращения точки вокруг центра.
+    */
+
+    auto rotate_point =
+        [&](float x, float y) -> SDL_FPoint
+        {
+            const float angle_rad =
+                my_rectangle.angle * static_cast<float>(M_PI) / 180.0f;
+
+            const float cos_a = std::cos(angle_rad);
+            const float sin_a = std::sin(angle_rad);
+
+            return
+            {
+                cx + x * cos_a - y * sin_a,
+                cy + x * sin_a + y * cos_a
+            };
+        };
+
+
+    /*
+        ============================================================
+        OUTER RECTANGLE
+        ============================================================
+    */
+
+    SDL_FPoint outer_points[4] =
+    {
+        rotate_point(-outer_half_width, -outer_half_height),
+        rotate_point( outer_half_width, -outer_half_height),
+        rotate_point( outer_half_width,  outer_half_height),
+        rotate_point(-outer_half_width,  outer_half_height)
+    };
+
+
+    /*
+        ============================================================
+        BORDER
+        ============================================================
+
+        Рисуем четыре полосы как отдельные квадраты.
+        Благодаря этому border тоже вращается вместе с объектом.
+    */
+
+    SDL_Vertex border_vertices[16];
+
+    auto set_vertex =
+        [&](SDL_Vertex& vertex,
+            const SDL_FPoint& point,
+            const SDL_Color& color)
+        {
+            vertex.position = point;
+            vertex.color = color;
+            vertex.tex_coord = { 0.0f, 0.0f };
+        };
+
+
+    /*
+        Верхняя граница
+    */
+
+    SDL_FPoint top[4] =
+    {
+        rotate_point(-outer_half_width, -outer_half_height),
+        rotate_point( outer_half_width, -outer_half_height),
+        rotate_point( outer_half_width, -inner_half_height),
+        rotate_point(-outer_half_width, -inner_half_height)
+    };
+
+    /*
+        Правая граница
+    */
+
+    SDL_FPoint right[4] =
+    {
+        rotate_point(inner_half_width, -inner_half_height),
+        rotate_point(outer_half_width, -outer_half_height),
+        rotate_point(outer_half_width, outer_half_height),
+        rotate_point(inner_half_width, inner_half_height)
+    };
+
+    /*
+        Нижняя граница
+    */
+
+    SDL_FPoint bottom[4] =
+    {
+        rotate_point(-outer_half_width, inner_half_height),
+        rotate_point(outer_half_width, inner_half_height),
+        rotate_point(outer_half_width, outer_half_height),
+        rotate_point(-outer_half_width, outer_half_height)
+    };
+
+    /*
+        Левая граница
+    */
+
+    SDL_FPoint left[4] =
+    {
+        rotate_point(-outer_half_width, -outer_half_height),
+        rotate_point(-inner_half_width, -inner_half_height),
+        rotate_point(-inner_half_width, inner_half_height),
+        rotate_point(-outer_half_width, outer_half_height)
+    };
+
+
+    /*
+        Заполняем вершины border.
+    */
+
+    for (int i = 0; i < 4; i++)
+    {
+        set_vertex(border_vertices[i],      top[i],    my_rectangle.border_color);
+        set_vertex(border_vertices[i + 4],  right[i],  my_rectangle.border_color);
+        set_vertex(border_vertices[i + 8],  bottom[i], my_rectangle.border_color);
+        set_vertex(border_vertices[i + 12], left[i],  my_rectangle.border_color);
+    }
+
+
+    int border_indices[] =
+    {
+        0, 1, 2,
+        0, 2, 3,
+
+        4, 5, 6,
+        4, 6, 7,
+
+        8, 9, 10,
+        8, 10, 11,
+
+        12, 13, 14,
+        12, 14, 15
+    };
+
+
+    SDL_RenderGeometry(
+        renderer,
+        nullptr,
+        border_vertices,
+        16,
+        border_indices,
+        24
+    );
+
+
+    /*
+        ============================================================
+        FILL
+        ============================================================
+    */
+
+    SDL_FPoint inner_points[4] =
+    {
+        rotate_point(-inner_half_width, -inner_half_height),
+        rotate_point( inner_half_width, -inner_half_height),
+        rotate_point( inner_half_width,  inner_half_height),
+        rotate_point(-inner_half_width,  inner_half_height)
+    };
+
+
+    SDL_Vertex fill_vertices[4];
+
+    for (int i = 0; i < 4; i++)
+    {
+        set_vertex(
+            fill_vertices[i],
+            inner_points[i],
+            my_rectangle.fill_color
+        );
+    }
+
+
+    int fill_indices[] =
+    {
+        0, 1, 2,
+        0, 2, 3
+    };
+
+
+    SDL_RenderGeometry(
+        renderer,
+        nullptr,
+        fill_vertices,
+        4,
+        fill_indices,
+        6
+    );
+}
+
+
+void rectangle_move_left()
+{
+    my_rectangle.x_rp -= 5;
+}
+
+
+void rectangle_move_up()
+{
+    my_rectangle.y_rp -= 5;
+}
+
+
+void rectangle_move_right()
+{
+    my_rectangle.x_rp += 5;
+}
+
+
+void rectangle_move_down()
+{
+    my_rectangle.y_rp += 5;
+}
+
+
+void rectangle_change_width(int new_width)
+{
+    const int min_width = my_rectangle.border_thickness * 2 + 1;
+
+    if (new_width < min_width)
+        new_width = min_width;
+
+    my_rectangle.width = new_width;
+}
+
+
+void rectangle_change_height(int new_height)
+{
+    const int min_height = my_rectangle.border_thickness * 2 + 1;
+
+    if (new_height < min_height)
+        new_height = min_height;
+
+    my_rectangle.height = new_height;
+}
+
+
+void rectangle_rotate(int angle)
+{
+    my_rectangle.angle += angle;
+
+    /*
+        Не даём углу бесконечно расти.
+    */
+
+    my_rectangle.angle %= 360;
+
+    if (my_rectangle.angle < 0)
+        my_rectangle.angle += 360;
+}
+
+
+void rectangle_change_border_thickness(int new_width)
+{
+
+    const int max_border =
+        std::min(
+            my_rectangle.width,
+            my_rectangle.height
+        ) / 2;
+
+    my_rectangle.border_thickness = new_width;
+
+    if (my_rectangle.border_thickness > max_border)
+        my_rectangle.border_thickness = max_border;
+}
+
+
+void rectangle_change_border_color()
+{
+    static size_t color_index = 0;
+
+    color_index++;
+
+    if (color_index >= border_colors.size())
+        color_index = 0;
+
+    my_rectangle.border_color =
+        border_colors[color_index];
+}
+
+
+void rectangle_change_fill_color()
+{
+    static size_t color_index = 0;
+
+    color_index++;
+
+    if (color_index >= fill_colors.size())
+        color_index = 0;
+
+    my_rectangle.fill_color =
+        fill_colors[color_index];
+}
+// ===== TESTING RECTANGLE =====
+
+
+
 
 // ===== SETUP DATA =====
 
@@ -201,6 +551,8 @@ void main_menu_elements_setup()
     Main_menu_panel->set_render_point(main_menu_background_x, main_menu_background_y);
     Main_menu_panel->set_size(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
     Main_menu_panel->set_border_radius(0);
+
+    rectangle_init();
 }
 
 
@@ -251,24 +603,96 @@ void main_menu_actions()
 {
     // Switch the state to EXIT if EXIT pressed
 
-    if (App_inputs.is_just_released(Key_actions::EXIT))
+    if (App_inputs.is_just_released(Key_actions::EXIT_KA))
     {
         this_app.app_sm.request_state_change(START_ID);
     }
 
     // Switch the state to MAIN MENU if ENTER pressed
 
-    if (App_inputs.is_just_released(Key_actions::ENTER))
+    if (App_inputs.is_just_released(Key_actions::START_KA))
     {
-        this_app.app_sm.request_state_change(START_ID);
+        // Change color
+        rectangle_change_border_color();
     }
 
-    if (App_inputs.is_just_released(Key_actions::SPECIAL_1))
+    if (App_inputs.is_just_released(Key_actions::SELECT_KA))
     {
-        App_palette.switch_to_the_next_palette();
-        App_fonts.switch_to_the_next_font_palette();
-        App_lang.switch_to_next_lang();
+        // App_palette.switch_to_the_next_palette();
+        // App_fonts.switch_to_the_next_font_palette();
+        // App_lang.switch_to_next_lang();
+        rectangle_change_fill_color();
     }
+
+
+    if (App_inputs.is_just_released(Key_actions::LEFT_KA))
+    {
+        rectangle_move_left();
+    }
+
+    
+    if (App_inputs.is_just_released(Key_actions::UP_KA))
+    {
+        rectangle_move_up();
+    }
+
+    
+    if (App_inputs.is_just_released(Key_actions::RIGHT_KA))
+    {
+        rectangle_move_right();
+    }
+
+    
+    if (App_inputs.is_just_released(Key_actions::DOWN_KA))
+    {
+        rectangle_move_down();
+    }
+
+
+    if (App_inputs.is_just_released(Key_actions::Y_KA))
+    {
+        rectangle_change_width(my_rectangle.width - 10);
+    }   
+
+    
+    if (App_inputs.is_just_released(Key_actions::X_KA))
+    {
+        rectangle_change_height(my_rectangle.height + 10);
+    }
+
+    
+    if (App_inputs.is_just_released(Key_actions::A_KA))
+    {
+        rectangle_change_width(my_rectangle.width + 10);
+    }
+
+    
+    if (App_inputs.is_just_released(Key_actions::B_KA))
+    {
+        rectangle_change_height(my_rectangle.height - 10);
+    }
+
+    if (App_inputs.is_just_released(Key_actions::L_1_KA))
+    {
+        rectangle_rotate(my_rectangle.angle - 5);
+    }
+
+    if (App_inputs.is_just_released(Key_actions::R_1_KA))
+    {
+        rectangle_rotate(my_rectangle.angle + 5);
+    }
+
+
+    if (App_inputs.is_just_released(Key_actions::L_2_KA))
+    {
+        rectangle_change_border_thickness(my_rectangle.border_thickness - 1);
+    }
+
+    if (App_inputs.is_just_released(Key_actions::R_2_KA))
+    {
+        rectangle_change_border_thickness(my_rectangle.border_thickness + 1);
+    }
+
 }
 
 
@@ -280,6 +704,9 @@ void main_menu_elements_render(SDL_Renderer* renderer)
     
     // Background
     Main_menu_panel->render(renderer);
+
+    // Test rectangle render
+    rectangle_render(renderer);
 
 }
 

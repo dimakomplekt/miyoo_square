@@ -11,6 +11,9 @@
 #include <vector>
 #include <unordered_map>
 
+
+#include "../../../base_modules/platform/platform.h"
+
 // =========================================================================================== IMPORT
 
 
@@ -128,24 +131,33 @@ class GI_mouse
 // =========================================================================================== KEYBOARD
 
 
-enum class Key_actions
-{
+// Miyoo Mini KA
+enum class Key_actions { 
+    
+    SELECT_KA, 
+    START_KA, 
+    EXIT_KA, 
 
-    ENTER,
-    EXIT,
-    MENU_FORWARD,
-    MENU_BACK,
-    SPECIAL_1,
-    LEFT,
-    UP,
-    RIGHT,
-    DOWN,
+    LEFT_KA, 
+    UP_KA, 
+    RIGHT_KA,
+    DOWN_KA, 
 
-    COUNT
+    Y_KA, 
+    X_KA, 
+    A_KA, 
+    B_KA,
+    
+    L_1_KA, 
+    L_2_KA, 
+    R_1_KA, 
+    R_2_KA, 
+    
+    COUNT_KA 
 
 };
 
-static constexpr size_t KEY_ACTION_COUNT = static_cast<size_t>(Key_actions::COUNT);
+static constexpr size_t KEY_ACTION_COUNT = static_cast<size_t>(Key_actions::COUNT_KA);
 
 
 struct Key_action_hash
