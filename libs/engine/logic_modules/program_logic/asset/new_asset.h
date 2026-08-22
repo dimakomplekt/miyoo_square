@@ -1,7 +1,3 @@
-// TODO: WHOLE REBUILD
-
-
-
 // asset.h
 
 #pragma once
@@ -47,13 +43,6 @@ enum class Asset_type {
 // =========================================================================================== ASSET BASE CLASS
 
 
-
-// Asset instance class forward declaration
-// (realized inside the asset_instance.h and asset_instance.cpp)
-
-class Asset_instance;
-
-
 /**
  * @brief Abstract base class for all assets in the engine.
  *
@@ -75,11 +64,6 @@ class Asset_instance;
 class Asset
 {
 
-    // Instance is the fried-class for the asset class for the protected methods 
-    // permission - "add_instance(Asset_instance* instance)" and "delete_instance(Asset_instance* instance)"
-    friend class Asset_instance;
-
-
     public:
 
         /**
@@ -93,7 +77,7 @@ class Asset
 
 
         // Virtual destructor.
-        // Ensures proper cleanup when deleting derived assets through a base pointer.
+        // Ensures proper basic class data cleanup with subclasses ~ calls.
         virtual ~Asset();
 
 
@@ -112,19 +96,6 @@ class Asset
         // Path to the file on disk
         std::string source_path;
 
-        
-        // Registration of asset instance inside the instances list
-        void register_instance(Asset_instance* instance);
-
-        // Delete instance from instances list
-        void unregister_instance(Asset_instance* instance);
-
-
-    private:
-        
-        // List of active asset instance addresses.
-        // The container is empty on asset creation and fully owned by Asset.
-        std::unordered_set<Asset_instance*> instances;
 };
 
 
@@ -135,8 +106,9 @@ class Asset
 
 // === Image asset ===
 
-// Predeclare
+// Predeclare for friendship without linking recursion
 class Image_instance;
+
 
 // Image format logic enum
 enum image_format 
@@ -148,10 +120,13 @@ enum image_format
     
 };
 
+
 /**
  * @brief Concrete asset representing a 2D image (texture).
  *
  * Images are expected to be used primarily by image_renderer
+ * 
+ * Holds the methods for basic image asset and instance creation / delete
  * 
  */
 class Image_asset : public Asset {
@@ -165,11 +140,12 @@ class Image_asset : public Asset {
          *
          * @param renderer SDL renderer used to create the texture.
          * @param path Path to the image file.
+         * 
          */
-        Image_asset(const std::string& path);
+        explicit Image_asset(const std::string& path);
 
-        // Destructor.
-        ~Image_asset() override;
+        // Destructor - delete the asset and all instances.
+        ~Image_asset();
              
 
         // Get initial image format
@@ -188,23 +164,24 @@ class Image_asset : public Asset {
         /**
          * @brief Create and register an asset instance.
          *
-         * This method creates a new Asset_instance and registers it
-         * inside the asset's internal instance list.
+         * This method creates a new Image_instance (by Image_instance constructor)
+         * and registers it inside the asset's internal instance set - std::unordered_set<Image_instance*> instances.
          *
          * Asset fully owns the lifetime of created instances.
+         * 
          */
         Image_instance* add_instance();
 
         /**
          * @brief Unregister an asset instance.
          *
-         * Removes the given Asset_instance pointer from the internal list
-         * of active instances associated with this asset.
+         * Calls the Image_instance destructor and removes the given Image_instance pointer
+         * from the internal list of active instances associated with this asset.
          *
-         * This method is called automatically by the Asset_instance
-         * destructor and should never be called manually.
+         * This method is called automatically and iterative by Image_asset destructor
          *
          * @param instance Pointer to the asset instance to unregister.
+         * 
          */
         void delete_instance(Image_instance* instance);
 
@@ -215,18 +192,35 @@ class Image_asset : public Asset {
 
         image_format initial_format;
 
+
         // Original image w-dimension
         unsigned int initial_width;
+
         // Original image h-dimension
         unsigned int initial_height;
 
 
-        // Set initial image format
+        // Set initial image format - calls in constructor
         void set_format();
 
 
-        // Set initial width and height of the image
+        // Set initial width and height of the image - calls in constructor
         void set_sizes();
+
+
+        // === INSTANCE WORKFLOW
+
+        // Registration of asset instance inside the instances list
+        void register_instance(Image_instance* instance);
+
+        // Delete instance from instances list
+        void unregister_instance(Image_instance* instance);
+
+        // List of active asset instance addresses.
+        // The container is empty on asset creation and fully owned by Asset.
+        std::unordered_set<Image_instance*> instances;
+
+        // === INSTANCE WORKFLOW
 };
 
 // === Image asset ===
@@ -269,9 +263,7 @@ enum audio_format
 };
 
 
-
-
-// Predeclare
+// Predeclare for friendship without linking recursion
 class Audio_instance;
 
 /**
@@ -293,7 +285,7 @@ class Audio_asset : public Asset {
          *
          * @param path Path to the audio file.
          */
-        Audio_asset(const std::string& path);
+        explicit Audio_asset(const std::string& path);
 
         // Destructor.
         // Stop playing, deallocate and nullptr 
@@ -314,11 +306,11 @@ class Audio_asset : public Asset {
 
 
         // Initial channel mode getter
-        channel_mode get_channel_mode();
+        channel_mode get_channel_mode() const;
 
 
         // Initial format getter
-        audio_format get_audio_format();
+        audio_format get_format() const;
 
 
         // === INSTANCE WORKFLOW === 
@@ -352,14 +344,17 @@ class Audio_asset : public Asset {
     private:
 
         unsigned int initial_sample_rate;
+
         unsigned int initial_bitrate;
+
 
         timecode initial_audio_length;          // h, m, s, ms
 
+
         channel_mode initial_channel_mode;      // Mono, stereo...
 
-        audio_format initial_format;            // WAW, MP3...
 
+        audio_format initial_format;            // WAW, MP3...
 
 
         // Initial sample rate inner setter
@@ -368,14 +363,31 @@ class Audio_asset : public Asset {
         // Initial bitrate inner setter
         void set_bitrate();
 
+
         // Initial audio length inner setter
         void set_length();
+
 
         // Channel mode initial setter
         void set_channel_mode();
 
         // Format initial setter
         void set_audio_format();
+
+
+        // === INSTANCE WORKFLOW
+
+        // Registration of asset instance inside the instances list
+        void register_instance(Audio_instance* instance);
+
+        // Delete instance from instances list
+        void unregister_instance(Audio_instance* instance);
+
+        // List of active asset instance addresses.
+        // The container is empty on asset creation and fully owned by Asset.
+        std::unordered_set<Audio_instance*> instances;
+
+        // === INSTANCE WORKFLOW
 };
 
 // === Audio asset ===

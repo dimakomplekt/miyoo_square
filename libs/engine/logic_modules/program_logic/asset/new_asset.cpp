@@ -1,6 +1,3 @@
-// TODO: WHOLE REBUILD
-
-
 // asset.cpp
 
 
@@ -8,7 +5,7 @@
 
 #include <iostream>
 
-#include "asset_instance.h"         // Automatically #include "asset.h"
+#include "new_asset_instance.h"     // Automatically #include "new_asset.h"
 #include <algorithm>                // For std::remove
 
 
@@ -24,39 +21,9 @@
 Asset::Asset(Asset_type type, const std::string& path) : type(type), source_path(path) {};
 
 
-// Destructor - deletes class data and all active instances
+// Destructor realization 
 
-Asset::~Asset()
-{
-    while (!instances.empty())
-    {
-        auto* instance = *instances.begin();
-
-        // Switch the logic for different asset types
-        // This logic choosen for the precise control of the destructors selection,
-        // by the reason, that Asset_instance could have some exclusive destructors logic
-        switch (type)
-        {
-            case Asset_type::IMAGE:
-
-                static_cast<Image_asset*>(this)->delete_instance(static_cast<Image_instance*>(instance));
-                break;
-
-            case Asset_type::AUDIO:
-
-                static_cast<Audio_asset*>(this)->delete_instance(static_cast<Audio_instance*>(instance));
-                break;
-
-            default:
-
-                delete instance;
-                break;
-        }
-    }
-
-    assert(instances.empty());
-}
-
+Asset::~Asset() = default;
 
 
 // Asset type getter
@@ -76,28 +43,7 @@ const std::string& Asset::get_path() const
     return source_path;
 }
 
-
-// Instances workflow by the unordered_set methods
-
-
-void Asset::register_instance(Asset_instance* instance)
-{
-    instances.insert(instance);
-}
-
-void Asset::unregister_instance(Asset_instance* instance)
-{
-    instances.erase(instance);
-}
-
-
-// Instances workflow by the unordered_set methods
-
-
 // =========================================================================================== ASSET CLASS
-
-
-// =========================================================================================== IMAGE ASSET CLASS
 
 // Image asset constructor
 
@@ -106,12 +52,11 @@ Image_asset::Image_asset(const std::string& path) :
     // Default values
     Asset(Asset_type::IMAGE, path), 
 
-    initial_width(0), 
-    initial_height(0)
-
 {
+
     this->set_format();
     this->set_sizes();
+
 }
 
 
@@ -119,12 +64,17 @@ Image_asset::Image_asset(const std::string& path) :
 
 Image_asset::~Image_asset()
 {
-    // TODO: 
-    // 1) Universal instances free logic by Asset class
-    // 2) Universal asset free logic by Asset class
-    // 3) Universal player free logic by Asset_instance class
-}
 
+    // Iteratively clears up the image asset instances list and calls
+    // instance destructor for every one of them 
+
+    while (!this->instances.empty())
+    {
+        Image_instance* instance = *instances.begin();
+
+        this->delete_instance(instance);
+    }
+}
 
 
 image_format Image_asset::get_format() const
@@ -165,17 +115,37 @@ void Image_asset::set_sizes()
 
 // Instance create and delete methods
 
-
 Image_instance* Image_asset::add_instance()
 {
+    /**
+     * Note on instance allocation:
+     * 
+     * Currently, all instances are allocated on the heap and managed via `delete_instance`.
+     * This gives full control over their lifecycle, ensuring proper cleanup.
+     * 
+     * While it would be technically possible to allow stack-based or pool-based allocation
+     * for temporary or high-frequency instances, the practical benefit is minimal in this system:
+     * 
+     * 1. Lifecycle flexibility: temporary "on-the-fly" instances are unnecessary,
+     *    since all instances are tied to their Asset and controlled centrally.
+     * 
+     * 2. Memory management: stack allocation would save a few allocations, and memory pools
+     *    help only when handling thousands of instances where heap allocation becomes a bottleneck.
+     *    In the current scope, heap allocation overhead is negligible.
+     * 
+     * Conclusion: keeping all instances on the heap keeps the code simple, safe, and efficient.
+     *
+     */
+
     // Create an instance by the friendly class constructor
-    auto* instance = new Image_instance(this);
+    Image_instance* instance = new Image_instance(this);
 
     // Insert the instance inside the instances list
     register_instance(instance);
 
     return instance; // Return the link of the class-object (variable) to use
 }
+
 
 void Image_asset::delete_instance(Image_instance* instance)
 {
@@ -184,10 +154,16 @@ void Image_asset::delete_instance(Image_instance* instance)
 
     assert(instance->get_main_asset_link() == this);
 
+
     // Remove the instance from the instances list
     unregister_instance(instance);
 
-    // Delete from the memory - CALL ONLY BY delete_instance()
+
+    // ~Image_instance();
+    //
+    // and 
+    //
+    // operator delete(ptr);
     delete instance;
 }
 
@@ -201,13 +177,8 @@ void Image_asset::delete_instance(Image_instance* instance)
 
 Audio_asset::Audio_asset(const std::string& path) :
 
-    // Default values
-    Asset(Asset_type::AUDIO, path),
-
-    initial_sample_rate(0),
-    initial_bitrate(0),
-
-    initial_audio_length{0, 0, 0, 0}
+    // Default values for basic class
+    Asset(Asset_type::AUDIO, path)
 
 {
     this->set_sample_rate();
@@ -218,15 +189,21 @@ Audio_asset::Audio_asset(const std::string& path) :
 }
 
 
-// Image asset destructor - free the memory and null the pointers for the asset and all asset instances
+// Audip asset destructor - free the memory and null the pointers for the asset and all asset instances
 
 Audio_asset::~Audio_asset()
 {
-    // TODO: 
-    // 1) Universal instances free logic by Asset class
-    // 2) Universal asset free logic by Asset class
-    // 3) Universal player free logic by Asset_instance class
+    // Iteratively clears up the audio asset instances list and calls
+    // instance destructor for every one of them 
+
+    while (!this->instances.empty())
+    {
+        Audio_instance* instance = *instances.begin();
+
+        this->delete_instance(instance);
+    }
 }
+
 
 
 // Initial sample rate getter
@@ -255,7 +232,7 @@ const timecode& Audio_asset::get_length() const
 
 // Initial channel mode getter
 
-channel_mode Audio_asset::get_channel_mode()
+channel_mode Audio_asset::get_channel_mode() const
 {
     return this->initial_channel_mode;
 }
@@ -263,9 +240,9 @@ channel_mode Audio_asset::get_channel_mode()
 
 // Initial format getter
 
-audio_format Audio_asset::get_audio_format()
+audio_format Audio_asset::get_format() const
 {
-    return Audio_asset::initial_format;
+    return this->initial_format;
 }
 
 
@@ -311,6 +288,26 @@ void Audio_asset::set_audio_format()
 
 Audio_instance* Audio_asset::add_instance()
 {
+    /**
+     * Note on instance allocation:
+     * 
+     * Currently, all instances are allocated on the heap and managed via `delete_instance`.
+     * This gives full control over their lifecycle, ensuring proper cleanup.
+     * 
+     * While it would be technically possible to allow stack-based or pool-based allocation
+     * for temporary or high-frequency instances, the practical benefit is minimal in this system:
+     * 
+     * 1. Lifecycle flexibility: temporary "on-the-fly" instances are unnecessary,
+     *    since all instances are tied to their Asset and controlled centrally.
+     * 
+     * 2. Memory management: stack allocation would save a few allocations, and memory pools
+     *    help only when handling thousands of instances where heap allocation becomes a bottleneck.
+     *    In the current scope, heap allocation overhead is negligible.
+     * 
+     * Conclusion: keeping all instances on the heap keeps the code simple, safe, and efficient.
+     *
+     */
+
     // Create an instance by the friendly class constructor
     auto* instance = new Audio_instance(this);
 

@@ -70,21 +70,23 @@ bool this_app_init()
 
     // ===== SDL3 AND SDL2 CONFLICT =====
 
+    
     // SDL image init
     
     if (!SDL_Image_init()) return false;
 
 
-
-    std::cout << "\n\nРУССКИЕ ВПЕРЁД";
+    // ===== CONSOLE SETUP FOR GCC =====
 
     #ifdef _WIN32
-    // Настраиваем консоль Windows на работу с UTF-8
+
+    // Setup Windows consol to UTF-8 symbols
     SetConsoleCP(65001);
     SetConsoleOutputCP(65001);
+
     #endif
 
-    std::cout << "\n\nРУССКИЕ ВПЕРЁД";
+    // ===== CONSOLE SETUP FOR GCC =====
 
 
     // Initialize app state machine and states (by initialization function from program_states.cpp)

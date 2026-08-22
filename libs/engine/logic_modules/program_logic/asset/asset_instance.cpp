@@ -1,3 +1,6 @@
+// TODO: WHOLE REBUILD
+
+
 // asset_instance.cpp
 
 
@@ -450,20 +453,20 @@ void Image_instance::reset_anchor_points()
      *
      */
 
-    unsigned int c_w = (w + 1) / 2;         // Horizontal center
-    unsigned int c_h = (h + 1) / 2;         // Vertical center
+    unsigned int c_w = (w + 1) / 2;     // Horizontal center
+    unsigned int c_h = (h + 1) / 2;     // Vertical center
 
-    this->anchors.top_left     = { 0,  h };
-    this->anchors.top_center   = { c_w, h };
-    this->anchors.top_right    = { w,  h };
+    this->anchors.top_left              = { 0,  h };
+    this->anchors.top_center            = { c_w, h };
+    this->anchors.top_right             = { w,  h };
 
-    this->anchors.center_left  = { 0,  c_h };
-    this->anchors.center_center= { c_w, c_h };
-    this->anchors.center_right = { w,  c_h };
+    this->anchors.center_left           = { 0,  c_h };
+    this->anchors.center_center         = { c_w, c_h };
+    this->anchors.center_right          = { w,  c_h };
 
-    this->anchors.bottom_left  = { 0,  0 };
-    this->anchors.bottom_center= { c_w, 0 };
-    this->anchors.bottom_right = { w,  0 };
+    this->anchors.bottom_left           = { 0,  0 };
+    this->anchors.bottom_center         = { c_w, 0 };
+    this->anchors.bottom_right          = { w,  0 };
 
     // Anchors reset with rounding and type handling
 
@@ -481,14 +484,105 @@ void Image_instance::reset_anchor_points()
 // =========================================================================================== AUDIO INSTANCE CLASS
 
 
-Audio_instance::Audio_instance(Audio_asset* asset) : Asset_instance(asset)
+// Type translators
+
+uint64_t time_to_samples(timecode current_timecode, unsigned int sample_rate)
 {
-    // Error handler
+    /** 
+     * We convert the entire timecode to milliseconds and perform the calculation 
+     * with using integer arithmetic to avoid floating-point precision errors.
+     * 
+     * Using double would introduce small rounding inaccuracies because values like
+     * 1/1000 cannot be represented exactly in binary form. In audio systems,
+     * even tiny timing errors may accumulate or cause misalignment over long
+     * durations.
+     * 
+     * By multiplying first and dividing at the end:
+     * 
+     * samples = (total_ms * sample_rate) / 1000
+     * 
+     * We preserve full integer precision and ensure deterministic,
+     * sample-accurate result
+     * 
+     */
+
+
+    // With use of unsigned long long
+    uint64_t total_ms =
+    
+        static_cast<uint64_t>(current_timecode.h) * 3600000ULL +
+        static_cast<uint64_t>(current_timecode.m) * 60000ULL +
+        static_cast<uint64_t>(current_timecode.s) * 1000ULL +
+        static_cast<uint64_t>(current_timecode.ms);
+
+
+    // Returns the sample value by timecode and sample rate
+    return (total_ms * sample_rate) / 1000ULL;
+}
+
+
+timecode samples_to_time(uint64_t sample, unsigned int sample_rate)
+{
+    timecode sample_time; // Return variable initialization
+
+    // Total sample time
+    uint64_t total_ms = (sample * 1000ULL) / sample_rate;
+
+    
+    // Time values calculation by the total sample time division
+    // Integer division and decrementation combination used to find time values
+
+
+    // 3600000 = 1000 * 60 * 60 - ms in one hour
+    // Integer division to find hours value
+    sample_time.h = static_cast<uint8_t>(total_ms / 3600000ULL);
+
+    // Reminder by decrementation of the hours value, translated to the ms
+    total_ms -= sample_time.h * 3600000ULL;
+
+    // Same logic
+    sample_time.m = static_cast<uint8_t>(total_ms / 60000ULL);
+    total_ms -= sample_time.m * 60000ULL;
+
+    // Seconds value by the same logic
+    sample_time.s = static_cast<uint8_t>(total_ms / 1000ULL);
+    total_ms -= sample_time.s * 1000ULL;
+
+    // Ms setter by the remainder
+    sample_time.ms = static_cast<uint16_t>(total_ms);
+
+    // Timecode return 
+    return sample_time;
+}
+
+
+
+
+Audio_instance::Audio_instance(Audio_asset* asset)
+{
+    // TODO: control the main_asset link by polymorphism
+
     assert(asset != nullptr);
-};
+
+    this->main_asset = asset;
 
 
-Audio_instance::~Audio_instance() {}
+    this->current_sample_rate =this->main_asset->get_sample_rate();
+    this->current_bitrate = this->main_asset->get_bitrate();
+
+    this->current_length_samples = time_to_samples(this->main_asset->get_length(), this->current_sample_rate);
+
+    this->current_start_sample = 0;
+    this->current_end_sample = this->current_length_samples;
+
+    this->current_channel_mode = this->main_asset->get_channel_mode();
+}
+
+
+Audio_instance::~Audio_instance() {
+
+    // Clears an player_playback_map and delete the instanc e data from the players
+}
 
 
 const Audio_asset* Audio_instance::get_main_asset_link() const
@@ -496,5 +590,11 @@ const Audio_asset* Audio_instance::get_main_asset_link() const
     return static_cast<const Audio_asset*>(Asset_instance::get_main_asset_link());
 }
 
+
+// Player registration insoode the player_playback_map 
+void Audio_instance::player_registry(Audio_player*)
+{
+
+}
 
 // =========================================================================================== AUDIO INSTANCE CLASS

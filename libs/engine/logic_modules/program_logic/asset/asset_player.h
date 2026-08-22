@@ -16,6 +16,7 @@
 // =========================================================================================== ASSET PLAYER CLASS
 
 // Asset player used for implementing of the different actions with assets instances.
+// Audio and images
 
 
 // =========================================================================================== ASSET PLAYER CLASS

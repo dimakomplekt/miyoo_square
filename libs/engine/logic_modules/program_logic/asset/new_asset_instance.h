@@ -1,13 +1,11 @@
-// TODO: WHOLE REBUILD
-
-
 // asset_instance.h
 
 #pragma once
 
 // =========================================================================================== IMPORT
 
-#include "asset.h"
+#include "new_asset.h"
+
 #include <vector>
 
 #include <unordered_map>
@@ -15,75 +13,21 @@
 // =========================================================================================== IMPORT
 
 
-// =========================================================================================== INSTANCE CLASS
+// =========================================================================================== INSTANCE CLASSES
 
-// Instance is the copy of the asset, which used for implementing multiple actions with multiple assets 
-// copies, without the storage of the repetitive data (like links, default settings and ect.)
-//
-// For every asset use we should create an asset instance and work with it, as we want,
-// by the asset player using.
-//
-// Instance is the fried-class for the asset class for the protected methods 
-// permission - "add_instance(Asset_instance* instance)" and "delete_instance(Asset_instance* instance)"
-class Asset_instance
-{   
-
-    friend class Asset; // Methods providing
-
-
-    // Call only by Asset class
-    protected:
-
-           /**
-         * @brief Construct an asset instance.
-         *
-         * This constructor calls from the instance_type constructors.
-         * It creates a new instance of an asset and automatically
-         * associates it with its parent Asset. The instance stores a pointer
-         * to the main Asset (`main_asset`) and immediately registers itself
-         * in the asset's internal list of active instances by calling:
-         *
-         *      type_asset->add_instance(this);
-         *
-         * This ensures that the Asset is aware of all its instances and can
-         * properly manage their lifetimes, including destruction when the
-         * Asset itself is deleted.
-         *
-         * @param asset Pointer to the Asset this instance is derived from.
-         */    
-        explicit Asset_instance(Asset* asset);
-
-
-        /* Basic asset instance destructor.
-         * Called automatically by the childrens destructors 
-         * (which called by the Asset::delete_instance(instance);)
-         */
-        virtual ~Asset_instance();
-
-
-    public:
-
-        // Main asset link getter (covariant)
-        virtual const Asset* get_main_asset_link() const;
-
-        
-    private:
-
-        // Main asset pointer for instance-to-asset association and parameter access 
-        const Asset* main_asset;
-};
-
-
-
-// =========================================================================================== INSTANCE CLASS
-
-
-// =========================================================================================== INSTANCE SUBCLASSES
-
+/*
+ * Instance is the copy of the asset, which used for implementing multiple actions with multiple assets 
+ * copies, without the storage of the repetitive data (like links, default settings and ect.).
+ * 
+ * For every asset use we should create an asset instance and work with it, as we want,
+ * by the asset player using.
+ * 
+ * Instance is the fried-class for the asset class for the protected methods 
+ * permission - "add_instance(Asset_instance* instance)" and "delete_instance(Asset_instance* instance)"
+ * 
+ */
 
 // =========================================================================================== IMAGE INSTANCE
-
-
 
 // Image_player class predeclaration
 // (realized inside the asset_player.h and asset_player.cpp)
@@ -110,8 +54,10 @@ struct size_2D
 
 };
 
+
 // Crop map for 2D space
-struct crop_map_2D {
+struct crop_map_2D 
+{
 
     // Points choosen for width - height / x - y values coincidence
 
@@ -121,61 +67,62 @@ struct crop_map_2D {
 };
 
 
-/*
- * Image instance subclass for copies of image assets
- * This class could work with Image_asset specific parameters and methods
- * It stores main_asset pointer by the heritage from Asset_instance base class
- * by the protected getter get_main_asset_link()
+/**
+ * @brief Image instance subclass for copies of image assets.
+
+ * This class could work with Image_asset specific parameters and methods.
+ * 
+ * Constructor and destructor are protected and calls only by the main asset methods.
+ * 
+ * Instance stores the main_asset pointer (and provides access to it by the protected getter 
+ * get_main_asset_link()).
  * 
  * Image instance contains the most common parameters
  * for image refactoring - scale, mirror, rotation angle, crop map.
  * 
  * Image instance data uses for quick access to the common image asset parameters
- * without calculation on every render step. 
- * 
- * Asset player works faster with using of these parameters. 
- * 
- * More memory, but less CPU usage. 
+ * without calculation on every render step. Asset player works faster with using
+ * of these parameters. More memory, but less CPU usage. 
  * 
  */ 
-class Image_instance : public Asset_instance
+class Image_instance
 {
 
     friend class Image_asset;   // Methods providing
 
-    // Call only by Image_asset class
+    
     protected:
 
         /**
-         * Image_instance constructor, which calls the Asset_instance constructor and 
-         * pass the Image_asset pointer to the main_asset link, then registers itself 
-         * in the asset's internal list of active instances.
-         *
-         * After that it initializes the scale factors to 1.0 (original size) and calculates
-         * the current_width, current_height and anchor points
+         * @brief Image_instance constructor.
          * 
-         * Calls from:
+         * Calls by the Image_asset objects and passes the Image_asset pointer to the main_asset link, 
+         * then registers itself in the asset's internal list of active instances. After that it initializes
+         * the scale factors to 1.0 (original size) and calculates the current_width, current_height
+         * and anchor points.
+         * 
+         * Calls like "Image_instance(this)" only by Image_asset objects:
          * 
          *      Image_asset::add_instance();
          * 
          */
         explicit Image_instance(Image_asset* asset);
 
-        /*
-         * Image_instance destructor which called by the Assets class instance indestructor method.
-         * Delete the object data and unregister instance from the asset's internal list of active asset
+        /**
+         * @brief Image_instance destructor
+         * 
+         * Deletes the object data and unregister instance from the asset's internal list of active asset
          * instances
          * 
-         * Calls from:
+         * 
+         * Calles by the Image_asset objects asset / instance destructor / delete methods:
          * 
          *      Image_asset::delete_instance(instance);
          * 
-         * or
-         * 
-         *      Asset::~Asset();
+         *      Image_asset::~Image_asset();
          * 
          */
-        ~Image_instance() override;
+        ~Image_instance();
 
 
 
@@ -206,12 +153,13 @@ class Image_instance : public Asset_instance
 
         // === IMAGE PLAYERS LIST === 
 
+
     public:
 
-        // Basic asset link getter override.
-        // Returns the link to the main Image_asset 
-        // (covariant by virtual parent method)
-        const Image_asset* get_main_asset_link() const override;
+        // Basic main asset link getter.
+        // Returns the link to the main Image_asset
+        const Image_asset* get_main_asset_link() const;
+
 
         // === SCALER METHODS ===
 
@@ -256,7 +204,7 @@ class Image_instance : public Asset_instance
          */
         void set_height(unsigned int new_height);
 
-        // No need for getter - player works only with cropped siz
+        // No need for getter - player works only with cropped size
 
         // === SCALER METHODS ===
 
@@ -362,7 +310,7 @@ class Image_instance : public Asset_instance
 
 
         /**
-         * @brief Image crop_map setter 2 
+         * @brief Image crop_map setter 3 
          * 
          * !!! Always setup by the initial asset sizes (scaled size drifting prevention) !!!
          * 
@@ -404,7 +352,9 @@ class Image_instance : public Asset_instance
 
     private:
 
+        // Main Image_asset link 
         const Image_asset* main_asset;
+
 
         // Current image scale factor x-axes
         float x_scaler;
@@ -412,7 +362,7 @@ class Image_instance : public Asset_instance
         // Current image scale factor y-axes
         float y_scaler;
 
-        // Scalers cache for crop reset
+        // Scalers cache (for crop reset with size fluctuation preventing)
         float last_x_scaler;
         float last_y_scaler; 
 
@@ -519,12 +469,10 @@ class Image_instance : public Asset_instance
         // === IMAGE PLAYERS LIST === 
 };
 
-
 // =========================================================================================== IMAGE INSTANCE
 
 
 // =========================================================================================== AUDIO INSTANCE
-
 
 
 // Audio_player class predeclaration
@@ -552,40 +500,54 @@ uint64_t time_to_samples(timecode current_timecode, unsigned int sample_rate);
 timecode samples_to_time(uint64_t sample, unsigned int sample_rate);
 
 
-// Audio instance subclass for copies of audio assets
-// This class could work with Audio_asset specific parameters and methods
-// It stores main_asset pointer by the heritage from Asset_instance base class -
-// by the protected getter get_main_asset_link()
-class Audio_instance : public Asset_instance
+/**
+ * @brief Audio_instance class for copies of audio assets
+ * 
+ * This class could work with Audio_asset specific parameters and methods
+ * 
+ * Constructor and destructor are protected and calls only by the main asset methods.
+ * 
+ * Instance stores the main_asset pointer (and provides access to it by the protected getter 
+ * get_main_asset_link()).
+ * 
+ * Audio instance data uses for quick access to the common audio asset parameters
+ * without calculation on every render step. Asset player works faster with using
+ * of these parameters. More memory, but less CPU usage. 
+ *
+ */
+class Audio_instance
 {
     /*
-    AUDIO INSTANCE DESIGN NOTES
 
-    1) Bitrate as a base asset property
-    - Bitrate is a fundamental property of an audio track.
-    - It may change due to processing or platform limitations.
-    - Downscaling is possible dynamically; duplicating assets is unnecessary.
+        AUDIO INSTANCE DESIGN NOTES
 
-    2) No playback state inside Audio_instance
-    - Audio_instance does NOT track playback state (stopped/playing/paused).
-    - It only stores reference points for playback (start/end samples).
-    - Playback is fully controlled by Audio_player; multiple players can
-        use the same Audio_instance independently.
+        1) Bitrate as a base asset property
+            - Bitrate is a fundamental property of an audio track.
+            - It may change due to processing or platform limitations.
+            - Downscaling is possible dynamically; duplicating assets is unnecessary.
 
-    3) Player-owned playback modifiers
-    - Parameters like pitch, speed, time stretching are owned by Audio_player.
-    - Audio_instance remains lightweight and data-oriented.
+        2) No playback state inside Audio_instance
+            - Audio_instance does NOT track playback state (stopped/playing/paused).
+            - It only stores reference points for playback (start/end samples).
+            - Playback is fully controlled by Audio_player; multiple players can
+              use the same Audio_instance independently.
 
-    4) Tracking users
-    - Audio_instance keeps track of which Audio_players currently use it
-        via `audio_instance_users`.
-    - When the instance is destroyed, all registered players are notified
-        to clear their reference.
-    - When a player is destroyed, it unregisters itself from any Audio_instance.
+        3) Player-owned playback modifiers
+            - Parameters like pitch, speed, time stretching are owned by Audio_player.
+            - Audio_instance remains lightweight and data-oriented.
+
+        4) Tracking users
+            - Audio_instance keeps track of which Audio_players currently use it
+              via `audio_instance_users`.
+            - When the instance is destroyed, all registered players are notified
+              to clear their reference.
+            - When a player is destroyed, it unregisters itself from any Audio_instance.
+
     */
 
     // To use the Audio_asset protected methods and parameters
     friend class Audio_asset;
+
 
     protected:
 
@@ -593,28 +555,35 @@ class Audio_instance : public Asset_instance
          * 
          * @brief Audio_instance constructor
          * 
-         * Calls the Asset_instance constructor and pass the Audio_asset pointer
-         * to the main_asset link, then registers itself in the asset's internal
-         * list of active instances.
+         * Calls by the Audio_asset objects and passes the Audio_asset pointer
+         * to the main_asset link, then registers itself in the asset's internal list 
+         * of active instances.After that it initializes the current_sample_rate
+         * and current_bitrate (with original size) and calculates the current_start,
+         * current_end and current_length, then set the current_playtime to {0, 0, 0, 0}.
          * 
-         * After that it initializes the current_sample_rate and current_bitrate
-         * (with original size) and calculates the current_start, current_end 
-         * and current_length, then set the current_playtime to {0, 0, 0, 0}.
+         * Calls like "Audio_instance(this)" only by Audio_asset objects:
          * 
-         * @param asset Main Audio_asset object pointer 
+         *      Audio_asset::add_instance();
          * 
          */
         Audio_instance(Audio_asset* asset);
 
 
         /**
+         * @brief Audio_instance destructor
          * 
-         * Audio_instance destructor which calls the Asset_instance destructor - 
-         * delete the object data and unregister itself from the asset's internal
-         * list of active asset instances
-         *
+         * Deletes the object data and unregister instance from the asset's internal list of active asset
+         * instances
+         * 
+         * 
+         * Calles by the Audio_asset objects asset / instance destructor / delete methods:
+         * 
+         *      Audio_asset::delete_instance(instance);
+         * 
+         *      Audio_asset::~Audio_asset();
+         * 
          */
-        ~Audio_instance() override;
+        ~Audio_instance();
         
 
         // === MAIN SETTINGS ===
@@ -751,7 +720,7 @@ class Audio_instance : public Asset_instance
         // Basic asset link getter override.
         // Returns the link to the main Audio_asset 
         // (covariant by virtual parent method)
-        const Audio_asset* get_main_asset_link() const override;
+        const Audio_asset* get_main_asset_link() const;
 
         
         // === MAIN SETTINGS ===
@@ -777,11 +746,12 @@ class Audio_instance : public Asset_instance
         // End sample value getter
         uint64_t get_end_sample() const;
 
-
         // === TRIM METHODS ===
+
 
     private:
 
+        // Main Image_asset link 
         const Audio_asset* main_asset;
 
 
@@ -825,6 +795,8 @@ class Audio_instance : public Asset_instance
 
 };
 
+
 // =========================================================================================== AUDIO INSTANCE
 
-// =========================================================================================== INSTANCE SUBCLASSES
+
+// =========================================================================================== INSTANCE CLASSES

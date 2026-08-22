@@ -158,7 +158,6 @@ void start_elements_setup()
     Start_textbox->switch_textbox_type(HEADER_2);
 
     Start_textbox->set_content(str_by_dictionary(gd_press_any_key));
-    Start_textbox->set_content("Нажмите ENTER для продолжения...");
 
     Start_textbox->switch_blinking_mode_flag(true);
 
@@ -195,24 +194,6 @@ void start_elements_update()
     // Check if textboxes need content renew
     reset_passed_by_dictionary_textboxes_if_language_switched();
 
-    // TEST
-    static int counter = 0;
-
-    if (counter % 500 == 0)
-    {
-        // TEST
-        Start_textbox->set_content(u8"ENTER...");
-    }
-
-    if (counter % 1000 == 0)
-    {
-        // TEST
-        Start_textbox->set_content("Нажмите...");
-    }
-
-    counter += 1;
-
-
     // Update all elements
     Start_panel->update();
 
@@ -226,7 +207,7 @@ void reset_passed_by_dictionary_textboxes_if_language_switched()
     {
         // TEST
         Start_textbox->set_content(str_by_dictionary(gd_press_any_key));
-        Start_textbox->set_content(u8"Нажми...");
+
     }
 }
 
@@ -243,8 +224,8 @@ void start_actions()
 
     if (App_inputs.is_just_released(Key_actions::SPECIAL_1))
     {
-        App_palette.switch_to_the_next_palette();
-        App_lang.switch_to_next_lang();
+        // App_palette.switch_to_the_next_palette();
+        // App_lang.switch_to_next_lang();
         App_fonts.switch_to_the_next_font_palette();
     
         static bool to_second = false;

@@ -39,8 +39,8 @@ inline Lang_string_type gd_pixels = {
 
 inline Lang_string_type gd_press_any_key = {
 
-    "Press ENTER to continue...",
-    u8"Нажмите ENTER для продолжения..."
+    "PRESS START",
+    "НАЖМИТЕ START"
 
 };
 

@@ -859,10 +859,12 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
 
     // ===== SDL3 AND SDL2 CONFLICT =====
 
-    SDL_Surface* surface = TTF_RenderText_Blended(
+    SDL_Surface* surface = TTF_RenderUTF8_Blended(
+
         this->ttf_font_link,
         this->content.c_str(),
         new_color
+
     );
 
     // ===== SDL3 AND SDL2 CONFLICT =====
