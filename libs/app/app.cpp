@@ -52,6 +52,18 @@ bool this_app_init()
 {
     // Full application initialization wrapper, including SDL and TTF initialization, window and renderer creation,
 
+
+    // TEST
+    printf("SDL compiled video drivers:\n");
+
+    int driver_count = SDL_GetNumVideoDrivers();
+
+    for (int i = 0; i < driver_count; ++i)
+    {
+        printf("  [%d] %s\n", i, SDL_GetVideoDriver(i));
+    }
+
+
     // APP init (4rth argument by the new string type, translated to the old string type)
     if (!SDL_app_init(&this_app, MAIN_WINDOW_H_SIZE, MAIN_WINDOW_V_SIZE, this_app.this_app_name.c_str())) 
     {
@@ -95,7 +107,7 @@ bool this_app_init()
     // Set the initial state to START_ID
     if (!this_app.app_sm.go_to(START_ID))
     {
-        std::cerr << "Failed to set initial state to START_ID." << std::endl;
+        std::cerr << "Failed to set initial state to START." << std::endl;
         SDL_app_shutdown(&this_app);
         return false;
     }

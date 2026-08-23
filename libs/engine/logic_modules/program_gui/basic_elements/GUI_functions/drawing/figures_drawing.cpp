@@ -169,6 +169,9 @@ void rectangle_draw_by_texture(
 
 // =========================================================================================== ROUNDED RECTANGLE
 
+
+#ifdef PLATFORM_WINDOWS
+
 void rounded_rectangle_draw_by_color(
     
     int x_render_point,
@@ -303,6 +306,233 @@ void rounded_rectangle_draw_by_color(
     draw_corner((float)(cx + hw - r), (float)(cy + hh - r), 0.0f);
 }
 
+#endif
+
+#ifdef PLATFORM_MIYOO
+
+void rounded_rectangle_draw_by_color(
+    
+    int x_render_point,
+    int y_render_point,
+
+    unsigned int width,
+    unsigned int height,
+
+    unsigned int radius,
+
+    SDL_Color color,
+
+    SDL_Renderer* renderer
+
+)
+{
+    if (width < 3 || height < 3 || !renderer)
+    {
+        return;
+    }
+
+    if (radius == 0)
+    {
+        rectangle_draw_by_color(
+            x_render_point,
+            y_render_point,
+            width,
+            height,
+            color,
+            renderer
+        );
+
+        return;
+    }
+
+    SDL_SetRenderDrawColor(
+        renderer,
+        color.r,
+        color.g,
+        color.b,
+        color.a
+    );
+
+    const int cx = x_render_point;
+    const int cy = y_render_point;
+
+    const int w = static_cast<int>(width);
+    const int h = static_cast<int>(height);
+
+    int r = static_cast<int>(radius);
+
+    const int max_r = std::min(
+        (w - 1) / 2,
+        (h - 1) / 2
+    );
+
+    if (r > max_r)
+    {
+        r = max_r;
+    }
+
+    const int hw = w / 2;
+    const int hh = h / 2;
+
+    // ========================================================
+    // CENTER
+    // ========================================================
+
+    SDL_Rect center_rect{
+        cx - hw + r,
+        cy - hh,
+        w - 2 * r,
+        h
+    };
+
+    SDL_RenderFillRect(
+        renderer,
+        &center_rect
+    );
+
+    // ========================================================
+    // SIDES
+    // ========================================================
+
+    SDL_Rect left_rect{
+        cx - hw,
+        cy - hh + r,
+        r,
+        h - 2 * r
+    };
+
+    SDL_RenderFillRect(
+        renderer,
+        &left_rect
+    );
+
+    SDL_Rect right_rect{
+        cx + hw - r,
+        cy - hh + r,
+        r,
+        h - 2 * r
+    };
+
+    SDL_RenderFillRect(
+        renderer,
+        &right_rect
+    );
+
+    // ========================================================
+    // ROUNDED CORNERS
+    // ========================================================
+
+    const int segments = std::max(
+        8,
+        r * 4
+    );
+
+    const float PI = 3.14159265f;
+
+    auto draw_corner =
+        [&](int center_x, int center_y, float start_angle)
+    {
+        for (int i = 0; i < segments; ++i)
+        {
+            const float a1 =
+                start_angle +
+                (PI * 0.5f) * i / segments;
+
+            const float a2 =
+                start_angle +
+                (PI * 0.5f) * (i + 1) / segments;
+
+            const int x1 =
+                center_x +
+                static_cast<int>(r * cosf(a1));
+
+            const int y1 =
+                center_y +
+                static_cast<int>(r * sinf(a1));
+
+            const int x2 =
+                center_x +
+                static_cast<int>(r * cosf(a2));
+
+            const int y2 =
+                center_y +
+                static_cast<int>(r * sinf(a2));
+
+            // Рисуем дугу
+            SDL_RenderDrawLine(
+                renderer,
+                x1,
+                y1,
+                x2,
+                y2
+            );
+
+            // Заполняем область между центром
+            // и дугой горизонтальными линиями
+            const int min_x =
+                std::min(x1, x2);
+
+            const int max_x =
+                std::max(x1, x2);
+
+            const int min_y =
+                std::min(y1, y2);
+
+            const int max_y =
+                std::max(y1, y2);
+
+            for (int y = min_y; y <= max_y; ++y)
+            {
+                SDL_RenderDrawLine(
+                    renderer,
+                    center_x,
+                    y,
+                    min_x,
+                    y
+                );
+
+                SDL_RenderDrawLine(
+                    renderer,
+                    center_x,
+                    y,
+                    max_x,
+                    y
+                );
+            }
+        }
+    };
+
+    // ========================================================
+    // FOUR CORNERS
+    // ========================================================
+
+    draw_corner(
+        cx - hw + r,
+        cy - hh + r,
+        PI
+    );
+
+    draw_corner(
+        cx + hw - r,
+        cy - hh + r,
+        -PI * 0.5f
+    );
+
+    draw_corner(
+        cx - hw + r,
+        cy + hh - r,
+        PI * 0.5f
+    );
+
+    draw_corner(
+        cx + hw - r,
+        cy + hh - r,
+        0.0f
+    );
+}
+
+#endif
+
 
 
 void rounded_rectangle_draw_by_texture(
@@ -434,6 +664,9 @@ void rounded_rectangle_draw_by_texture(
 
 // =========================================================================================== CIRCLE
 
+
+#ifdef PLATFORM_WINDOWS
+
 void circle_draw_by_color(
     
     int x_render_point,
@@ -509,7 +742,6 @@ void circle_draw_by_color(
     }
 }
 
-
 void circle_draw_by_texture(
 
     int x_render_point,
@@ -583,5 +815,267 @@ void circle_draw_by_texture(
     }
 }
 
+#endif
+
+
+#ifdef PLATFORM_MIYOO
+
+void circle_draw_by_color(
+
+    int x_render_point,
+    int y_render_point,
+
+    unsigned int radius,
+
+    SDL_Color color,
+
+    SDL_Renderer* renderer
+
+)
+{
+    if (radius == 0 || !renderer)
+    {
+        return;
+    }
+
+    const int cx =
+        x_render_point;
+
+    const int cy =
+        y_render_point;
+
+    const int r =
+        static_cast<int>(radius);
+
+
+    SDL_SetRenderDrawColor(
+        renderer,
+        color.r,
+        color.g,
+        color.b,
+        color.a
+    );
+
+
+    /*
+        ============================================================
+        CIRCLE SCANLINE
+        ============================================================
+
+        Для каждого Y вычисляем половину ширины круга:
+
+            x^2 + y^2 = r^2
+
+        =>
+
+            x = sqrt(r^2 - y^2)
+
+        После этого просто рисуем горизонтальную линию.
+    */
+
+    const int radius_squared =
+        r * r;
+
+
+    for (int y = -r; y <= r; ++y)
+    {
+        const int y_squared =
+            y * y;
+
+        const int x =
+            static_cast<int>(
+                std::sqrt(
+                    static_cast<float>(
+                        radius_squared - y_squared
+                    )
+                )
+            );
+
+
+        SDL_RenderDrawLine(
+            renderer,
+            cx - x,
+            cy + y,
+            cx + x,
+            cy + y
+        );
+    }
+}
+
+
+void circle_draw_by_texture(
+
+    int x_render_point,
+    int y_render_point,
+
+    unsigned int radius,
+
+    SDL_Texture* texture,
+
+    SDL_Renderer* renderer
+
+)
+{
+    if (!texture || radius == 0 || !renderer)
+    {
+        return;
+    }
+
+
+    const int cx =
+        x_render_point;
+
+    const int cy =
+        y_render_point;
+
+    const int r =
+        static_cast<int>(radius);
+
+
+    /*
+        ============================================================
+        GET TEXTURE SIZE
+        ============================================================
+    */
+
+    int texture_width = 0;
+    int texture_height = 0;
+
+    if (
+        SDL_QueryTexture(
+            texture,
+            nullptr,
+            nullptr,
+            &texture_width,
+            &texture_height
+        ) != 0
+    )
+    {
+        return;
+    }
+
+
+    if (
+        texture_width <= 0 ||
+        texture_height <= 0
+    )
+    {
+        return;
+    }
+
+
+    /*
+        ============================================================
+        CIRCLE EQUATION
+        ============================================================
+    */
+
+    const int diameter =
+        r * 2;
+
+
+    const int radius_squared =
+        r * r;
+
+
+    /*
+        ============================================================
+        DRAW HORIZONTAL TEXTURE STRIPS
+        ============================================================
+    */
+
+    for (int y = -r; y <= r; ++y)
+    {
+        const int y_squared =
+            y * y;
+
+
+        const int half_width =
+            static_cast<int>(
+                std::sqrt(
+                    static_cast<float>(
+                        radius_squared - y_squared
+                    )
+                )
+            );
+
+
+        if (half_width <= 0)
+        {
+            continue;
+        }
+
+
+        /*
+            Destination rectangle.
+
+            Only the part of the horizontal row that belongs
+            to the circle is rendered.
+        */
+
+        SDL_Rect destination_rect
+        {
+            cx - half_width,
+            cy + y,
+
+            half_width * 2 + 1,
+            1
+        };
+
+
+        /*
+            Map circle Y coordinate to texture Y coordinate.
+
+            -r ... +r
+                ↓
+             0 ... texture_height
+        */
+
+        const float normalized_y =
+            static_cast<float>(y + r) /
+            static_cast<float>(diameter);
+
+
+        int source_y =
+            static_cast<int>(
+                normalized_y *
+                texture_height
+            );
+
+
+        source_y =
+            std::max(
+                0,
+                std::min(
+                    texture_height - 1,
+                    source_y
+                )
+            );
+
+
+        /*
+            Take the corresponding horizontal row
+            from the texture.
+        */
+
+        SDL_Rect source_rect
+        {
+            0,
+            source_y,
+            texture_width,
+            1
+        };
+
+
+        SDL_RenderCopy(
+            renderer,
+            texture,
+            &source_rect,
+            &destination_rect
+        );
+    }
+}
+
+#endif
 
 // =========================================================================================== CIRCLE

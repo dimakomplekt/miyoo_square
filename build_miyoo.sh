@@ -1,0 +1,308 @@
+#!/bin/bash
+set -e
+
+
+TOOLCHAIN_ROOT="/home/dimakomplekt/miyoo_toolchain"
+BUILD_DIR="/home/dimakomplekt/miyoo_build"
+DEPLOY_DIR="build_lin"
+
+
+CMAKE="$TOOLCHAIN_ROOT/mini/bin/cmake"
+GCC="$TOOLCHAIN_ROOT/mini/bin/arm-linux-gnueabihf-gcc"
+GXX="$TOOLCHAIN_ROOT/mini/bin/arm-linux-gnueabihf-g++"
+NINJA="$TOOLCHAIN_ROOT/mini/bin/ninja"
+
+SYSROOT_LIB="$TOOLCHAIN_ROOT/mini/arm-buildroot-linux-gnueabihf/sysroot/usr/lib"
+
+SDL2_LIB="$HOME/miyoo_sdl2/sdl2/build/.libs/libSDL2-2.0.so.0.18.2"
+SDL2_IMAGE_LIB="$SYSROOT_LIB/libSDL2_image-2.0.so.0"
+SDL2_TTF_LIB="$SYSROOT_LIB/libSDL2_ttf-2.0.so.0"
+
+MIYOO_PREBUILT="$HOME/miyoo_sdl2/prebuilt/miyoo"
+
+
+echo "========================================"
+echo "Configuring Miyoo build..."
+echo "Toolchain: $TOOLCHAIN_ROOT"
+echo "CMake:     $CMAKE"
+echo "GCC:       $GCC"
+echo "G++:       $GXX"
+echo "Ninja:     $NINJA"
+echo "Build:     $BUILD_DIR"
+echo "========================================"
+
+
+# ============================================================
+# BUILD
+# ============================================================
+
+rm -rf "$BUILD_DIR"
+
+"$CMAKE" \
+    -S . \
+    -B "$BUILD_DIR" \
+    -G Ninja \
+    -DCMAKE_TOOLCHAIN_FILE="$PWD/cmake/miyoo_toolchain.cmake" \
+    -DPROJECT_PLATFORM=MIYOO
+
+"$CMAKE" --build "$BUILD_DIR"
+
+
+# ============================================================
+# DEPLOYMENT
+# ============================================================
+
+echo
+echo "========================================"
+echo "Preparing Miyoo deployment..."
+echo "========================================"
+
+rm -rf "$DEPLOY_DIR"
+
+mkdir -p \
+    "$DEPLOY_DIR/lib" \
+    "$DEPLOY_DIR/content"
+
+
+# ============================================================
+# EXECUTABLE
+# ============================================================
+
+cp \
+    "$BUILD_DIR/package/MIYOO_SQUARE" \
+    "$DEPLOY_DIR/MIYOO_SQUARE"
+
+
+# ============================================================
+# CONTENT
+# ============================================================
+
+cp -r \
+    "libs/engine/logic_modules/program_gui/basic_content/." \
+    "$DEPLOY_DIR/content/"
+
+
+# ============================================================
+# SDL2
+# ============================================================
+
+cp -L \
+    "$SDL2_LIB" \
+    "$DEPLOY_DIR/lib/libSDL2-2.0.so.0"
+
+
+# ============================================================
+# SDL2 IMAGE
+# ============================================================
+
+cp -L \
+    "$SDL2_IMAGE_LIB" \
+    "$DEPLOY_DIR/lib/libSDL2_image-2.0.so.0"
+
+
+# ============================================================
+# SDL2 TTF
+# ============================================================
+
+cp -L \
+    "$SDL2_TTF_LIB" \
+    "$DEPLOY_DIR/lib/libSDL2_ttf-2.0.so.0"
+
+
+# ============================================================
+# MIYOO EGL / GLES
+# ============================================================
+
+echo "Copying Miyoo EGL/GLES..."
+
+if [ ! -f "$MIYOO_PREBUILT/libEGL.so.1.0.0" ]; then
+    echo "ERROR: Miyoo libEGL.so.1.0.0 not found:"
+    echo "       $MIYOO_PREBUILT/libEGL.so.1.0.0"
+    exit 1
+fi
+
+if [ ! -f "$MIYOO_PREBUILT/libGLESv2.so.2.0.0" ]; then
+    echo "ERROR: Miyoo libGLESv2.so.2.0.0 not found:"
+    echo "       $MIYOO_PREBUILT/libGLESv2.so.2.0.0"
+    exit 1
+fi
+
+cp \
+    "$MIYOO_PREBUILT/libEGL.so.1.0.0" \
+    "$DEPLOY_DIR/lib/libEGL.so"
+
+cp \
+    "$MIYOO_PREBUILT/libGLESv2.so.2.0.0" \
+    "$DEPLOY_DIR/lib/libGLESv2.so.2"
+
+
+
+# ============================================================
+# ADDITIONAL LIBS
+# ============================================================
+
+cp "$SYSROOT_LIB/libfreetype.so.6" \
+   "$DEPLOY_DIR/lib/"
+
+cp "$SYSROOT_LIB/libbz2.so.1.0" \
+   "$DEPLOY_DIR/lib/"
+
+cp "$SYSROOT_LIB/libpng16.so.16" \
+   "$DEPLOY_DIR/lib/"
+
+cp "$SYSROOT_LIB/libz.so.1" \
+   "$DEPLOY_DIR/lib/"
+
+cp "$SYSROOT_LIB/libjson-c.so.5" \
+   "$DEPLOY_DIR/lib/"
+
+
+
+# ============================================================
+# LAUNCH SCRIPT
+# ============================================================
+
+cat > "$DEPLOY_DIR/launch.sh" << 'EOF'
+#!/bin/sh
+
+APP_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+LOG_FILE="$APP_DIR/launch.log"
+
+export LD_LIBRARY_PATH="$APP_DIR/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+cd "$APP_DIR"
+
+echo "========================================" > "$LOG_FILE"
+echo "MIYOO_SQUARE LAUNCH" >> "$LOG_FILE"
+echo "========================================" >> "$LOG_FILE"
+
+
+echo "=== MIYOO SDL2 BACKEND LIBRARIES ===" >> "$LOG_FILE"
+
+
+find /lib /config /customer /mnt/SDCARD \
+    \( -name 'libEGL.so*' \
+    -o -name 'libGLESv2.so*' \
+    -o -name 'libjson-c.so*' \
+    -o -name 'libmi_*.so*' \
+    -o -name 'libshmvar.so*' \) \
+    >> "$LOG_FILE" 2>&1
+
+
+echo "APP_DIR=$APP_DIR" >> "$LOG_FILE"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> "$LOG_FILE"
+echo "PID=$$" >> "$LOG_FILE"
+echo "DATE=$(date)" >> "$LOG_FILE"
+
+echo >> "$LOG_FILE"
+echo "=== ENVIRONMENT ===" >> "$LOG_FILE"
+
+echo "DISPLAY=$DISPLAY" >> "$LOG_FILE"
+echo "SDL_VIDEODRIVER=$SDL_VIDEODRIVER" >> "$LOG_FILE"
+echo "TERM=$TERM" >> "$LOG_FILE"
+echo "PATH=$PATH" >> "$LOG_FILE"
+
+echo >> "$LOG_FILE"
+echo "=== FULL ENV ===" >> "$LOG_FILE"
+
+env >> "$LOG_FILE" 2>&1
+
+
+echo >> "$LOG_FILE"
+echo "=== SDL LIBRARIES ===" >> "$LOG_FILE"
+
+find /lib /usr/lib /config /customer \
+    \( -name 'libSDL2*' -o -name 'libSDL*' \) \
+    >> "$LOG_FILE" 2>&1
+
+
+echo >> "$LOG_FILE"
+echo "=== VIDEO DEVICES ===" >> "$LOG_FILE"
+
+ls -l /dev/fb* >> "$LOG_FILE" 2>&1
+ls -l /dev/dri/* >> "$LOG_FILE" 2>&1
+
+
+echo >> "$LOG_FILE"
+echo "=== /dev VIDEO-RELATED ===" >> "$LOG_FILE"
+
+ls -l /dev | grep -Ei 'fb|gpu|drm|disp|lcd|video' \
+    >> "$LOG_FILE" 2>&1
+
+
+echo >> "$LOG_FILE"
+
+
+echo >> "$LOG_FILE"
+echo "=== APP LIB DIRECTORY ===" >> "$LOG_FILE"
+ls -lah "$APP_DIR/lib" >> "$LOG_FILE" 2>&1
+
+echo >> "$LOG_FILE"
+echo "=== EGL FILE ===" >> "$LOG_FILE"
+ls -lah "$APP_DIR/lib/libEGL.so"* >> "$LOG_FILE" 2>&1
+
+echo >> "$LOG_FILE"
+echo "=== EGL REALPATH ===" >> "$LOG_FILE"
+readlink -f "$APP_DIR/lib/libEGL.so" >> "$LOG_FILE" 2>&1
+
+echo >> "$LOG_FILE"
+echo "=== SDL2 NEEDED ===" >> "$LOG_FILE"
+# если readelf есть в системе
+readelf -d "$APP_DIR/lib/libSDL2-2.0.so.0" 2>/dev/null |
+    grep NEEDED >> "$LOG_FILE" 2>&1
+
+echo >> "$LOG_FILE"
+echo "=== START ===" >> "$LOG_FILE"
+
+
+"$APP_DIR/MIYOO_SQUARE" >> "$LOG_FILE" 2>&1
+
+EXIT_CODE=$?
+
+echo >> "$LOG_FILE"
+echo "EXIT_CODE=$EXIT_CODE" >> "$LOG_FILE"
+echo "========================================" >> "$LOG_FILE"
+
+exit "$EXIT_CODE"
+EOF
+
+chmod +x "$DEPLOY_DIR/launch.sh"
+
+
+
+echo
+echo "========================================"
+echo "DEPLOYMENT CHECK"
+echo "========================================"
+
+ls -lah "$DEPLOY_DIR/lib"
+
+echo
+echo "Checking required libraries..."
+
+for lib in \
+    libSDL2-2.0.so.0 \
+    libSDL2_image-2.0.so.0 \
+    libSDL2_ttf-2.0.so.0 \
+    libEGL.so \
+    libGLESv2.so.2
+do
+    if [ -f "$DEPLOY_DIR/lib/$lib" ]; then
+        echo "OK: $lib"
+    else
+        echo "ERROR: missing $lib"
+        exit 1
+    fi
+done
+
+
+# ============================================================
+# RESULT
+# ============================================================
+
+echo
+echo "========================================"
+echo "Miyoo deployment:"
+echo "========================================"
+
+find "$DEPLOY_DIR" -maxdepth 2 -type f -print

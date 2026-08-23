@@ -213,221 +213,298 @@ void rectangle_render(SDL_Renderer* renderer)
     if (!renderer)
         return;
 
-    const float cx = static_cast<float>(my_rectangle.x_rp);
-    const float cy = static_cast<float>(my_rectangle.y_rp);
 
-    const float half_width = my_rectangle.width * 0.5f;
-    const float half_height = my_rectangle.height * 0.5f;
+    // ============================================================
+    // BASIC PARAMETERS
+    // ============================================================
 
-    const float border = static_cast<float>(my_rectangle.border_thickness);
+    const float cx =
+        static_cast<float>(my_rectangle.x_rp);
 
-    /*
-        Внешний прямоугольник
-    */
+    const float cy =
+        static_cast<float>(my_rectangle.y_rp);
 
-    const float outer_half_width = half_width;
-    const float outer_half_height = half_height;
+    const float half_width =
+        my_rectangle.width * 0.5f;
 
-    /*
-        Внутренний прямоугольник.
+    const float half_height =
+        my_rectangle.height * 0.5f;
 
-        Не даём border уничтожить прямоугольник.
-    */
-
-    const float inner_half_width =
-        std::max(0.0f, half_width - border);
-
-    const float inner_half_height =
-        std::max(0.0f, half_height - border);
+    const float border =
+        static_cast<float>(my_rectangle.border_thickness);
 
 
-    /*
-        Функция вращения точки вокруг центра.
-    */
+    // ============================================================
+    // ROTATION
+    // ============================================================
+
+    const float angle_rad =
+        my_rectangle.angle *
+        3.14159265f /
+        180.0f;
+
+    const float cos_a =
+        std::cos(angle_rad);
+
+    const float sin_a =
+        std::sin(angle_rad);
+
 
     auto rotate_point =
-        [&](float x, float y) -> SDL_FPoint
+        [&](float x, float y) -> SDL_Point
         {
-            const float angle_rad =
-                my_rectangle.angle * static_cast<float>(M_PI) / 180.0f;
+            SDL_Point result;
 
-            const float cos_a = std::cos(angle_rad);
-            const float sin_a = std::sin(angle_rad);
+            result.x = static_cast<int>(
+                cx + x * cos_a - y * sin_a
+            );
 
-            return
-            {
-                cx + x * cos_a - y * sin_a,
+            result.y = static_cast<int>(
                 cy + x * sin_a + y * cos_a
-            };
+            );
+
+            return result;
         };
 
 
-    /*
-        ============================================================
-        OUTER RECTANGLE
-        ============================================================
-    */
+    // ============================================================
+    // DRAW ROTATED QUADRILATERAL
+    // ============================================================
 
-    SDL_FPoint outer_points[4] =
-    {
-        rotate_point(-outer_half_width, -outer_half_height),
-        rotate_point( outer_half_width, -outer_half_height),
-        rotate_point( outer_half_width,  outer_half_height),
-        rotate_point(-outer_half_width,  outer_half_height)
-    };
-
-
-    /*
-        ============================================================
-        BORDER
-        ============================================================
-
-        Рисуем четыре полосы как отдельные квадраты.
-        Благодаря этому border тоже вращается вместе с объектом.
-    */
-
-    SDL_Vertex border_vertices[16];
-
-    auto set_vertex =
-        [&](SDL_Vertex& vertex,
-            const SDL_FPoint& point,
-            const SDL_Color& color)
+    auto draw_filled_quad =
+        [&](const SDL_Point points[4], SDL_Color color)
         {
-            vertex.position = point;
-            vertex.color = color;
-            vertex.tex_coord = { 0.0f, 0.0f };
+            SDL_SetRenderDrawColor(
+                renderer,
+                color.r,
+                color.g,
+                color.b,
+                color.a
+            );
+
+
+            /*
+                Find vertical bounds of the polygon.
+            */
+
+            int min_y = points[0].y;
+            int max_y = points[0].y;
+
+            for (int i = 1; i < 4; ++i)
+            {
+                min_y =
+                    std::min(min_y, points[i].y);
+
+                max_y =
+                    std::max(max_y, points[i].y);
+            }
+
+
+            /*
+                Scanline filling.
+
+                Для каждого Y находим пересечения
+                горизонтальной линии с четырьмя
+                рёбрами четырёхугольника.
+            */
+
+            for (int y = min_y; y <= max_y; ++y)
+            {
+                float intersections[4];
+
+                int intersection_count = 0;
+
+
+                for (int i = 0; i < 4; ++i)
+                {
+                    const SDL_Point& p1 =
+                        points[i];
+
+                    const SDL_Point& p2 =
+                        points[(i + 1) % 4];
+
+
+                    /*
+                        Горизонтальное ребро
+                        не даёт пересечения.
+                    */
+
+                    if (p1.y == p2.y)
+                        continue;
+
+
+                    /*
+                        Проверяем, проходит ли
+                        scanline через ребро.
+                    */
+
+                    if (
+                        y < std::min(p1.y, p2.y) ||
+                        y > std::max(p1.y, p2.y)
+                    )
+                    {
+                        continue;
+                    }
+
+
+                    const float t =
+                        static_cast<float>(y - p1.y) /
+                        static_cast<float>(p2.y - p1.y);
+
+
+                    const float x =
+                        p1.x +
+                        t * (p2.x - p1.x);
+
+
+                    intersections[intersection_count++] = x;
+                }
+
+
+                if (intersection_count < 2)
+                    continue;
+
+
+                /*
+                    Для выпуклого четырёхугольника
+                    достаточно найти левую и правую
+                    границы.
+                */
+
+                float left_x =
+                    intersections[0];
+
+                float right_x =
+                    intersections[0];
+
+
+                for (int i = 1; i < intersection_count; ++i)
+                {
+                    left_x =
+                        std::min(
+                            left_x,
+                            intersections[i]
+                        );
+
+                    right_x =
+                        std::max(
+                            right_x,
+                            intersections[i]
+                        );
+                }
+
+
+                SDL_RenderDrawLine(
+                    renderer,
+                    static_cast<int>(left_x),
+                    y,
+                    static_cast<int>(right_x),
+                    y
+                );
+            }
         };
 
 
-    /*
-        Верхняя граница
-    */
+    // ============================================================
+    // OUTER RECTANGLE
+    // ============================================================
 
-    SDL_FPoint top[4] =
+    SDL_Point outer_points[4] =
     {
-        rotate_point(-outer_half_width, -outer_half_height),
-        rotate_point( outer_half_width, -outer_half_height),
-        rotate_point( outer_half_width, -inner_half_height),
-        rotate_point(-outer_half_width, -inner_half_height)
-    };
+        rotate_point(
+            -half_width,
+            -half_height
+        ),
 
-    /*
-        Правая граница
-    */
+        rotate_point(
+             half_width,
+            -half_height
+        ),
 
-    SDL_FPoint right[4] =
-    {
-        rotate_point(inner_half_width, -inner_half_height),
-        rotate_point(outer_half_width, -outer_half_height),
-        rotate_point(outer_half_width, outer_half_height),
-        rotate_point(inner_half_width, inner_half_height)
-    };
+        rotate_point(
+             half_width,
+             half_height
+        ),
 
-    /*
-        Нижняя граница
-    */
-
-    SDL_FPoint bottom[4] =
-    {
-        rotate_point(-outer_half_width, inner_half_height),
-        rotate_point(outer_half_width, inner_half_height),
-        rotate_point(outer_half_width, outer_half_height),
-        rotate_point(-outer_half_width, outer_half_height)
-    };
-
-    /*
-        Левая граница
-    */
-
-    SDL_FPoint left[4] =
-    {
-        rotate_point(-outer_half_width, -outer_half_height),
-        rotate_point(-inner_half_width, -inner_half_height),
-        rotate_point(-inner_half_width, inner_half_height),
-        rotate_point(-outer_half_width, outer_half_height)
+        rotate_point(
+            -half_width,
+             half_height
+        )
     };
 
 
-    /*
-        Заполняем вершины border.
-    */
+    // ============================================================
+    // DRAW BORDER
+    // ============================================================
 
-    for (int i = 0; i < 4; i++)
-    {
-        set_vertex(border_vertices[i],      top[i],    my_rectangle.border_color);
-        set_vertex(border_vertices[i + 4],  right[i],  my_rectangle.border_color);
-        set_vertex(border_vertices[i + 8],  bottom[i], my_rectangle.border_color);
-        set_vertex(border_vertices[i + 12], left[i],  my_rectangle.border_color);
-    }
-
-
-    int border_indices[] =
-    {
-        0, 1, 2,
-        0, 2, 3,
-
-        4, 5, 6,
-        4, 6, 7,
-
-        8, 9, 10,
-        8, 10, 11,
-
-        12, 13, 14,
-        12, 14, 15
-    };
-
-
-    SDL_RenderGeometry(
-        renderer,
-        nullptr,
-        border_vertices,
-        16,
-        border_indices,
-        24
+    draw_filled_quad(
+        outer_points,
+        my_rectangle.border_color
     );
 
 
+    // ============================================================
+    // INNER RECTANGLE
+    // ============================================================
+
+    const float inner_half_width =
+        std::max(
+            0.0f,
+            half_width - border
+        );
+
+    const float inner_half_height =
+        std::max(
+            0.0f,
+            half_height - border
+        );
+
+
     /*
-        ============================================================
-        FILL
-        ============================================================
+        Если border съел весь прямоугольник,
+        внутренний прямоугольник не рисуем.
     */
 
-    SDL_FPoint inner_points[4] =
+    if (
+        inner_half_width <= 0.0f ||
+        inner_half_height <= 0.0f
+    )
     {
-        rotate_point(-inner_half_width, -inner_half_height),
-        rotate_point( inner_half_width, -inner_half_height),
-        rotate_point( inner_half_width,  inner_half_height),
-        rotate_point(-inner_half_width,  inner_half_height)
-    };
-
-
-    SDL_Vertex fill_vertices[4];
-
-    for (int i = 0; i < 4; i++)
-    {
-        set_vertex(
-            fill_vertices[i],
-            inner_points[i],
-            my_rectangle.fill_color
-        );
+        return;
     }
 
 
-    int fill_indices[] =
+    SDL_Point inner_points[4] =
     {
-        0, 1, 2,
-        0, 2, 3
+        rotate_point(
+            -inner_half_width,
+            -inner_half_height
+        ),
+
+        rotate_point(
+             inner_half_width,
+            -inner_half_height
+        ),
+
+        rotate_point(
+             inner_half_width,
+             inner_half_height
+        ),
+
+        rotate_point(
+            -inner_half_width,
+             inner_half_height
+        )
     };
 
 
-    SDL_RenderGeometry(
-        renderer,
-        nullptr,
-        fill_vertices,
-        4,
-        fill_indices,
-        6
+    // ============================================================
+    // DRAW FILL
+    // ============================================================
+
+    draw_filled_quad(
+        inner_points,
+        my_rectangle.fill_color
     );
 }
 
@@ -577,6 +654,12 @@ void main_menu_elements_free_and_nullptr()
 
 void main_menu_elements_update()
 {
+
+    
+    // TEST
+    std::cout << "UPDATE!\n\n";
+
+
     // Check if textboxes need content renew
     reset_passed_by_dictionary_textboxes_if_language_switched_mm();
 
@@ -584,7 +667,7 @@ void main_menu_elements_update()
     // Update all elements
 
     // Background
-    Main_menu_panel->update();
+    // Main_menu_panel->update();
 
 }
 
@@ -702,8 +785,11 @@ void main_menu_elements_render(SDL_Renderer* renderer)
 
     // Update all elements
     
+    // TEST
+    std::cout << "REMDER!\n\n";
+
     // Background
-    Main_menu_panel->render(renderer);
+    // Main_menu_panel->render(renderer);
 
     // Test rectangle render
     rectangle_render(renderer);

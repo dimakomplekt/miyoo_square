@@ -13,9 +13,8 @@
 
 #include "../../../../engine.h"
 
-// Predeclare trick for nullptr allow of ttf_font_link on compilation stage without including SDL_ttf header
-// here, to avoid SDL_ttf dependency in the header file and possible issues with that in the future
-struct TTF_Font;
+
+#include <SDL2/SDL_ttf.h>
 
 // =========================================================================================== IMPORT
 
