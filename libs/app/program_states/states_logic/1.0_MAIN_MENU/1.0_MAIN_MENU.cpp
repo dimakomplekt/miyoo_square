@@ -655,11 +655,6 @@ void main_menu_elements_free_and_nullptr()
 void main_menu_elements_update()
 {
 
-    
-    // TEST
-    std::cout << "UPDATE!\n\n";
-
-
     // Check if textboxes need content renew
     reset_passed_by_dictionary_textboxes_if_language_switched_mm();
 
@@ -688,6 +683,7 @@ void main_menu_actions()
 
     if (App_inputs.is_just_released(Key_actions::EXIT_KA))
     {
+        std::cout << "EXIT_KA pressed" << std::endl; // TEST
         this_app.app_sm.request_state_change(START_ID);
     }
 
@@ -695,12 +691,14 @@ void main_menu_actions()
 
     if (App_inputs.is_just_released(Key_actions::START_KA))
     {
+        std::cout << "START_KA pressed" << std::endl; // TEST
         // Change color
         rectangle_change_border_color();
     }
 
     if (App_inputs.is_just_released(Key_actions::SELECT_KA))
     {
+        std::cout << "SELECT_KA pressed" << std::endl; // TEST
         // App_palette.switch_to_the_next_palette();
         // App_fonts.switch_to_the_next_font_palette();
         // App_lang.switch_to_next_lang();
@@ -710,69 +708,81 @@ void main_menu_actions()
 
     if (App_inputs.is_just_released(Key_actions::LEFT_KA))
     {
+        std::cout << "LEFT_KA pressed" << std::endl; // TEST
         rectangle_move_left();
     }
 
     
     if (App_inputs.is_just_released(Key_actions::UP_KA))
     {
+        std::cout << "UP_KA pressed" << std::endl; // TEST
         rectangle_move_up();
     }
 
     
     if (App_inputs.is_just_released(Key_actions::RIGHT_KA))
     {
+        std::cout << "RIGHT_KA pressed" << std::endl; // TEST
         rectangle_move_right();
     }
 
     
     if (App_inputs.is_just_released(Key_actions::DOWN_KA))
     {
+        std::cout << "DOWN_KA pressed" << std::endl; // TEST
         rectangle_move_down();
     }
 
 
     if (App_inputs.is_just_released(Key_actions::Y_KA))
     {
+        std::cout << "Y_KA pressed" << std::endl; // TEST
         rectangle_change_width(my_rectangle.width - 10);
     }   
 
     
     if (App_inputs.is_just_released(Key_actions::X_KA))
     {
+        std::cout << "X_KA pressed" << std::endl; // TEST
         rectangle_change_height(my_rectangle.height + 10);
     }
 
     
     if (App_inputs.is_just_released(Key_actions::A_KA))
     {
+        std::cout << "A_KA pressed" << std::endl; // TEST
         rectangle_change_width(my_rectangle.width + 10);
     }
 
     
     if (App_inputs.is_just_released(Key_actions::B_KA))
     {
+        std::cout << "B_KA pressed" << std::endl; // TEST
         rectangle_change_height(my_rectangle.height - 10);
     }
 
     if (App_inputs.is_just_released(Key_actions::L_1_KA))
     {
+        std::cout << "L_1_KA pressed" << std::endl; // TEST
         rectangle_rotate(my_rectangle.angle - 5);
     }
 
     if (App_inputs.is_just_released(Key_actions::R_1_KA))
     {
+        std::cout << "R_1_KA pressed" << std::endl; // TEST
         rectangle_rotate(my_rectangle.angle + 5);
     }
 
 
     if (App_inputs.is_just_released(Key_actions::L_2_KA))
     {
+        std::cout << "L_2_KA pressed" << std::endl; // TEST
         rectangle_change_border_thickness(my_rectangle.border_thickness - 1);
     }
 
     if (App_inputs.is_just_released(Key_actions::R_2_KA))
     {
+        std::cout << "R_2_KA pressed" << std::endl; // TEST
         rectangle_change_border_thickness(my_rectangle.border_thickness + 1);
     }
 
@@ -784,15 +794,16 @@ void main_menu_elements_render(SDL_Renderer* renderer)
     // Render all elements
 
     // Update all elements
-    
-    // TEST
-    std::cout << "REMDER!\n\n";
 
     // Background
     // Main_menu_panel->render(renderer);
 
     // Test rectangle render
     rectangle_render(renderer);
+
+    // SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    // SDL_RenderClear(renderer);
+    // SDL_RenderPresent(renderer);
 
 }
 

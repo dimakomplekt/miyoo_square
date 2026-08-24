@@ -43,7 +43,15 @@ const std::string THIS_APP_NAME = "MIYOO_SQUARE_1.0";
 
 // const SDL_WindowFlags THIS_APP_WINDOW_FLAG = 0; // | SDL_WINDOW_ALLOW_HIGHDPI
 
-const Uint32 THIS_APP_WINDOW_FLAG = 0; 
+#ifdef PLATFORM_WINDOWS
+
+    const Uint32 THIS_APP_WINDOW_FLAG = SDL_WINDOW_ALLOW_HIGHDPI; 
+
+#elif defined(PLATFORM_MIYOO)
+
+    const Uint32 THIS_APP_WINDOW_FLAG = SDL_WINDOW_SHOWN; 
+
+#endif
 
 // ===== SDL3 AND SDL2 CONFLICT =====
 

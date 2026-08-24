@@ -105,9 +105,9 @@ bool this_app_init()
     init_program_states(this_app.app_sm);
 
     // Set the initial state to START_ID
-    if (!this_app.app_sm.go_to(START_ID))
+    if (!this_app.app_sm.go_to(MAIN_MENU_ID))
     {
-        std::cerr << "Failed to set initial state to START." << std::endl;
+        std::cerr << "Failed to set initial state to MAIN_MENU." << std::endl;
         SDL_app_shutdown(&this_app);
         return false;
     }
@@ -160,14 +160,30 @@ bool SDL_app_init(SDL_app_ctx* app, int w, int h, const char* title)
 
     // SDL2 FIX: SDL_CreateWindowAndRenderer doesn't support custom renderer flags (like VSync).
     // We separate window and renderer creation to explicitly pass the SDL_RENDERER_PRESENTVSYNC flag.
-    app->window = SDL_CreateWindow(
-        title,
-        SDL_WINDOWPOS_CENTERED, // Initial X position
-        SDL_WINDOWPOS_CENTERED, // Initial Y position
-        w,
-        h,
-        THIS_APP_WINDOW_FLAG    // Your global window flags (now Uint32)
-    );
+
+    #ifdef PLATFORM_WINDOWS
+    
+        app->window = SDL_CreateWindow(
+            title,
+            SDL_WINDOWPOS_CENTERED, // Initial X position
+            SDL_WINDOWPOS_CENTERED, // Initial Y position
+            w,
+            h,
+            THIS_APP_WINDOW_FLAG    // Your global window flags (now Uint32)
+        );
+
+    #elif defined(PLATFORM_MIYOO)
+
+            app->window = SDL_CreateWindow(
+            title,
+            SDL_WINDOWPOS_UNDEFINED, // Initial X position
+            SDL_WINDOWPOS_UNDEFINED, // Initial Y position
+            w,
+            h,
+            THIS_APP_WINDOW_FLAG    // Your global window flags (now Uint32)
+        );
+
+    #endif
 
     if (!app->window)
     {
@@ -199,12 +215,14 @@ bool SDL_app_init(SDL_app_ctx* app, int w, int h, const char* title)
     // ===== SDL3 AND SDL2 CONFLICT =====
     // SDL_SetRenderVSync(app->renderer, 1);
 
+    #ifdef PLATFORM_WINDOWS
+        SDL_SetRenderDrawBlendMode(app->renderer, SDL_BLENDMODE_BLEND);
+        SDL_SetWindowTitle(app->window, title);
+    #endif
 
-    SDL_SetRenderDrawBlendMode(app->renderer, SDL_BLENDMODE_BLEND);
-
-    SDL_SetWindowTitle(app->window, title);
 
     // ===== SDL3 AND SDL2 CONFLICT =====
+    
     app->app_state = true;
     return true;
 }
@@ -300,14 +318,61 @@ bool SDL_app_cycle(SDL_app_ctx* app)
     {
         SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, 255);
 
+
+        /*
+                        SDL
+                        │
+                        ▼
+            SDL_RenderPresent()
+                        │
+                        ▼
+            FlushRenderCommands()
+                        │
+                        ▼
+                Mini backend
+                /           \
+                /             \
+                ▼               ▼
+        Mini_QueueCopy    Mini_RenderPresent
+                │               │
+                ▼               ▼
+            GFX_Copy          GFX_Flip
+                │               │
+                └───────┬───────┘
+                        ▼
+                framebuffer
+                        │
+                        ▼
+                    Miyoo
+
+        */
+
         if (App_timer_1.can_execute(Execute_zone_ID::HZ_60))
         {
             SDL_RenderClear(app->renderer);
+
+            
+            app->app_sm.state_render(app->renderer);
+
+
+            SDL_RenderPresent(app->renderer);
+
         }
 
-        app->app_sm.state_render(app->renderer);
+        /*
 
-        SDL_RenderPresent(app->renderer);
+            // WHY I DID THIS OUTSIDE OF FPS ZONE???
+
+            // BECAUSE IN SOME PROGRAMS I USE DIFFERENT SPEED OF RENDERING 
+            // FOR DIFFERENT PARTS OF THE STATE
+
+            // But maybe it's not the best solution
+
+            app->app_sm.state_render(app->renderer);
+
+            SDL_RenderPresent(app->renderer);
+
+        */
     }
 
     // ===== SDL3 AND SDL2 CONFLICT =====
