@@ -684,7 +684,12 @@ void main_menu_actions()
     if (App_inputs.is_just_released(Key_actions::EXIT_KA))
     {
         std::cout << "EXIT_KA pressed" << std::endl; // TEST
-        this_app.app_sm.request_state_change(START_ID);
+        // this_app.app_sm.request_state_change(START_ID);
+
+        SDL_DestroyRenderer(this_app.renderer);
+        SDL_DestroyWindow(this_app.window);
+        SDL_Quit();
+
     }
 
     // Switch the state to MAIN MENU if ENTER pressed

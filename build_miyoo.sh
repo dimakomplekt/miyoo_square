@@ -18,7 +18,10 @@ SDL2_LIB="$HOME/miyoo_sdl2/sdl2/build/.libs/libSDL2-2.0.so.0.18.2"
 SDL2_IMAGE_LIB="$SYSROOT_LIB/libSDL2_image-2.0.so.0"
 SDL2_TTF_LIB="$SYSROOT_LIB/libSDL2_ttf-2.0.so.0"
 
-MIYOO_PREBUILT="$HOME/miyoo_sdl2/prebuilt/miyoo"
+# For 640 x 480
+MIYOO_EGL="$HOME/miyoo_sdl2/prebuilt/640x480/libEGL.so"
+MIYOO_GLES="$HOME/miyoo_sdl2/prebuilt/640x480/libGLESv2.so"
+
 
 
 echo "========================================"
@@ -115,26 +118,25 @@ cp -L \
 
 echo "Copying Miyoo EGL/GLES..."
 
-if [ ! -f "$MIYOO_PREBUILT/libEGL.so.1.0.0" ]; then
-    echo "ERROR: Miyoo libEGL.so.1.0.0 not found:"
-    echo "       $MIYOO_PREBUILT/libEGL.so.1.0.0"
+if [ ! -f "$MIYOO_EGL" ]; then
+    echo "ERROR: Miyoo 640x480 libEGL.so not found:"
+    echo "       $MIYOO_EGL"
     exit 1
 fi
 
-if [ ! -f "$MIYOO_PREBUILT/libGLESv2.so.2.0.0" ]; then
-    echo "ERROR: Miyoo libGLESv2.so.2.0.0 not found:"
-    echo "       $MIYOO_PREBUILT/libGLESv2.so.2.0.0"
+if [ ! -f "$MIYOO_GLES" ]; then
+    echo "ERROR: Miyoo 640x480 libGLESv2.so not found:"
+    echo "       $MIYOO_GLES"
     exit 1
 fi
 
 cp \
-    "$MIYOO_PREBUILT/libEGL.so.1.0.0" \
+    "$MIYOO_EGL" \
     "$DEPLOY_DIR/lib/libEGL.so"
 
 cp \
-    "$MIYOO_PREBUILT/libGLESv2.so.2.0.0" \
+    "$MIYOO_GLES" \
     "$DEPLOY_DIR/lib/libGLESv2.so.2"
-
 
 
 # ============================================================

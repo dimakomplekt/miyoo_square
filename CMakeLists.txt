@@ -243,6 +243,31 @@ elseif(PROJECT_PLATFORM STREQUAL "MIYOO")
     )
 
 
+    set(MIYOO_SDL2_ROOT
+        "$ENV{HOME}/miyoo_sdl2/sdl2"
+    )
+
+    set(MIYOO_SDL2_INCLUDE_DIR
+        "${MIYOO_SDL2_ROOT}/include"
+    )
+
+    set(MIYOO_SDL2_LIB
+        "${MIYOO_SDL2_ROOT}/build/.libs/libSDL2-2.0.so.0.18.2"
+    )
+
+    set(MIYOO_MINI_LIB_DIR
+        "$ENV{HOME}/miyoo_sdl2/mini/lib"
+    )
+
+    set(MIYOO_EGL_LIB
+        "$ENV{HOME}/miyoo_sdl2/prebuilt/640x480/libEGL.so"
+    )
+
+    set(MIYOO_GLES_LIB
+        "$ENV{HOME}/miyoo_sdl2/prebuilt/640x480/libGLESv2.so"
+    )
+
+
     # --------------------------------------------------------
     # HEADERS
     # --------------------------------------------------------
@@ -250,7 +275,19 @@ elseif(PROJECT_PLATFORM STREQUAL "MIYOO")
     target_include_directories(
         MIYOO_SQUARE
         PRIVATE
+        "${MIYOO_SDL2_INCLUDE_DIR}"
         "${MIYOO_INCLUDE_DIR}"
+    )
+
+
+    # --------------------------------------------------------
+    # LINK OPTIONS
+    # --------------------------------------------------------
+
+    target_link_options(
+        MIYOO_SQUARE
+        PRIVATE
+        -Wl,--no-as-needed
     )
 
 
@@ -262,13 +299,22 @@ elseif(PROJECT_PLATFORM STREQUAL "MIYOO")
         MIYOO_SQUARE
         PRIVATE
 
-        "${MIYOO_LIB_DIR}/libSDL2-2.0.so.0.16.0"
+        "${MIYOO_EGL_LIB}"
+        "${MIYOO_GLES_LIB}"
+
+        "${MIYOO_MINI_LIB_DIR}/libmi_ao.so"
+        "${MIYOO_MINI_LIB_DIR}/libshmvar.so"
+        "${MIYOO_MINI_LIB_DIR}/libmi_common.so"
+        "${MIYOO_MINI_LIB_DIR}/libmi_sys.so"
+        "${MIYOO_MINI_LIB_DIR}/libmi_gfx.so"
+
+        "${MIYOO_SDL2_LIB}"
+
         "${MIYOO_LIB_DIR}/libSDL2_image-2.0.so.0.2.3"
         "${MIYOO_LIB_DIR}/libSDL2_ttf-2.0.so.0.14.1"
 
         stdc++fs
     )
-
 
     # --------------------------------------------------------
     # CONTENT
