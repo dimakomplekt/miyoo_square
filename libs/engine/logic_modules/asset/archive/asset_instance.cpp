@@ -9,7 +9,7 @@
 #include "asset_instance.h"
 
 #include <cassert> // assert include
-#include <cmath> // Devision and rounding operations
+#include <cmath>   // Devision and rounding operations
 
 // =========================================================================================== IMPORT
 
