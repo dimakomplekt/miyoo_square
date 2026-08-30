@@ -347,7 +347,7 @@ bool SDL_app_cycle(SDL_app_ctx* app)
 
         */
 
-        if (App_timer_1.can_execute(Execute_zone_ID::HZ_60))
+        if (App_timer_1.can_execute(Execute_zone_ID::HZ_120))
         {
             SDL_RenderClear(app->renderer);
 

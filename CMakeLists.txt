@@ -53,6 +53,12 @@ file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS
 # SOURCE EXCLUSIONS
 # ============================================================
 
+# The asset subsystem is still under active development and is not part of
+# the SDL renderer smoke-test path. Keep it out of the build until it is ready.
+list(FILTER PROJECT_SOURCES EXCLUDE
+    REGEX "libs/engine/logic_modules/asset/.*"
+)
+
 list(FILTER PROJECT_SOURCES EXCLUDE
     REGEX "libs/engine/logic_modules/program_logic/asset/.*"
 )
@@ -160,52 +166,28 @@ if(PROJECT_PLATFORM STREQUAL "WINDOWS")
     )
 
 
-    add_custom_command(
-        TARGET MIYOO_SQUARE
-        POST_BUILD
+      # Автоматический сбор системных DLL от конфликтов MinGW
+    get_filename_component(MINGW_BIN_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
+    set(SYS_DLL_NAMES "libstdc++-6.dll" "libgcc_s_seh-1.dll" "libwinpthread-1.dll")
 
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    foreach(DLL_NAME ${SYS_DLL_NAMES})
+        find_program(FOUND_DLL_${DLL_NAME} NAMES ${DLL_NAME} HINTS "${MINGW_BIN_DIR}" NO_DEFAULT_PATH)
+        if(FOUND_DLL_${DLL_NAME})
+            add_custom_command(
+                TARGET MIYOO_SQUARE
+                POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FOUND_DLL_${DLL_NAME}}" "$<TARGET_FILE_DIR:MIYOO_SQUARE>"
+                COMMENT "Copying system dependency: ${DLL_NAME}"
+            )
+        endif()
+    endforeach()
 
-        "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL/win_SDL2-2.32.10/lib/x64/SDL2.dll"
+    # Копирование библиотек SDL и контента
+    add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL/win_SDL2-2.32.10/lib/x64/SDL2.dll" "$<TARGET_FILE_DIR:MIYOO_SQUARE>")
+    add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL_TTF/SDL2_ttf-2.24.0/lib/x64" "$<TARGET_FILE_DIR:MIYOO_SQUARE>")
+    add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL_IMAGE/SDL2_image-2.8.10/lib/x64" "$<TARGET_FILE_DIR:MIYOO_SQUARE>")
+    add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/libs/engine/logic_modules/program_gui/basic_content" "$<TARGET_FILE_DIR:MIYOO_SQUARE>/content")
 
-        "$<TARGET_FILE_DIR:MIYOO_SQUARE>"
-    )
-
-
-    add_custom_command(
-        TARGET MIYOO_SQUARE
-        POST_BUILD
-
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-
-        "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL_TTF/SDL2_ttf-2.24.0/lib/x64"
-
-        "$<TARGET_FILE_DIR:MIYOO_SQUARE>"
-    )
-
-
-    add_custom_command(
-        TARGET MIYOO_SQUARE
-        POST_BUILD
-
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-
-        "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL_IMAGE/SDL2_image-2.8.10/lib/x64"
-
-        "$<TARGET_FILE_DIR:MIYOO_SQUARE>"
-    )
-
-
-    add_custom_command(
-        TARGET MIYOO_SQUARE
-        POST_BUILD
-
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-
-        "${CMAKE_SOURCE_DIR}/libs/engine/logic_modules/program_gui/basic_content"
-
-        "$<TARGET_FILE_DIR:MIYOO_SQUARE>/content"
-    )
 
 
     target_compile_options(

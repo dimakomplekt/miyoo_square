@@ -16,7 +16,6 @@
 
 // =========================================================================================== ASSET TYPES
 
-
 /**
  * @brief Kinds of assets supported by the engine.
  *
@@ -27,20 +26,45 @@
  * without knowing the concrete implementation.
  * 
  */
-enum class Asset_type {
+enum asset_type {
 
     IMAGE_AT,      // 2D texture rendered via SDL
     AUDIO_AT,      // Audio resource
     VIDEO_AT,      // Animated or streamed media
     FONT_AT,       // Bitmap or vector font
+
     UNKNOWN_AT     // Placeholder for invalid or not-yet-loaded assets
 
 };
 
-// =========================================================================================== ASSET_TYPES
+// =========================================================================================== ASSET TYPES
+
+
+// =========================================================================================== HANDLE STRUCT
+
+// For both asset manager and asset instance manager
+
+// Handle struct, which serves asset manager and asset instances manager
+// clients for the lifetime check functional. For example: managers subscribers 
+// should check both idx and gen before further actions with their current asset or
+// instance
+struct handle_ctx
+{
+    // Index of handle
+    int index;
+
+    // Generation of handle
+    int generation;
+    
+};
 
 
 // =========================================================================================== ASSET BASE CLASS
+
+
+// Predeclare for friendship
+class Asset_manager;
+
 
 /**
  * @brief Abstract base class for all assets in the engine.
@@ -62,13 +86,15 @@ enum class Asset_type {
  */
 class Asset
 {
+    friend Asset_manager;
+
 
     public:
 
         // ===== METHODS =====
 
         // Asset type getter - uses by Asset manager
-        const Asset_type get_type() const;
+        const asset_type get_type() const;
 
         // Asset path getter - uses by Asset manager
         const std::string& get_path() const;
@@ -96,7 +122,7 @@ class Asset
         // ===== DATA =====
 
         // Kind of this asset
-        Asset_type type;    
+        asset_type type;    
 
 
         // Path to the file on disk
@@ -134,6 +160,8 @@ enum image_format
  */
 class Image_asset : public Asset 
 {
+    friend Asset_manager;
+
 
     public:
 

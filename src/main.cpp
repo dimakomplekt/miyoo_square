@@ -1,3 +1,102 @@
+/*
+
+#include "../libs/engine/engine.h"
+#include <stdio.h>
+
+static void log_rect(const char *name, const SDL_Rect *r)
+{
+    printf("%s: x=%d y=%d w=%d h=%d\n", name, r->x, r->y, r->w, r->h);
+}
+
+int main(int argc, char **argv)
+{
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_Window *win = SDL_CreateWindow(
+        "copy-test",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        640,
+        480,
+        0
+    );
+
+    SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+    SDL_Texture *tex_red = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 128, 128);
+    SDL_Texture *tex_green = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 128, 128);
+    SDL_Texture *tex_blue = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 128, 128);
+    SDL_Texture *tex_yellow = SDL_CreateTexture(ren, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, 128, 128);
+
+    Uint32 *p = NULL;
+    int pitch = 0;
+    SDL_LockTexture(tex_red, NULL, (void **)&p, &pitch);
+    for (int y = 0; y < 128; ++y) {
+        for (int x = 0; x < 128; ++x) {
+            p[y * (pitch / 4) + x] = 0xFFFF0000; // red
+        }
+    }
+    SDL_UnlockTexture(tex_red);
+
+    // green
+    SDL_LockTexture(tex_green, NULL, (void **)&p, &pitch);
+    for (int y = 0; y < 128; ++y) {
+        for (int x = 0; x < 128; ++x) {
+            p[y * (pitch / 4) + x] = 0xFF00FF00; // green
+        }
+    }
+    SDL_UnlockTexture(tex_green);
+
+    SDL_LockTexture(tex_blue, NULL, (void **)&p, &pitch);
+    for (int y = 0; y < 128; ++y) {
+        for (int x = 0; x < 128; ++x) {
+            p[y * (pitch / 4) + x] = 0xFF0000FF; // blue
+        }
+    }
+    SDL_UnlockTexture(tex_blue);
+
+    SDL_LockTexture(tex_yellow, NULL, (void **)&p, &pitch);
+    for (int y = 0; y < 128; ++y) {
+        for (int x = 0; x < 128; ++x) {
+            p[y * (pitch / 4) + x] = 0xFFFFFF00; // yellow
+        }
+    }
+    SDL_UnlockTexture(tex_yellow);
+
+    SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+    SDL_RenderClear(ren);
+
+    SDL_Rect dst1 = { 40, 40, 128, 128 };
+    SDL_Rect dst2 = { 472, 40, 128, 128 };
+    SDL_Rect dst3 = { 40, 312, 128, 128 };
+    SDL_Rect dst4 = { 472, 312, 128, 128 };
+
+    log_rect("dst1", &dst1);
+    log_rect("dst2", &dst2);
+    log_rect("dst3", &dst3);
+    log_rect("dst4", &dst4);
+
+    SDL_RenderCopy(ren, tex_red, NULL, &dst1);
+    SDL_RenderCopy(ren, tex_green, NULL, &dst2);
+    SDL_RenderCopy(ren, tex_blue, NULL, &dst3);
+    SDL_RenderCopy(ren, tex_yellow, NULL, &dst4);
+
+    SDL_RenderPresent(ren);
+    SDL_Delay(5000);
+
+    SDL_DestroyTexture(tex_red);
+    SDL_DestroyTexture(tex_green);
+    SDL_DestroyTexture(tex_blue);
+    SDL_DestroyTexture(tex_yellow);
+    SDL_DestroyRenderer(ren);
+    SDL_DestroyWindow(win);
+    SDL_Quit();
+    return 0;
+}
+
+*/
+
+/*
 
 #include <SDL.h>
 #include <stdio.h>
@@ -6,6 +105,7 @@ static void print_rect(const char *label, const SDL_Rect *rect)
 {
     printf("%s: x=%d y=%d w=%d h=%d\n", label, rect->x, rect->y, rect->w, rect->h);
 }
+
 
 static void draw_quadrant_test(SDL_Renderer *renderer)
 {
@@ -47,6 +147,7 @@ static void draw_quadrant_test(SDL_Renderer *renderer)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(renderer, &screen_border);
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -112,9 +213,9 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+*/
 
 
-/*
 
 // main.cpp
 
@@ -137,5 +238,3 @@ int main()
 }
 
 // =========================================================================================== MAIN
-
-*/

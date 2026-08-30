@@ -10,6 +10,7 @@
 // =========================================================================================== IMPORT
 
 
+
 // =========================================================================================== ASSET CLASS
 
 // ===== LIFETIME =====
@@ -30,7 +31,7 @@ Asset::~Asset() = default;
 
 // Asset type getter
 
-const Asset_type Asset::get_type() const
+const asset_type Asset::get_type() const
 {
     // Returns the current asset type
     return this->type;
@@ -58,7 +59,7 @@ const std::string& Asset::get_path() const
 
 Image_asset::Image_asset(const std::string& path) {
 
-    this->type = Asset_type::IMAGE_AT; 
+    this->type = IMAGE_AT; 
     this->source_path = path;          
 
     this->set_format();

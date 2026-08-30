@@ -21,7 +21,7 @@
 
 // Constructor realization 
 
-Asset::Asset(Asset_type type, const std::string& path) : type(type), source_path(path) {};
+Asset::Asset(asset_type type, const std::string& path) : type(type), source_path(path) {};
 
 
 // Destructor - deletes class data and all active instances
@@ -37,12 +37,12 @@ Asset::~Asset()
         // by the reason, that Asset_instance could have some exclusive destructors logic
         switch (type)
         {
-            case Asset_type::IMAGE:
+            case asset_type::IMAGE:
 
                 static_cast<Image_asset*>(this)->delete_instance(static_cast<Image_instance*>(instance));
                 break;
 
-            case Asset_type::AUDIO:
+            case asset_type::AUDIO:
 
                 static_cast<Audio_asset*>(this)->delete_instance(static_cast<Audio_instance*>(instance));
                 break;
@@ -61,7 +61,7 @@ Asset::~Asset()
 
 // Asset type getter
 
-Asset_type Asset::get_type() const
+asset_type Asset::get_type() const
 {
     // Returns the current asset type
     return type;
@@ -104,7 +104,7 @@ void Asset::unregister_instance(Asset_instance* instance)
 Image_asset::Image_asset(const std::string& path) :
 
     // Default values
-    Asset(Asset_type::IMAGE, path), 
+    Asset(asset_type::IMAGE, path), 
 
     initial_width(0), 
     initial_height(0)
@@ -202,7 +202,7 @@ void Image_asset::delete_instance(Image_instance* instance)
 Audio_asset::Audio_asset(const std::string& path) :
 
     // Default values
-    Asset(Asset_type::AUDIO, path),
+    Asset(asset_type::AUDIO, path),
 
     initial_sample_rate(0),
     initial_bitrate(0),

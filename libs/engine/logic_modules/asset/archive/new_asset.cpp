@@ -18,7 +18,7 @@
 
 // Constructor realization 
 
-Asset::Asset(Asset_type type, const std::string& path) : type(type), source_path(path) {};
+Asset::Asset(asset_type type, const std::string& path) : type(type), source_path(path) {};
 
 
 // Destructor realization 
@@ -28,7 +28,7 @@ Asset::~Asset() = default;
 
 // Asset type getter
 
-Asset_type Asset::get_type() const
+asset_type Asset::get_type() const
 {
     // Returns the current asset type
     return type;
@@ -50,7 +50,7 @@ const std::string& Asset::get_path() const
 Image_asset::Image_asset(const std::string& path) :
 
     // Default values
-    Asset(Asset_type::IMAGE, path), 
+    Asset(asset_type::IMAGE, path), 
 
 {
 
@@ -178,7 +178,7 @@ void Image_asset::delete_instance(Image_instance* instance)
 Audio_asset::Audio_asset(const std::string& path) :
 
     // Default values for basic class
-    Asset(Asset_type::AUDIO, path)
+    Asset(asset_type::AUDIO, path)
 
 {
     this->set_sample_rate();

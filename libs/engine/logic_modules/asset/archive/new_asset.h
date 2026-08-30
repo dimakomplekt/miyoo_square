@@ -27,7 +27,7 @@
  * without knowing the concrete implementation.
  * 
  */
-enum class Asset_type {
+enum class asset_type {
 
     IMAGE,      // 2D texture rendered via SDL
     VIDEO,      // Animated or streamed media
@@ -37,7 +37,7 @@ enum class Asset_type {
 
 };
 
-// =========================================================================================== ASSET_TYPES
+// =========================================================================================== asset_typeS
 
 
 // =========================================================================================== ASSET BASE CLASS
@@ -73,7 +73,7 @@ class Asset
          * @param path File path to the asset on disk.
          * 
          */
-        Asset(Asset_type type, const std::string& path);
+        Asset(asset_type type, const std::string& path);
 
 
         // Virtual destructor.
@@ -82,7 +82,7 @@ class Asset
 
 
         // Asset type getter
-        Asset_type get_type() const;
+        asset_type get_type() const;
 
         // Asset path getter
         const std::string& get_path() const;
@@ -91,7 +91,7 @@ class Asset
     protected:
 
         // Kind of this asset
-        Asset_type type;    
+        asset_type type;    
 
         // Path to the file on disk
         std::string source_path;
