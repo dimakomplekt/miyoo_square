@@ -86,9 +86,13 @@ class Asset_manager;
  */
 class Asset
 {
+    // ===== Friendship ===== 
+
     friend Asset_manager;
 
+    // ===== Friendship ===== 
 
+    
     public:
 
         // ===== METHODS =====

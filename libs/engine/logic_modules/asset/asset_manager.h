@@ -16,18 +16,12 @@
 // Asset slot (asset + handle)
 struct asset_slot_ctx {
 
-    Asset* asset;               // Asset himself
+    Asset* asset;                       // Asset himself
 
-    std::string asset_name;     // Asset name
-    handle_ctx handle;          // Asset handle (index and generation)
+    handle_ctx handle;                  // Asset handle (index and generation)
 
-};
+    unsigned int instance_count;        // Instance counter (serves to understand could we delete asset or not)
 
-
-// List of asset slots in asset manager 
-struct images_assets_list 
-{
-    // Whatever the storage logic
 };
 
 
@@ -39,7 +33,8 @@ struct images_assets_list
 // Predeclaration for friendship setting
 
 class Asset_instance;
-
+class Image_instance;
+class Audio_instance;
 
 // =========================================================================================== FRIEND CLASSES PREDECLARE
 
@@ -51,8 +46,13 @@ class Asset_instance;
 
 class Asset_manager
 {
-    friend Asset_instance;
+    // ===== Friendship ===== 
 
+    friend Asset_instance;
+    friend Image_instance;
+    friend Audio_instance;
+
+    // ===== Friendship ===== 
 
     public:
 
@@ -65,7 +65,7 @@ class Asset_manager
         ~Asset_manager();
 
 
-        // ===== Asset workflow =====
+        // ===== METHODS =====
 
         /**
          * @brief Asset adder (+ creator)
@@ -73,65 +73,100 @@ class Asset_manager
          * Serves to create asset add add it inside asset manager
          * 
          * @param type Asset type
-         * @param asset_name Asset name in string format. Should be unique. 
          * @param asset_link Link to the asset file inside build directory
          * 
          * @return handle_ctx constant copy to use 
          * 
          */
-        const handle_ctx add_asset(asset_type type, std::string asset_name, std::string asset_link);
+        const handle_ctx add_asset(asset_type type, std::string asset_link);
 
 
         /**
          * @brief Asset delete from assets list method (+ asset destructor call)
          * 
-         * Serves to delete asset
+         * Serves to delete asset. Checks the asset instance counter and deletes
+         * asset if there is no active instances.  
+         * 
+         * @param asset_handle Handle of asset to delete
+         * 
+         */
+        bool delete_asset_request(handle_ctx asset_handle);
+
+        // ===== METHODS =====
+
+
+    protected:
+
+        // ===== METHODS =====
+
+        /**
+         * @brief Asset getter
+         * 
+         * Serves to get the asset link by handle
+         * 
+         * Could be called only by INSTANCE MANAGERS (during
+         * the reason of "at least one instance to work with 
+         * asset" workflow).
+         * 
+         * @return Pointer to the requested Asset
+         * 
+         * @return Asset link
+         * 
+         */
+        Asset* get_asset(handle_ctx asset_handle) const;
+
+        // ===== METHODS =====
+
+    private:
+
+        // ===== METHODS =====
+
+        /**
+         * @brief Asset delete from assets list method (+ asset destructor call)
+         * 
+         * Inner asset manager function.
+         * 
+         * Serves to delete asset after nullptr of asset link and generation incrementation
+         * inside the asset list
          * 
          * @param asset Asset to delete
          * 
          */
         void delete_asset(Asset* asset);
+        
+        // ===== METHODS =====
 
 
-        /**
-         * @brief Asset getter
-         * 
-         * Serves to get the asset link by type and handle
-         * 
-         * @param type Asset type
-         * @param asset_handle Asset handle
-         * 
-         * @return Asset link
-         * 
-         */
-        Asset* get_asset(asset_type type, handle_ctx asset_handle) const;
-
-        // ===== Asset workflow =====
-
-    protected:
+        // ===== Data =====
 
         /**
-         * @brief Asset handle getter
          * 
-         * Serves to get the asset handle by asset name.
-         * Could be called only by asset instance manager
-         * 
-         * Uses inside add_instance() method. During the call
-         * function will get the current instance handle. So in further
-         * handle changes would provide controlled behavior of the program
-         * cycle - returns with std::cout << of treatment errors
-         * 
-         * @param name Asset name
-         * 
-         * @return Asset handle constant copy
-         * 
-         */
-        handle_ctx get_asset_handle_by_name(std::string asset_name) const;
-
-
-    private:
-
-        images_assets_list images_assets; 
-}
+         * @brief Asset slots list.
+         *
+         * The vector index is directly associated with the asset handle index:
+         *     slots[index] <-> handle_ctx.index
+         *
+         * This provides O(1) asset slot access by handle without any additional
+         * lookup or search operation.
+         *
+         * Each vector element represents a stable logical slot. Asset deletion
+         * does not remove the slot from the vector, because erasing an element
+         * would shift subsequent elements and invalidate their handle indices.
+         *
+         * Instead, an unused slot remains inside the vector and may be reused
+         * for a future asset. When a slot is reused, its generation is incremented
+         * to invalidate handles referring to the previous asset.
+         *
+         * Therefore the following invariant must always be preserved:
+         *
+         *     slots[N].handle.index == N
+         *
+         * The handle index identifies the slot, while the handle generation
+         * identifies the current lifetime of the asset occupying that slot.
+        */
+        std::vector<asset_slot_ctx> slots;
+        
+        // ===== Data =====
+};
 
 // =========================================================================================== ASSET MANAGER CLASS
