@@ -25,6 +25,14 @@ struct asset_slot_ctx {
 };
 
 
+// Asset inclosure, contained by the Instance (which uses asset)
+struct asset_inclosure
+{
+    
+}
+
+
+
 // =========================================================================================== HELPERS
 
 

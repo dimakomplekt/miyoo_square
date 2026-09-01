@@ -14,6 +14,25 @@
 // =========================================================================================== IMPORT
 
 
+/*
+    PARADIGM:
+    
+    Asset:
+
+        owns resource
+
+    Instance:
+
+        uses Asset
+        owns calculated representation
+
+    Object:
+
+        uses Instance
+        owns inner data
+*/
+
+
 // =========================================================================================== ASSET TYPES
 
 /**
@@ -92,7 +111,7 @@ class Asset
 
     // ===== Friendship ===== 
 
-    
+
     public:
 
         // ===== METHODS =====
@@ -182,7 +201,7 @@ class Image_asset : public Asset
         unsigned int get_height() const;
 
         // ===== METHODS =====
-
+ 
 
     protected:
 
@@ -202,17 +221,15 @@ class Image_asset : public Asset
         // ===== LIFETIME =====
 
 
-
-
     private:
 
         // ===== METHODS =====
 
-        // Set initial image format - calls inside constructor
+        // Set initial image format - calls ones inside constructor
         void set_format();
 
 
-        // Set initial width and height of the image - calls in constructor
+        // Set initial width and height of the image - calls ones inside constructor
         void set_sizes();
 
         // ===== METHODS =====
