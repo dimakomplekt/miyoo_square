@@ -11,6 +11,32 @@
 // =========================================================================================== IMPORT
 
 
+// =========================================================================================== NOTE
+
+/*
+
+    So, the logic here:
+
+    Instance users must do IM.unsub(used_instance_handle) in their destructors (which will decrement subscribers_count inside
+    the instance slot)
+    
+    After that IM.delete_instance_request(used_instance_handle) (which will check subscribers_count == 0 and delete the
+    instance if its true). With instance delete, the instance destructor will be called, which must call 
+    AM.unsub(used_instance_handle), which will decrement instance_count inside the asset slot.
+
+    If we want to delete the asset, we must call AM.delete_asset_request(used_asset_handle),
+    which will check instance_count == 0 inside the asset slot and delete the asset itself if its true. 
+
+    So we got the 2-stage subscription system, which allows us to delete the asset only if there is no active instances
+    of it, and delete the instance.
+
+    So with correct classes or correct use inside non-OOP code, we will not have any memory leaks or dangling pointers.
+
+*/
+
+// =========================================================================================== NOTE
+
+
 // =========================================================================================== HELPERS
 
 // Asset slot (asset + handle)
@@ -29,7 +55,9 @@ struct asset_slot_ctx {
 struct asset_inclosure
 {
     
-}
+
+
+};
 
 
 
@@ -100,6 +128,17 @@ class Asset_manager
          */
         bool delete_asset_request(handle_ctx asset_handle);
 
+
+        /**
+         * @brief Asset instance unsubscribing method
+         * 
+         * Serves to decrement the asset instance counter inside the asset slot
+         * 
+         * @param asset_handle Handle of asset to unsubscribe
+         * 
+         */
+        void unsub(handle_ctx instance_handle);
+
         // ===== METHODS =====
 
 
@@ -163,7 +202,9 @@ class Asset_manager
          *
          * Instead, an unused slot remains inside the vector and may be reused
          * for a future asset. When a slot is reused, its generation is incremented
-         * to invalidate handles referring to the previous asset.
+         * to invalidate handles referring to the previous asset. At the add operation
+         * we check if the slot is free (asset == nullptr) and if it is, we use it for 
+         * the new asset.
          *
          * Therefore the following invariant must always be preserved:
          *
@@ -171,6 +212,7 @@ class Asset_manager
          *
          * The handle index identifies the slot, while the handle generation
          * identifies the current lifetime of the asset occupying that slot.
+         * 
         */
         std::vector<asset_slot_ctx> slots;
         
