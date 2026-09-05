@@ -23,6 +23,38 @@ enum element_form
 
 
 /**
+ * @brief Draws a line between two points with a specified width and color.
+ * 
+ * @param x_1_render_point render point 1 x coordinate
+ * @param y_1_render_point render point 1 y coordinate
+ * @param x_2_render_point render point 2 x coordinate
+ * @param y_2_render_point render point 2 y coordinate
+ * @param line_width line width
+ * @param color line color
+ * @param renderer renderer
+ * 
+ * 
+ */
+void line_draw(
+
+    int x_1_render_point, 
+    int y_1_render_point,
+
+    int x_2_render_point, 
+    int y_2_render_point,
+
+
+    unsigned int line_width,
+
+    SDL_Color color,
+
+    SDL_Renderer* renderer
+
+);
+
+
+
+/**
  * @brief Renders a filled rectangle using a solid color.
  *
  * Draws a rectangle centered at the given render point using the specified width,

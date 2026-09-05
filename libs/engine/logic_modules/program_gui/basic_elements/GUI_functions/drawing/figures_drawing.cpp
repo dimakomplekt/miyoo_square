@@ -12,6 +12,91 @@
 // =========================================================================================== RECTANGLE
 
 
+/**
+ * @brief Draws a line between two points with a specified width and color.
+ * 
+ * @param x_1_render_point render point 1 x coordinate
+ * @param y_1_render_point render point 1 y coordinate
+ * @param x_2_render_point render point 2 x coordinate
+ * @param y_2_render_point render point 2 y coordinate
+ * @param line_width line width
+ * @param color line color
+ * @param renderer renderer
+ * 
+ * 
+ */
+void line_draw(
+
+    int x_1_render_point, 
+    int y_1_render_point,
+
+    int x_2_render_point, 
+    int y_2_render_point,
+
+
+    unsigned int line_width,
+
+    SDL_Color color,
+
+    SDL_Renderer* renderer
+
+)
+{
+    if (!renderer || line_width == 0) return;
+
+    // Set the drawing color once for all lines below
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    // Standard case for 1px line thickness
+    if (line_width == 1) {
+        SDL_RenderDrawLine(renderer, x_1_render_point, y_1_render_point, x_2_render_point, y_2_render_point);
+        return;
+    }
+
+    // Horizontal thick lines are filled as one rectangle instead of a batch
+    // of thin line commands, avoiding edge artifacts in the Mini backend.
+    if (y_1_render_point == y_2_render_point) {
+        SDL_FRect rect = {
+            (float)std::min(x_1_render_point, x_2_render_point),
+            (float)y_1_render_point - ((float)line_width * 0.5f),
+            (float)std::abs(x_2_render_point - x_1_render_point),
+            (float)line_width
+        };
+        SDL_RenderFillRectF(renderer, &rect);
+        return;
+    }
+
+    // Check direction vector
+    float dx = (float)(x_2_render_point - x_1_render_point);
+    float dy = (float)(y_2_render_point - y_1_render_point);
+    float length = std::sqrt(dx * dx + dy * dy);
+
+    if (length == 0.0f) return; // Point-to-point error (coinciding points)
+
+    // Normalize direction vector
+    dx /= length;
+    dy /= length;
+
+    // Find the perpendicular unit vector (normal)
+    float nx = -dy;
+    float ny = dx;
+
+    // Calculate half width for symmetric drawing
+    float half_width = (float)line_width / 2.0f;
+
+    // Draw the thick line as a set of parallel thin lines
+    // Step by 0.5 pixels to prevent gaps due to rounding errors
+    for (float i = -half_width; i <= half_width; i += 0.5f) {
+        int x1_offset = std::round((float)x_1_render_point + nx * i);
+        int y1_offset = std::round((float)y_1_render_point + ny * i);
+        int x2_offset = std::round((float)x_2_render_point + nx * i);
+        int y2_offset = std::round((float)y_2_render_point + ny * i);
+
+        SDL_RenderDrawLine(renderer, x1_offset, y1_offset, x2_offset, y2_offset);
+    }
+}
+
+
 void rectangle_borders_draw_by_color(
     
     int x_render_point,

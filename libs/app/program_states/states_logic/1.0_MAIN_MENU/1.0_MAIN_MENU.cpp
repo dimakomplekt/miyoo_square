@@ -681,7 +681,12 @@ void main_menu_actions()
 {
     // Switch the state to EXIT if EXIT pressed
 
-    if (App_inputs.is_just_released(Key_actions::EXIT_KA))
+    if (
+
+        (App_inputs.is_just_released(Key_actions::EXIT_KA) ||
+        App_inputs.is_pressed(Key_actions::EXIT_KA))
+
+    )
     {
         std::cout << "EXIT_KA pressed" << std::endl; // TEST
         // this_app.app_sm.request_state_change(START_ID);
@@ -690,6 +695,7 @@ void main_menu_actions()
         SDL_DestroyWindow(this_app.window);
         SDL_Quit();
 
+        exit(0); 
     }
 
     // Switch the state to MAIN MENU if ENTER pressed
@@ -699,7 +705,9 @@ void main_menu_actions()
         std::cout << "START_KA pressed" << std::endl; // TEST
         // Change color
         rectangle_change_border_color();
+        rectangle_change_fill_color();
     }
+
 
     if (App_inputs.is_just_released(Key_actions::SELECT_KA))
     {
@@ -709,6 +717,7 @@ void main_menu_actions()
         // App_lang.switch_to_next_lang();
         rectangle_change_fill_color();
     }
+
 
 
     if (App_inputs.is_just_released(Key_actions::LEFT_KA))
@@ -803,8 +812,35 @@ void main_menu_elements_render(SDL_Renderer* renderer)
     // Background
     // Main_menu_panel->render(renderer);
 
+    // Up line
+
+    line_draw(
+
+        1, 10,
+        640, 10,
+        10,
+        hex_to_sdl_color("#0808d5", 254),
+        renderer
+
+    );
+
+
     // Test rectangle render
     rectangle_render(renderer);
+
+
+    // LOW LINE
+
+    line_draw(
+
+        1, 470,
+        640, 470,
+        10,
+        hex_to_sdl_color("#33ff00", 254),
+        renderer
+
+    );
+
 
     // SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     // SDL_RenderClear(renderer);
