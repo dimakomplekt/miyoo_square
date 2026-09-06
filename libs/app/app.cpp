@@ -105,9 +105,9 @@ bool this_app_init()
     init_program_states(this_app.app_sm);
 
     // Set the initial state to START_ID
-    if (!this_app.app_sm.go_to(MAIN_MENU_ID))
+    if (!this_app.app_sm.go_to(START_ID))
     {
-        std::cerr << "Failed to set initial state to MAIN_MENU." << std::endl;
+        std::cerr << "Failed to set initial state to START." << std::endl;
         SDL_app_shutdown(&this_app);
         return false;
     }

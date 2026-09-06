@@ -93,6 +93,60 @@ class My_SDL_button : public My_SDL_element // SDL_Element
         void set_access_type(button_access_type new_access_type);
 
 
+        // ===== OUTER CONTROL (FOR USE WITHOUT MOUSE) =====
+
+        /**
+         * @brief Outer control mode switcher
+         * 
+         * Set the flag to outer control mode handling
+         * 
+         * Provides the check of outer setters of clicked and hovered states
+         * 
+         * @param outer_control current mode status (activated or deactivated)
+         */
+        void switch_outer_control_flag(bool outer_control);
+
+
+        /**
+         * @brief Outer clicked state control
+         * 
+         * Set as true if it's hovered right now
+         * 
+         * Set as false if it's not
+         *  
+         * 
+         * @param hovered hovered or not
+         *        
+         */
+        void set_hovered_state(bool hovered);
+
+        /**
+         * @brief Outer clicked state control
+         * 
+         * Set as true if it's clicked rigth now
+         * 
+         * Set as false at the release
+         * 
+         * @param clicked clicked or not
+         *         
+         */
+        void set_clicked_state(bool clicked);
+
+
+        /**
+         * @brief Outer clicked temp "false" setter
+         * 
+         * Need to be called to block the pressing
+         * if the hover switched to another button
+         * 
+         */
+        void drop_clicked_temp();
+
+
+        // ===== OUTER CONTROL (FOR USE WITHOUT MOUSE) =====
+
+
+
         // Toggles the push mode flag (affects pressed-state rendering behavior)
         void switch_push_mode();
 
@@ -432,6 +486,7 @@ class My_SDL_button : public My_SDL_element // SDL_Element
 
         button_access_type click_access_type;        // Button click access type for click callback logic permission
 
+        bool outer_control_mode;
 
         bool click_permission;                       // Button click permission flag
 

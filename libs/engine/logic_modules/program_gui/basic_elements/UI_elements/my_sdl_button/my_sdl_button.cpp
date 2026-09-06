@@ -24,6 +24,8 @@ My_SDL_button::My_SDL_button()
 
     this->click_access_type  = BUTTON_DEFAULT_CLICK_PERMISSION;
 
+    this->outer_control_mode = false;
+
     this->set_gui_type(STATIC_ELEMENT_GUI);
 
 
@@ -212,7 +214,10 @@ void My_SDL_button::update()
     this->movement_logic_in_update_loop();
 
     // Hover check
-    this->button_hover_check();
+    if (!this->outer_control_mode)
+    {
+        this->button_hover_check();
+    }
 
     // Hover logic
     if (this->button_hovered)
@@ -224,8 +229,11 @@ void My_SDL_button::update()
         if (!this->button_clicked_tmp)
             this->current_button_state = HOVERED_ES;
 
-        // New click or release check  
-        this->button_clicked = lb_click_check();
+        // New click or release check
+        
+        // By outer setter or input check
+        if (!this->outer_control_mode)
+            this->button_clicked = lb_click_check();
     }
     else
     {
@@ -278,7 +286,16 @@ void My_SDL_button::update()
         // One callback call after release
         if (this->on_click)
         {
-            this->on_click();
+            if (!this->outer_control_mode)
+            {
+                this->on_click();
+            }
+            else
+            {
+                // Need additional hovered state check
+                if (this->button_hovered)
+                     this->on_click();
+            }
         }
 
         // Block repeats and reset
@@ -338,6 +355,36 @@ void My_SDL_button::move_to_point(
     
     );
 }
+
+
+void My_SDL_button::switch_outer_control_flag(bool outer_control)
+{
+    this->outer_control_mode = outer_control;
+}
+
+
+
+void My_SDL_button::set_hovered_state(bool hovered)
+{
+    if (!this->outer_control_mode) return;
+
+    this->button_hovered = hovered;
+}
+
+
+void My_SDL_button::set_clicked_state(bool clicked)
+{
+    if (!this->outer_control_mode) return;
+
+    this->button_clicked = clicked;
+}
+
+
+void My_SDL_button::drop_clicked_temp()
+{
+    this->button_clicked_tmp = false;
+}
+
 
 
 
