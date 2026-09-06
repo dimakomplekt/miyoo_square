@@ -192,6 +192,9 @@ bool SDL_app_init(SDL_app_ctx* app, int w, int h, const char* title)
         return false;
     }
 
+
+    #ifdef PLATFORM_WINDOWS
+
     // SDL2 FIX: Creating the renderer with accelerated hardware rendering and built-in VSync.
     // Index '-1' automatically picks the first graphics driver that matches the requested flags.
     app->renderer = SDL_CreateRenderer(
@@ -199,6 +202,21 @@ bool SDL_app_init(SDL_app_ctx* app, int w, int h, const char* title)
         -1, 
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
     );
+
+    #endif
+
+    #ifdef PLATFORM_MIYOO   
+
+    // SDL2 FIX: Creating the renderer with accelerated hardware rendering and built-in VSync.
+    // Index '-1' automatically picks the first graphics driver that matches the requested flags.
+    app->renderer = SDL_CreateRenderer(
+        app->window, 
+        -1, 
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+    );
+
+    #endif
+
 
     if (!app->renderer)
     {

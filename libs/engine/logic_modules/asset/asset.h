@@ -5,12 +5,18 @@
 
 // =========================================================================================== IMPORT
 
+#include <iostream>
+#include <filesystem>
+
 #include <string>
 #include <vector>
 #include <unordered_set>
 
 // Platform
 #include "../../base_modules/platform/platform.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 // =========================================================================================== IMPORT
 
@@ -71,10 +77,10 @@ enum asset_type {
 struct handle_ctx
 {
     // Index of handle
-    int index;
+    int index = -1;                 // Non valid by default
 
     // Generation of handle
-    int generation;
+    int generation = 0;             // No generation by default
     
 };
 
@@ -125,6 +131,7 @@ class Asset
 
         // ===== METHODS =====
 
+
     protected:
 
         // ===== LIFETIME =====
@@ -138,6 +145,7 @@ class Asset
 
         // Virtual destructor.
         // Ensures proper basic class data cleanup with subclasses ~ calls.
+        // Called only by the asset manager
         virtual ~Asset();
 
         // ===== LIFETIME =====
@@ -163,16 +171,6 @@ class Asset
 
 // =========================================================================================== IMAGE ASSET
 
-// Image format logic enum
-enum image_format 
-{
-
-    PNG_IF,
-    JPG_IF,
-    BMP_IF
-    
-};
-
 
 /**
  * @brief Concrete asset representing a 2D image (texture).
@@ -191,10 +189,6 @@ class Image_asset : public Asset
 
         // ===== METHODS =====
 
-        // Get initial image format
-        image_format get_format() const;
-
-
         // Get initial width of the image
         unsigned int get_width() const;
 
@@ -211,34 +205,52 @@ class Image_asset : public Asset
         /**
          * @brief Constructor - load an image asset.
          *
+         * Called only by the asset manager.
+         * 
          * @param path Path to the image file.
          * 
          */
         explicit Image_asset(const std::string& path);
 
-        // Destructor - delete the asset and all instances.
+        // Destructor - delete the asset.
+        // Called only by the asset manager.
         ~Image_asset();
-             
+            
         // ===== LIFETIME =====
+
+
+        // ===== METHODS =====
+
+        /**
+         * @brief Surface provider
+         * 
+         * Provides ready-to-use surface to image assets instances
+         * through the instance manager request
+         * 
+         * @return Pointer to basic image asset in SDL surface format
+         *  
+         */
+        const SDL_Surface* provide_surface() const;
+
+        // ===== METHODS =====
 
 
     private:
 
         // ===== METHODS =====
 
-        // Set initial image format - calls ones inside constructor
-        void set_format();
-
-
         // Set initial width and height of the image - calls ones inside constructor
-        void set_sizes();
+        void image_load();
 
         // ===== METHODS =====
 
 
         // ===== DATA =====
 
-        image_format initial_format;
+        // Loaded image, translated into surface
+        // Surface uses here because textures needs
+        // link to renderer
+        SDL_Surface* surface = nullptr;
 
 
         // Original image w-dimension

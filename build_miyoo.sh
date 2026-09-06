@@ -191,6 +191,11 @@ find /lib /config /customer /mnt/SDCARD \
     >> "$LOG_FILE" 2>&1
 
 
+ulimit -c unlimited
+echo "CORE_PATTERN=$(cat /proc/sys/kernel/core_pattern)" >> "$LOG_FILE"
+echo "PWD=$(pwd)" >> "$LOG_FILE"
+
+
 echo "APP_DIR=$APP_DIR" >> "$LOG_FILE"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> "$LOG_FILE"
 echo "PID=$$" >> "$LOG_FILE"

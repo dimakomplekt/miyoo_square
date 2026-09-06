@@ -1,3 +1,4 @@
+
 // 1.0_MAIN_MENU.cpp
 
 
@@ -10,9 +11,6 @@
 #include "../../../../engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_panel/my_sdl_panel.h"
 #include "../../../../engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_button/my_sdl_button.h"
 #include "../../../../engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_texture/my_sdl_texture.h"
-
-
-
 
 
 // Predeclare for switching states

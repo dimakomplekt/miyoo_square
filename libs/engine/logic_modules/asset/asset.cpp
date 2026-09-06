@@ -62,25 +62,41 @@ Image_asset::Image_asset(const std::string& path) {
     this->type = IMAGE_AT; 
     this->source_path = path;          
 
-    this->set_format();
-    this->set_sizes();
+
+    this->image_load();
 }
 
 
 // Image asset destructor - free the memory and null the pointers for the asset and all asset instances
 
-Image_asset::~Image_asset() = default;
+Image_asset::~Image_asset()
+{
 
+    if (this->surface != nullptr)
+    {
+        SDL_FreeSurface(this->surface);
+        this->surface = nullptr;
+    }
+
+}
 
 // ===== LIFETIME =====
 
 
 // ===== METHODS =====
 
-image_format Image_asset::get_format() const
+const SDL_Surface* Image_asset::provide_surface() const
 {
-    return this->initial_format;
+    if (this->surface != nullptr) return this->surface;
+
+    else std::cout << "Empty surface translation by asset.";
 }
+
+// ===== METHODS =====
+        
+
+// ===== METHODS =====
+
 
 // Initial width getter
 
@@ -98,17 +114,24 @@ unsigned int Image_asset::get_height() const
 }
 
 
-// Set initial image format
-void Image_asset::set_format()
-{
-    // TODO: FILE PARSER
-}
-
-
 // Set initial width of the image
-void Image_asset::set_sizes()
+void Image_asset::image_load()
 {
-    // TODO: FILE PARSER
+    // Load by SDL_Image
+    this->surface = IMG_Load(this->source_path.c_str());
+
+
+    if (this->surface == nullptr)
+    {
+        this->initial_width = 0;
+        this->initial_height = 0;
+
+        return;
+    }
+
+    this->initial_width = static_cast<unsigned int>(this->surface->w);
+
+    this->initial_height = static_cast<unsigned int>(this->surface->h);
 }
 
 // ===== METHODS =====

@@ -51,16 +51,6 @@ struct asset_slot_ctx {
 };
 
 
-// Asset inclosure, contained by the Instance (which uses asset)
-struct asset_inclosure
-{
-    
-
-
-};
-
-
-
 // =========================================================================================== HELPERS
 
 
@@ -71,6 +61,8 @@ struct asset_inclosure
 class Asset_instance;
 class Image_instance;
 class Audio_instance;
+
+class Instance_manager;
 
 // =========================================================================================== FRIEND CLASSES PREDECLARE
 
@@ -88,17 +80,23 @@ class Asset_manager
     friend Image_instance;
     friend Audio_instance;
 
+    friend Instance_manager;
+
     // ===== Friendship ===== 
 
     public:
+
+        // ===== Lifetime ===== 
 
         // Manager constructor
         // Calles once per app cycle 
         Asset_manager();
 
-        // Manager destructor
-        // Calles once per app cycle 
-        ~Asset_manager();
+        // Outer destructor
+        // with protection
+        void asset_manager_delete();
+
+        // ===== Lifetime =====
 
 
         // ===== METHODS =====
@@ -128,17 +126,6 @@ class Asset_manager
          */
         bool delete_asset_request(handle_ctx asset_handle);
 
-
-        /**
-         * @brief Asset instance unsubscribing method
-         * 
-         * Serves to decrement the asset instance counter inside the asset slot
-         * 
-         * @param asset_handle Handle of asset to unsubscribe
-         * 
-         */
-        void unsub(handle_ctx instance_handle);
-
         // ===== METHODS =====
 
 
@@ -162,9 +149,31 @@ class Asset_manager
          */
         Asset* get_asset(handle_ctx asset_handle) const;
 
+
+        /**
+         * @brief Asset instance unsubscribing method
+         * 
+         * Serves to decrement the asset instance counter inside the asset slot
+         * Called by instance manager during the unsub_request()
+         * 
+         * @param asset_handle Handle of asset what instance want to unsub
+         * 
+         */
+        void unsub_operation(handle_ctx asset_handle);
+
         // ===== METHODS =====
 
     private:
+
+
+        // ===== LIFETIME =====
+
+        // Manager destructor
+        // Calles once per app cycle 
+        // by outer delete function
+        ~Asset_manager();
+
+        // ===== LIFETIME =====
 
         // ===== METHODS =====
 
@@ -180,6 +189,15 @@ class Asset_manager
          * 
          */
         void delete_asset(Asset* asset);
+
+        /**
+         * @brief Free handle in slots list getter
+         * 
+         * Provides the handle to the created asset
+         * 
+         * @return First met free handle
+         */
+        const handle_ctx get_free_handle();
         
         // ===== METHODS =====
 
