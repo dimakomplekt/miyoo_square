@@ -140,9 +140,10 @@ Global_fonts::Global_fonts()
 {
     this->current_fonts_palette_id = 0;
 
-    this->fonts_palette_init_flag = true;
-    this->fonts_palette_reset_flag_loops_counter = 0;
 
+    this->fonts_palette_init_flag = true;
+    this->fonts_palette_reset_flag = false;
+    this->fonts_palette_reset_flag_loops_counter = 0;
 
     // Constructor is private and only called once by Instance().
     // No dynamic memory allocation needed here.
@@ -158,8 +159,13 @@ void Global_fonts::fonts_management_in_update_loop()
     // Go through the palettes list and initialize / reinitialize the SDL_TTF fonts if the palette reset flag is set
     if (this->fonts_palette_init_flag)
     {
-        for (app_fonts_palette_ctx& palette : this->fonts_palettes_list)
+        //for (app_fonts_palette_ctx& palette : this->fonts_palettes_list)
+        // {
+
+        for (size_t palette_id = 0; palette_id < this->fonts_palettes_list.size(); ++palette_id)
         {
+            app_fonts_palette_ctx& palette = this->fonts_palettes_list[palette_id];
+
             // Counter for further logic switch by UI textbox type
             this->fonts_palette_reset_flag = true;
             int iterator_font_counter = 0;
@@ -198,6 +204,17 @@ void Global_fonts::fonts_management_in_update_loop()
                             font_ctx->font_size = 48;
                             font_ctx->ttf_font_link = TTF_OpenFont(font_ctx->font_path.c_str(), font_ctx->font_size);
 
+                            // TEST
+                            SDL_Log(
+                                "FONT OPEN palette=%zu counter=%d path='%s' size=%u result=%p",
+                                palette_id,
+                                iterator_font_counter,
+                                font_ctx->font_path.c_str(),
+                                font_ctx->font_size,
+                                static_cast<void*>(font_ctx->ttf_font_link)
+                            );
+
+
                             iterator_font_counter++;
 
                             break;
@@ -208,6 +225,17 @@ void Global_fonts::fonts_management_in_update_loop()
 
                             font_ctx->font_size = 36;
                             font_ctx->ttf_font_link = TTF_OpenFont(font_ctx->font_path.c_str(), font_ctx->font_size);
+
+                            // TEST
+                            SDL_Log(
+                                "FONT OPEN palette=%zu counter=%d path='%s' size=%u result=%p",
+                                palette_id,
+                                iterator_font_counter,
+                                font_ctx->font_path.c_str(),
+                                font_ctx->font_size,
+                                static_cast<void*>(font_ctx->ttf_font_link)
+                            );
+
 
                             iterator_font_counter++;
 
@@ -220,6 +248,17 @@ void Global_fonts::fonts_management_in_update_loop()
                             font_ctx->font_size = 24;
                             font_ctx->ttf_font_link = TTF_OpenFont(font_ctx->font_path.c_str(), font_ctx->font_size);
 
+
+                            // TEST
+                            SDL_Log(
+                                "FONT OPEN palette=%zu counter=%d path='%s' size=%u result=%p",
+                                palette_id,
+                                iterator_font_counter,
+                                font_ctx->font_path.c_str(),
+                                font_ctx->font_size,
+                                static_cast<void*>(font_ctx->ttf_font_link)
+                            );
+
                             iterator_font_counter++;
 
                             break;
@@ -230,6 +269,19 @@ void Global_fonts::fonts_management_in_update_loop()
 
                             font_ctx->font_size = 18;
                             font_ctx->ttf_font_link = TTF_OpenFont(font_ctx->font_path.c_str(), font_ctx->font_size);
+
+
+                            // TEST
+                            SDL_Log(
+                                "FONT OPEN palette=%zu counter=%d path='%s' size=%u result=%p",
+                                palette_id,
+                                iterator_font_counter,
+                                font_ctx->font_path.c_str(),
+                                font_ctx->font_size,
+                                static_cast<void*>(font_ctx->ttf_font_link)
+                            );
+
+
 
                             iterator_font_counter++;
 
@@ -242,6 +294,16 @@ void Global_fonts::fonts_management_in_update_loop()
                             font_ctx->font_size = 12;
                             font_ctx->ttf_font_link = TTF_OpenFont(font_ctx->font_path.c_str(), font_ctx->font_size);
 
+                            // TEST
+                            SDL_Log(
+                                "FONT OPEN palette=%zu counter=%d path='%s' size=%u result=%p",
+                                palette_id,
+                                iterator_font_counter,
+                                font_ctx->font_path.c_str(),
+                                font_ctx->font_size,
+                                static_cast<void*>(font_ctx->ttf_font_link)
+                            );
+
                             iterator_font_counter++;
 
                             break;
@@ -252,6 +314,18 @@ void Global_fonts::fonts_management_in_update_loop()
 
                             font_ctx->font_size = 18;
                             font_ctx->ttf_font_link = TTF_OpenFont(font_ctx->font_path.c_str(), font_ctx->font_size);
+                            
+                            // TEST
+                            SDL_Log(
+                                "FONT OPEN palette=%zu counter=%d path='%s' size=%u result=%p",
+                                palette_id,
+                                iterator_font_counter,
+                                font_ctx->font_path.c_str(),
+                                font_ctx->font_size,
+                                static_cast<void*>(font_ctx->ttf_font_link)
+                            );
+
+                            
                             iterator_font_counter++;
                             
                             break;
@@ -261,6 +335,18 @@ void Global_fonts::fonts_management_in_update_loop()
 
                             font_ctx->font_size = 24;
                             font_ctx->ttf_font_link = TTF_OpenFont(font_ctx->font_path.c_str(), font_ctx->font_size);
+                            
+                            // TEST
+                            SDL_Log(
+                                "FONT OPEN palette=%zu counter=%d path='%s' size=%u result=%p",
+                                palette_id,
+                                iterator_font_counter,
+                                font_ctx->font_path.c_str(),
+                                font_ctx->font_size,
+                                static_cast<void*>(font_ctx->ttf_font_link)
+                            );
+
+                            
                             iterator_font_counter = 0;
                             
                             break;

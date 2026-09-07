@@ -30,7 +30,7 @@ struct app_font_ctx
     TTF_Font* ttf_font_link = nullptr;             // TTF Font pointer (void* to avoid SDL_ttf dependency in header)
 
     
-    unsigned int font_size;                        // TTF font size
+    unsigned int font_size = 1;                    // TTF font size
 };
 
 

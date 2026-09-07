@@ -1,5 +1,6 @@
 // 0.0_START.cpp
 
+/*
 
 // =========================================================================================== IMPORT
 
@@ -179,6 +180,11 @@ void start_elements_setup()
 void start_elements_free_and_nullptr()
 {
     // Free all elements
+    if (Start_panel == nullptr)
+    {
+        return;
+    }
+
 
     Start_panel->delete_element();
 
@@ -272,8 +278,9 @@ void start_elements_render(SDL_Renderer* renderer)
 
 // =========================================================================================== STATE INNER FUNCTIONS REALIZATION
 
+*/
 
-/*
+
 
 // 0.0_START.cpp
 
@@ -810,7 +817,28 @@ void start_elements_render(SDL_Renderer* renderer)
 
     START_LOG("Rendering Start_panel");
 
+    line_draw
+    (
+        1, 10,
+        600, 10,
+        5,
+        hex_to_sdl_color("#fd0404", 255),
+        renderer
+    );
+
+
     Start_panel->render(renderer);
+
+
+    line_draw
+    (
+        1, 400,
+        600, 400,
+        5,
+        hex_to_sdl_color("#6bf410", 255),
+        renderer
+    );
+
 
     START_LOG("Start_panel render finished");
 
@@ -819,4 +847,3 @@ void start_elements_render(SDL_Renderer* renderer)
 }
 
 // =========================================================================================== STATE INNER FUNCTIONS REALIZATION
-*/

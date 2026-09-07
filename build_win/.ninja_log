@@ -32,3 +32,17 @@
 247	36581	8104455215871424	CMakeFiles/MIYOO_SQUARE.dir/libs/app/program_states/states_logic/1.0_MAIN_MENU/1.0_MAIN_MENU.cpp.obj	2dd96ea8ce310afe
 194	40058	8104455215343096	CMakeFiles/MIYOO_SQUARE.dir/libs/app/app.cpp.obj	79272b902bc87ddc
 40058	43979	8104455613966392	MIYOO_SQUARE.exe	4fb12f38de7b6eef
+21	192	8104818986422571	C:/creator/it/programs/games/miyoo_square/build_win/CMakeFiles/cmake.verify_globs	957e7cd03bb26aa6
+247	9670	8104818988636240	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_element/my_sdl_element.cpp.obj	a4e06c1597e7d519
+217	12368	8104818988404544	CMakeFiles/MIYOO_SQUARE.dir/libs/app/program_states/program_states.cpp.obj	c0880bb521b273c5
+243	12641	8104818988590937	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_button/my_sdl_button.cpp.obj	879f0c75b6811eac
+228	12702	8104818988510767	CMakeFiles/MIYOO_SQUARE.dir/libs/app/program_states/states_logic/0.0_START/0.0_START.cpp.obj	4eb4cf7fd434abf9
+239	13476	8104818988550912	CMakeFiles/MIYOO_SQUARE.dir/libs/app/program_states/states_logic/1.0_MAIN_MENU/1.0_MAIN_MENU.cpp.obj	2dd96ea8ce310afe
+211	15402	8104818988284520	CMakeFiles/MIYOO_SQUARE.dir/libs/app/app.cpp.obj	79272b902bc87ddc
+9672	20553	8104819083134543	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_fader/my_sdl_fader.cpp.obj	4ce401ae23e01f4a
+12702	21994	8104819113187125	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_texture/my_sdl_texture.cpp.obj	527842d7ec5da395
+12643	23125	8104819112678733	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_textbox/my_sdl_textbox.cpp.obj	f5d27889f378ee8e
+12409	23760	8104819110611848	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_panel/my_sdl_panel.cpp.obj	e67dc6d25fc98f57
+15436	24907	8104819141488785	CMakeFiles/MIYOO_SQUARE.dir/src/main.cpp.obj	c31e1432e939ccfa
+13502	25695	8104819121428148	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/global_fonts/global_fonts.cpp.obj	ca288c3fe92ca3cf
+25695	27526	8104819243115735	MIYOO_SQUARE.exe	4fb12f38de7b6eef

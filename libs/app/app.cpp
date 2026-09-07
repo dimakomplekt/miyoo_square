@@ -293,7 +293,7 @@ bool SDL_app_cycle(SDL_app_ctx* app)
 
     // ===== GLOBAL GUI ELEMENTS UPDATES =====
 
-    if (App_timer_1.can_execute(Execute_zone_ID::HZ_240))
+    if (App_timer_1.can_execute(Execute_zone_ID::HZ_240) || !init)
     {
         
         // Counter and flag update for language reset in dictionary-oriented textboxes
