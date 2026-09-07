@@ -1,0 +1,25 @@
+# ninja log v5
+32	5395	0	/mnt/c/creator/it/programs/games/miyoo_square/build_miyoo/CMakeFiles/cmake.verify_globs	f9c9b5ef240be9a6
+202	4636	1788743704829123000	CMakeFiles/MIYOO_SQUARE.dir/libs/app/global_data/app_timer/app_timer.cpp.o	ad543e1128f6b972
+251	6679	1788743706439832200	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/GUI_functions/drawing/figures_drawing.cpp.o	bddddf61bcbdaf37
+217	7933	1788743708041428300	CMakeFiles/MIYOO_SQUARE.dir/libs/app/program_states/states_logic/0.0_START/0.0_START.cpp.o	ed227107fceec80d
+208	8194	1788743708318069600	CMakeFiles/MIYOO_SQUARE.dir/libs/app/program_states/program_states.cpp.o	11a6b1c3cab92161
+230	8310	1788743708354493100	CMakeFiles/MIYOO_SQUARE.dir/libs/app/program_states/states_logic/1.0_MAIN_MENU/1.0_MAIN_MENU.cpp.o	d9bdc3583debf424
+199	8490	1788743708389768200	CMakeFiles/MIYOO_SQUARE.dir/libs/app/app.cpp.o	9dac28fc395e55d7
+6612	13946	1788743714158643700	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/GUI_functions/translators/color_translator.cpp.o	9fb8b20ad9582a06
+8120	15843	1788743716052359600	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_element/my_sdl_element.cpp.o	4be6b610550af058
+8253	16066	1788743716266910600	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_fader/my_sdl_fader.cpp.o	431162398ae74d82
+6772	16193	1788743716332562000	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_button/my_sdl_button.cpp.o	ef39dd71b9123f86
+8384	16823	1788743716988864700	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_panel/my_sdl_panel.cpp.o	d5fe77d169faeb5c
+8515	18395	1788743718440008400	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_textbox/my_sdl_textbox.cpp.o	c34dcbdb76a25368
+16897	21249	1788743721447744400	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_logic/lang_state/lang_state.cpp.o	1c0e55bc034a84d7
+13982	22680	1788743722885496600	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/UI_elements/my_sdl_texture/my_sdl_texture.cpp.o	ba911a1a7cd43ed0
+16256	23467	1788743723635172700	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_logic/global_inputs/global_inputs.cpp.o	9af97a080d9a73ac
+16134	24560	1788743724767851900	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/global_palette/global_palette.cpp.o	72efaf5c2b9078af
+15907	26813	1788743726837877100	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_gui/basic_elements/global_fonts/global_fonts.cpp.o	2a70215bcda96f07
+21381	27979	1788743728202730800	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/special_modules/absolute_by_relative/absolute_by_relative.cpp.o	a057c1c468f00fff
+22745	28043	1788743728267595900	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/special_modules/absolute_by_relative/platform_routing_lin.cpp.o	d7eb86475c35dca1
+18446	28195	1788743728412120600	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/logic_modules/program_logic/state_machine/state_machine.cpp.o	15daaba225813fd4
+23502	28418	1788743728643147000	CMakeFiles/MIYOO_SQUARE.dir/libs/engine/special_modules/absolute_by_relative/platform_routing_win.cpp.o	1ac379e492e323e6
+24682	29867	1788743730095315700	CMakeFiles/MIYOO_SQUARE.dir/src/main.cpp.o	47dd2a1ab19dc4c1
+29882	41719	1788743738170422300	MIYOO_SQUARE	5a6cc9de43f0a723

@@ -4,6 +4,8 @@
 
 #include "app.h"
 
+#include "../engine/logic_modules/program_gui/basic_elements/global_fonts/global_fonts.h"
+
 #include <iostream>
 
 #ifdef _WIN32
@@ -103,19 +105,8 @@ bool this_app_init()
 
     // Initialize app state machine and states (by initialization function from program_states.cpp)
     init_program_states(this_app.app_sm);
-
-    // Set the initial state to START_ID
-    if (!this_app.app_sm.go_to(START_ID))
-    {
-        std::cerr << "Failed to set initial state to START." << std::endl;
-        SDL_app_shutdown(&this_app);
-        return false;
-    }
-    else
-    {
-        std::cout << this_app.app_sm.get_current_state()->id.string() << std::endl;
-    }
     
+
     return true;
 }
 
@@ -125,7 +116,7 @@ bool SDL_TTF_init()
     // SDL3 and SDL2 CONFLICT
     if (TTF_Init()) 
     {
-        SDL_Log("TTF_Init failed: %s", SDL_GetError());
+        SDL_Log("TTF_Init failed: %s", TTF_GetError());
         return true;
     }
     else
@@ -276,6 +267,9 @@ bool this_app_loop()
 }
 
 
+
+bool init = false;
+
 void SDL_app_event(SDL_app_ctx* app, SDL_Event* event)
 {
     // Main SDL events handler
@@ -287,26 +281,16 @@ void SDL_app_event(SDL_app_ctx* app, SDL_Event* event)
     }
 
     // Other functions delegation to state machine
-    if (app->app_sm.get_current_state()) app->app_sm.state_handle_event(*event);
+    if (init)
+        if (app->app_sm.get_current_state()) 
+            app->app_sm.state_handle_event(*event);
 }
+
 
 
 bool SDL_app_cycle(SDL_app_ctx* app)
 {
-    // State change requests handler
-    if (app->app_sm.check_state_change())
-    {
-        // Perform exit/enter here (with inner state_change.clear() call)
-        app->app_sm.go_to(app->app_sm.consume_next_state());
 
-
-        // ===== SDL3 AND SDL2 CONFLICT =====
-
-        // state changed -> skip this frame to avoid mixed execution
-        return app->app_state == true;
-    }
-
-    
     // ===== GLOBAL GUI ELEMENTS UPDATES =====
 
     if (App_timer_1.can_execute(Execute_zone_ID::HZ_240))
@@ -327,6 +311,31 @@ bool SDL_app_cycle(SDL_app_ctx* app)
     
     // ===== GLOBAL GUI ELEMENTS UPDATES =====
 
+    // State change requests handler
+
+    // 1st time
+    if (!init)
+    {
+        // 1st state
+        if (this_app.app_sm.go_to(START_ID)) init = true;
+    }
+
+    // Further
+    else
+    {
+        if (app->app_sm.check_state_change())
+        {
+            // Perform exit/enter here (with inner state_change.clear() call)
+            app->app_sm.go_to(app->app_sm.consume_next_state());
+
+
+            // ===== SDL3 AND SDL2 CONFLICT =====
+
+            // state changed -> skip this frame to avoid mixed execution
+            return app->app_state == true;
+        }
+
+    }
 
     // State update
     if (app->app_sm.get_current_state()) app->app_sm.state_update();
@@ -400,10 +409,19 @@ bool SDL_app_cycle(SDL_app_ctx* app)
 
 void SDL_app_shutdown(SDL_app_ctx* app)
 {
+    if (app->app_sm.get_current_state() &&
+        app->app_sm.get_current_state()->on_exit)
+    {
+        app->app_sm.get_current_state()->on_exit();
+    }
+
     if (app->renderer) SDL_DestroyRenderer(app->renderer);
     if (app->window) SDL_DestroyWindow(app->window);
 
+    App_fonts.shutdown();
+    TTF_Quit();
     SDL_Quit();
+    exit(0); 
 }
 
 

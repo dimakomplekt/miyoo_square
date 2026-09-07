@@ -1,6 +1,5 @@
 // 0.0_START.cpp
 
-/*
 
 // =========================================================================================== IMPORT
 
@@ -260,13 +259,21 @@ void start_elements_render(SDL_Renderer* renderer)
     // Render all elements
     Start_panel->render(renderer);
 
-}
+    line_draw
+    (
+        1, 10,
+        600, 10,
+        5,
+        hex_to_sdl_color("#fd0404", 255),
+        renderer
+    );
+
+}   
 
 // =========================================================================================== STATE INNER FUNCTIONS REALIZATION
 
-*/
 
-
+/*
 
 // 0.0_START.cpp
 
@@ -812,3 +819,4 @@ void start_elements_render(SDL_Renderer* renderer)
 }
 
 // =========================================================================================== STATE INNER FUNCTIONS REALIZATION
+*/

@@ -5,9 +5,11 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 # MIYOO TOOLCHAIN
 # ============================================================
 
-set(MIYOO_TOOLCHAIN_ROOT
-    "/home/dimakomplekt/miyoo_toolchain"
-)
+if(NOT DEFINED MIYOO_TOOLCHAIN_ROOT)
+    set(MIYOO_TOOLCHAIN_ROOT
+        "/home/dimakomplekt/miyoo_toolchain"
+    )
+endif()
 
 # ============================================================
 # COMPILERS

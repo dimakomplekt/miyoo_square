@@ -225,9 +225,11 @@ elseif(PROJECT_PLATFORM STREQUAL "MIYOO")
     )
 
 
-    set(MIYOO_SDL2_ROOT
-        "$ENV{HOME}/miyoo_sdl2/sdl2"
-    )
+    if(NOT DEFINED MIYOO_SDL2_ROOT)
+        set(MIYOO_SDL2_ROOT
+            "$ENV{HOME}/miyoo_sdl2/sdl2"
+        )
+    endif()
 
     set(MIYOO_SDL2_INCLUDE_DIR
         "${MIYOO_SDL2_ROOT}/include"
@@ -237,17 +239,23 @@ elseif(PROJECT_PLATFORM STREQUAL "MIYOO")
         "${MIYOO_SDL2_ROOT}/build/.libs/libSDL2-2.0.so.0.18.2"
     )
 
-    set(MIYOO_MINI_LIB_DIR
-        "$ENV{HOME}/miyoo_sdl2/mini/lib"
-    )
+    if(NOT DEFINED MIYOO_MINI_LIB_DIR)
+        set(MIYOO_MINI_LIB_DIR
+            "$ENV{HOME}/miyoo_sdl2/mini/lib"
+        )
+    endif()
 
-    set(MIYOO_EGL_LIB
-        "$ENV{HOME}/miyoo_sdl2/prebuilt/640x480/libEGL.so"
-    )
+    if(NOT DEFINED MIYOO_EGL_LIB)
+        set(MIYOO_EGL_LIB
+            "$ENV{HOME}/miyoo_sdl2/prebuilt/640x480/libEGL.so"
+        )
+    endif()
 
-    set(MIYOO_GLES_LIB
-        "$ENV{HOME}/miyoo_sdl2/prebuilt/640x480/libGLESv2.so"
-    )
+    if(NOT DEFINED MIYOO_GLES_LIB)
+        set(MIYOO_GLES_LIB
+            "$ENV{HOME}/miyoo_sdl2/prebuilt/640x480/libGLESv2.so"
+        )
+    endif()
 
 
     # --------------------------------------------------------

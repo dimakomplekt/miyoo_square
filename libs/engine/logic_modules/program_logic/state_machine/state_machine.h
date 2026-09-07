@@ -111,7 +111,7 @@ public:
     State_ID child(int i) const;
 
 
-        /**
+    /**
      * @brief Converts the State_ID to a dot-separated string.
      *
      * Example:

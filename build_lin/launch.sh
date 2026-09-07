@@ -31,6 +31,7 @@ echo "PWD=$(pwd)" >> "$LOG_FILE"
 
 echo "APP_DIR=$APP_DIR" >> "$LOG_FILE"
 echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" >> "$LOG_FILE"
+echo "LD_PRELOAD=${LD_PRELOAD-}" >> "$LOG_FILE"
 echo "PID=$$" >> "$LOG_FILE"
 echo "DATE=$(date)" >> "$LOG_FILE"
 
@@ -87,9 +88,14 @@ readlink -f "$APP_DIR/lib/libEGL.so" >> "$LOG_FILE" 2>&1
 
 echo >> "$LOG_FILE"
 echo "=== SDL2 NEEDED ===" >> "$LOG_FILE"
-# если readelf есть в системе
-readelf -d "$APP_DIR/lib/libSDL2-2.0.so.0" 2>/dev/null |
-    grep NEEDED >> "$LOG_FILE" 2>&1
+echo "--- $APP_DIR/MIYOO_SQUARE ---" >> "$LOG_FILE"
+readelf -d "$APP_DIR/MIYOO_SQUARE" 2>/dev/null | grep NEEDED >> "$LOG_FILE" 2>&1
+for lib in "$APP_DIR"/lib/libSDL2*.so*; do
+    echo "--- $lib ---" >> "$LOG_FILE"
+    ls -l "$lib" >> "$LOG_FILE" 2>&1
+    sha256sum "$lib" >> "$LOG_FILE" 2>&1
+    readelf -d "$lib" 2>/dev/null | grep NEEDED >> "$LOG_FILE" 2>&1
+done
 
 echo >> "$LOG_FILE"
 echo "=== START ===" >> "$LOG_FILE"

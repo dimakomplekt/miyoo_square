@@ -147,14 +147,9 @@ void start_game()
 
 void exit_game()
 {
-        // Exit call
+    // Exit call
 
-        SDL_DestroyRenderer(this_app.renderer);
-        SDL_DestroyWindow(this_app.window);
-
-        SDL_Quit();
-
-        exit(0); 
+    SDL_app_shutdown(&this_app);
 }
 
 // =========================================================================================== CALLBACKS
@@ -461,6 +456,15 @@ void main_menu_actions()
 
 void main_menu_elements_render(SDL_Renderer* renderer)
 {
+    line_draw
+    (
+        1, 300,
+        600, 300,
+        5,
+        hex_to_sdl_color("#1a36d6", 255),
+        renderer
+    );
+
 
     Main_menu_panel->render(renderer);
 

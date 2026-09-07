@@ -69,3 +69,15 @@
 - есть lang_state, state_machine и основные части движка.
 
 Сейчас планируется развитие движка для чтения ассетов, формирование игры и перенос на консоль.
+
+## Miyoo Mini backend
+
+`build_miyoo.sh` собирает ARM/Buildroot пакет в `build_lin/`. В пакет входят
+SDL2, SDL2_image, SDL2_ttf и графические `libEGL.so`/`libGLESv2.so`; `libmi_*`
+и `libshmvar.so` остаются системными библиотеками Miyoo и должны быть доступны
+на устройстве (обычно в `/config/lib`).
+
+Документы `diary/notes/day_1.md` и `diary/notes/day_2.md` описывают Mini
+video/renderer backend. Они фиксируют диагностический этап: наличие Mini
+renderer и вызов `RenderPresent` не означает, что весь вывод пикселей уже
+реализован.

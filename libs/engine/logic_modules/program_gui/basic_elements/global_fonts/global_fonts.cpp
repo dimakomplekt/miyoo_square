@@ -4,7 +4,29 @@
 
 #include "global_fonts.h"
 
+#include <filesystem>
+
 // =========================================================================================== IMPORT
+
+namespace
+{
+void log_font_open_result(const app_font_ctx& font_ctx)
+{
+    std::error_code ec;
+    const bool exists = std::filesystem::is_regular_file(font_ctx.font_path, ec);
+    const auto size = exists ? std::filesystem::file_size(font_ctx.font_path, ec) : 0;
+
+    SDL_Log(
+        "FONT open path='%s' exists=%d size=%llu pts=%u result=%p error='%s'",
+        font_ctx.font_path.c_str(),
+        exists ? 1 : 0,
+        static_cast<unsigned long long>(size),
+        font_ctx.font_size,
+        static_cast<void*>(font_ctx.ttf_font_link),
+        font_ctx.ttf_font_link ? "" : TTF_GetError()
+    );
+}
+}
 
 
 // =========================================================================================== APP FONTS
@@ -158,7 +180,7 @@ void Global_fonts::fonts_management_in_update_loop()
                 if (font_ctx->ttf_font_link)
                 {
                     TTF_CloseFont(static_cast<TTF_Font*>(font_ctx->ttf_font_link));
-                    // font_ctx->ttf_font_link = nullptr; - MAYBE DESTRUCT THE LOGIC
+                    font_ctx->ttf_font_link = nullptr;
                 }
 
 
@@ -252,13 +274,40 @@ void Global_fonts::fonts_management_in_update_loop()
 
                     if (!font_ctx->ttf_font_link)
                     {
-                        SDL_Log("TTF_OpenFont failed for font path %s: %s", font_ctx->font_path.c_str(), SDL_GetError());
+                        log_font_open_result(*font_ctx);
+                    }
+                    else
+                    {
+                        log_font_open_result(*font_ctx);
                     }
                 }
             }
         }
 
         this->fonts_palette_init_flag = false;
+    }
+}
+
+void Global_fonts::shutdown()
+{
+    for (app_fonts_palette_ctx& palette : this->fonts_palettes_list)
+    {
+        for (app_font_ctx* font_ctx : {
+            &palette.header_1_font,
+            &palette.header_2_font,
+            &palette.header_3_font,
+            &palette.ordinary_text_font,
+            &palette.small_text_font,
+            &palette.button_text_font,
+            &palette.emoji_text_font
+        })
+        {
+            if (font_ctx->ttf_font_link)
+            {
+                TTF_CloseFont(font_ctx->ttf_font_link);
+                font_ctx->ttf_font_link = nullptr;
+            }
+        }
     }
 }
 

@@ -110,6 +110,9 @@ class Global_fonts
         // if the palette reset flag is set 
         void fonts_management_in_update_loop();
 
+        // Closes all palette-owned fonts before SDL_ttf shutdown.
+        void shutdown();
+
         /**
          * @brief Adds a fonts palette to the internal fonts palette list.
          *

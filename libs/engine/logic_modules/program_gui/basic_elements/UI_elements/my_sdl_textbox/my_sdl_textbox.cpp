@@ -66,7 +66,12 @@ My_SDL_textbox::My_SDL_textbox()
 
         if (!this->ttf_font_link)
         {
-            SDL_Log("TTF_OpenFont failed: %s", SDL_GetError());
+            SDL_Log(
+                "TEXTBOX deferred font load path='%s' pts=%u error='%s'",
+                this->font_path.c_str(),
+                this->font_size,
+                TTF_GetError()
+            );
         }
     }
 
@@ -208,7 +213,15 @@ void My_SDL_textbox::update_font()
 
             if (self_opened_font) this->set_owned_font(self_opened_font);
 
-            else SDL_Log("TTF_OpenFont failed: %s", SDL_GetError());
+            else
+            {
+                SDL_Log(
+                    "TTF_OpenFont failed path='%s' pts=%u error='%s'",
+                    this->font_path.c_str(),
+                    this->font_size,
+                    TTF_GetError()
+                );
+            }
         }
     }
 
@@ -310,7 +323,12 @@ void My_SDL_textbox::update_font()
     
             if (!this->ttf_font_link)
             {
-                SDL_Log("TTF_OpenFont failed: %s", SDL_GetError());
+                SDL_Log(
+                    "TTF_OpenFont failed path='%s' pts=%u error='%s'",
+                    this->font_path.c_str(),
+                    this->font_size,
+                    TTF_GetError()
+                );
             }
         }
 
@@ -554,7 +572,12 @@ void My_SDL_textbox::set_font_path(const std::string& new_font_path)
 
     if (!self_opened_font)
     {
-        SDL_Log("TTF_OpenFont failed: %s", SDL_GetError());
+        SDL_Log(
+            "TTF_OpenFont failed path='%s' pts=%u error='%s'",
+            this->font_path.c_str(),
+            this->font_size,
+            TTF_GetError()
+        );
         return;
     }
 
@@ -589,7 +612,12 @@ void My_SDL_textbox::set_font_size(unsigned int new_size)
 
     if (!self_opened_font)
     {
-        SDL_Log("TTF_OpenFont failed: %s", SDL_GetError());
+        SDL_Log(
+            "TTF_OpenFont failed path='%s' pts=%u error='%s'",
+            this->font_path.c_str(),
+            this->font_size,
+            TTF_GetError()
+        );
         return;
     }
 
@@ -830,6 +858,12 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
 {
     if (!this->content_dirty) return;
 
+    if (!renderer)
+    {
+        SDL_Log("TEXTBOX texture update skipped: renderer is null");
+        return;
+    }
+
 
     if (!this->ttf_font_link)
     {
@@ -871,12 +905,39 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
 
     if (!surface)
     {
+        SDL_Log(
+            "TTF_RenderUTF8_Blended failed path='%s' text_bytes=%zu error='%s'",
+            this->font_path.c_str(),
+            this->content.size(),
+            TTF_GetError()
+        );
         this->content_dirty = false; // FIX
         return;
     }
 
+    SDL_Log(
+        "TEXTBOX surface path='%s' size=%dx%d pitch=%d format=0x%08x pixels=%p",
+        this->font_path.c_str(),
+        surface->w,
+        surface->h,
+        surface->pitch,
+        surface->format ? surface->format->format : 0u,
+        surface->pixels
+    );
+
     this->content_texture = SDL_CreateTextureFromSurface(renderer, surface);
 
+    if (!this->content_texture)
+    {
+        SDL_Log(
+            "SDL_CreateTextureFromSurface failed path='%s' surface=%dx%d pitch=%d error='%s'",
+            this->font_path.c_str(),
+            surface->w,
+            surface->h,
+            surface->pitch,
+            SDL_GetError()
+        );
+    }
 
     // ===== SDL3 AND SDL2 CONFLICT =====
 
@@ -930,7 +991,12 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
             // and doesn't require string length parameter.
             if (TTF_SizeUTF8(this->ttf_font_link, this->content.c_str(), &w, &h) != 0)
             { 
-                std::cerr << "TTF_SizeUTF8 failed\n";
+                SDL_Log(
+                    "TTF_SizeUTF8 failed path='%s' text_bytes=%zu error='%s'",
+                    this->font_path.c_str(),
+                    this->content.size(),
+                    TTF_GetError()
+                );
         
                 this->content_dirty = false; 
                 return; 
