@@ -123,7 +123,7 @@ const handle_ctx Asset_manager::add_asset(asset_type type, std::string asset_lin
     {
         case IMAGE_AT:
         {
-            Image_asset* new_asset = new Image_asset(asset_link);
+            Image_asset* new_asset = new Image_asset(asset_link, this);
             
             // Image not passed handler
             if (new_asset->provide_surface() == nullptr)

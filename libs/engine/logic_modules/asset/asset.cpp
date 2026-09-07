@@ -17,12 +17,20 @@
 
 // Constructor realization 
 
-Asset::Asset() = default;
+Asset::Asset(Asset_manager* r_asset_manager) 
+: 
+asset_manager(r_asset_manager) 
+{
+
+};
 
 
 // Destructor realization 
 
-Asset::~Asset() = default;
+Asset::~Asset()
+{
+    asset_manager = nullptr;
+};
 
 // ===== LIFETIME =====
 
@@ -57,7 +65,10 @@ const std::string& Asset::get_path() const
 
 // Image asset constructor
 
-Image_asset::Image_asset(const std::string& path) {
+Image_asset::Image_asset(const std::string& path, Asset_manager* r_asset_manager) 
+:
+Asset(r_asset_manager) 
+{
 
     this->type = IMAGE_AT; 
     this->source_path = path;          
@@ -71,6 +82,7 @@ Image_asset::Image_asset(const std::string& path) {
 
 Image_asset::~Image_asset()
 {
+    asset_manager = nullptr;
 
     if (this->surface != nullptr)
     {

@@ -139,8 +139,10 @@ class Asset
         /**
          * @brief Construct a generic asset.
          * 
+         * @param r_asset_manager Responsible asset manager  
+         * 
          */
-        Asset();
+        Asset(Asset_manager* r_asset_manager);
 
 
         // Virtual destructor.
@@ -159,6 +161,10 @@ class Asset
 
         // Path to the file on disk
         std::string source_path;
+
+
+        // Responsible asset manager link
+        const Asset_manager* asset_manager;
 
         // ===== DATA =====
 
@@ -208,9 +214,10 @@ class Image_asset : public Asset
          * Called only by the asset manager.
          * 
          * @param path Path to the image file.
+         * @param r_asset_manager Responsible asset manager
          * 
          */
-        explicit Image_asset(const std::string& path);
+        explicit Image_asset(const std::string& path, Asset_manager* r_asset_manager);
 
         // Destructor - delete the asset.
         // Called only by the asset manager.

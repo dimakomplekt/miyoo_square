@@ -20,7 +20,7 @@
 // Predeclare for friendship
 
 class Instance_manager;
-
+class Image_instance;
 
 /**
  * 
@@ -47,10 +47,12 @@ class Instance
         /**
          * @brief Construct a generic asset instance.
          * 
-         * @param asset_handle Handle of the basic asset.
+         * @param asset_handle Handle of the basic image asset.
+         * @param r_instance_manager Responsible instance manager
+         * @param r_asset_manager Responsible asset manager
          * 
          */
-        Instance(handle_ctx asset_handle);
+        Instance(handle_ctx asset_handle, Instance_manager* r_instance_manager, Asset_manager* r_asset_manager);
 
 
         // Virtual destructor.
@@ -64,6 +66,9 @@ class Instance
 
         // Main asset handle, passed during the construction of the instance
         const handle_ctx asset_handle;
+
+        const Instance_manager* instance_manager;
+        const Asset_manager* asset_manager;
 
         // ===== DATA =====
 
@@ -238,11 +243,11 @@ class Image_instance : public Instance
          *
          * Recomputes current width and height based on the original size.
          *
-         * @param x_scaler Scale factor x-axes (1.0 = original size).
-         * @param y_scaler Scale factor y-axes (1.0 = original size).
+         * @param new_x_scaler Scale factor x-axes (1.0 = original size).
+         * @param new_y_scaler Scale factor y-axes (1.0 = original size).
          * 
          */
-        void set_scaler(float x_scaler, float y_scaler);
+        void set_scaler(float new_x_scaler, float new_y_scaler);
 
 
         // Current x-axes scaler getter
@@ -348,9 +353,12 @@ class Image_instance : public Instance
          * and anchor points.
          *
          * @param asset_handle Handle of the basic image asset.
+         * @param r_instance_manager Responsible instance manager
+         * @param r_asset_manager Responsible asset manager
          * 
          */
-        explicit Image_instance(handle_ctx asset_handle);
+        explicit Image_instance(handle_ctx asset_handle, Instance_manager* r_instance_manager, Asset_manager* r_asset_manager);
+
 
 
         /**
@@ -470,8 +478,8 @@ class Image_instance : public Instance
         anchor_points anchors; 
 
 
-        // Ready instance texture for rendering
-        SDL_Texture* texture;
+        // Ready instance surface for rendering
+        SDL_Surface* surface = nullptr;
 
 
         // ===== DATA =====

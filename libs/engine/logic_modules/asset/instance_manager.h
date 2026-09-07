@@ -81,6 +81,7 @@ class Instance_manager
     // ===== Friendship ===== 
 
     friend Asset_manager;
+    friend Instance;
 
     // ===== Friendship ===== 
 
