@@ -32,6 +32,22 @@ const std::string THIS_APP_NAME = "MIYOO_SQUARE_1.0";
 
 // =========================================================================================== GLOBAL WINDOW SETTINGS
 
+// =========================================================================================== TEST FLAGS
+
+#define MIYOO_TEST_CASENAME   0
+#define MIYOO_TEST_APP_LOG    0
+#define MIYOO_TEST_START_LOG  0
+
+
+
+#if MIYOO_TEST_APP_LOG
+    #define APP_LOG(x) std::cout << "[APP] " << x << std::endl
+#else
+    #define APP_LOG(x) do {} while (0)
+#endif
+
+// =========================================================================================== TEST FLAGS
+
 // Main window horizontal size
 #define MAIN_WINDOW_H_SIZE 640 
 

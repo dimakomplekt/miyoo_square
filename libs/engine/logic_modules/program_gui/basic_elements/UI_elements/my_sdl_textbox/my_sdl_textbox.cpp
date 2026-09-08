@@ -11,6 +11,13 @@
 // =========================================================================================== IMPORT
 
 
+// =========================================================================================== TEST
+
+#define TEST_TEXTBOX_OFF 0
+#define TEST_TEXTBOX_LOG 0
+
+// =========================================================================================== TEST
+
 // =========================================================================================== CONSTRUCTOR AND DESTRUCTOR
 
 My_SDL_textbox::My_SDL_textbox()
@@ -182,6 +189,8 @@ void blinking_mode_control(blinking_textbox_ctx &blinking_ctx);
 
 void My_SDL_textbox::update()
 {
+    if (TEST_TEXTBOX_OFF) return;
+
     // No actions for not visiable element
     if (!this->visible_flag) return;
 
@@ -444,6 +453,8 @@ void blinking_mode_control(blinking_textbox_ctx &blinking_ctx)
 
 void My_SDL_textbox::render(SDL_Renderer* renderer)
 {
+    if (TEST_TEXTBOX_OFF) return;
+
     // No actions for not visiable element
     if (!this->visible_flag) return;
 
@@ -915,15 +926,20 @@ void My_SDL_textbox::update_content_texture(SDL_Renderer* renderer, SDL_Color ne
         return;
     }
 
-    SDL_Log(
-        "TEXTBOX surface path='%s' size=%dx%d pitch=%d format=0x%08x pixels=%p",
-        this->font_path.c_str(),
-        surface->w,
-        surface->h,
-        surface->pitch,
-        surface->format ? surface->format->format : 0u,
-        surface->pixels
-    );
+    
+    if(TEST_TEXTBOX_LOG)
+    {
+        SDL_Log(
+            "TEXTBOX surface path='%s' size=%dx%d pitch=%d format=0x%08x pixels=%p",
+            this->font_path.c_str(),
+            surface->w,
+            surface->h,
+            surface->pitch,
+            surface->format ? surface->format->format : 0u,
+            surface->pixels
+        );
+    }
+
 
     this->content_texture = SDL_CreateTextureFromSurface(renderer, surface);
 

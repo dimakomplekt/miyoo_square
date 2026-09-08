@@ -8,6 +8,12 @@
 
 // =========================================================================================== IMPORT
 
+// =========================================================================================== TEST
+
+#define PANEL_UPDATE_TEST 0
+
+// =========================================================================================== TEST
+
 
 // =========================================================================================== CONSTRUCTOR AND DESTRUCTOR
 
@@ -79,20 +85,49 @@ void My_SDL_panel::delete_element()
 
 void My_SDL_panel::update()
 {
+    if (PANEL_UPDATE_TEST) std::cout << "\n\nUpdating My_SDL_panel";
+    if (PANEL_UPDATE_TEST) std::cout << "\n\nVISIBLE: " << this->visible_flag;
+
     // No actions for not visiable element
     if (!this->visible_flag) return;
+
+    if (PANEL_UPDATE_TEST) std::cout << "\n\nProcessing movement";
 
     // Movement logic if the movement is on
     this->movement_logic_in_update_loop();
 
+    if (PANEL_UPDATE_TEST) std::cout << "\n\nMovement complete";
+
     // Check if the palette was switched and update the colors by the new palette if it was
+
+    if (PANEL_UPDATE_TEST) std::cout << "\n\nReset colors";
+
     this->reset_colors_if_palette_switched();
+
+    if (PANEL_UPDATE_TEST) std::cout << "\n\nColors reset complete";
 
     
     // Just update all inner elements by auto type link and overrided update() methods
-    for (auto& inner : inner_elements)
+
+    if (PANEL_UPDATE_TEST) std::cout << "\n\nUpdating inner elements";
+
+
+    for (size_t i = 0; i < inner_elements.size(); ++i)
     {
+        auto& inner = inner_elements[i];
+
+        if (PANEL_UPDATE_TEST)
+        {
+            std::cout
+                << "\n  [" << i << "]"
+                << " pointer=" << inner.element_pointer
+                << " updating";
+        }
+
         inner.element_pointer->update();
+
+        if (PANEL_UPDATE_TEST)
+            std::cout << "\n  [" << i << "] update finished\n\n";
     }
 }
 

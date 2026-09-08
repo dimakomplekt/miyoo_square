@@ -14,6 +14,13 @@
 // =========================================================================================== IMPORT
 
 
+// =========================================================================================== TEST
+
+#define TEST_NO_TEXTBOX 0
+
+// =========================================================================================== TEST
+
+
 // =========================================================================================== CONSTRUCTOR AND DESTRUCTOR
 
 My_SDL_button::My_SDL_button()
@@ -313,7 +320,8 @@ void My_SDL_button::update()
     this->reset_button_textbox_if_font_palette_switched();
 
     // Font prepare (onetime at the start or onetime by reset_flag from fonts palette)
-    this->button_textbox.update();
+    if (!TEST_NO_TEXTBOX)
+        this->button_textbox.update();
 
     // Palette prepare for rendering
     this->button_palette_prepare();  
@@ -581,7 +589,8 @@ void My_SDL_button::render(SDL_Renderer* renderer)
 
     // Content draw by SDL ttf
     // Update content texture if the content_dirty flag us true (or pass the previous texture if not)
-    this->button_textbox.render(renderer);
+    if (!TEST_NO_TEXTBOX)
+        this->button_textbox.render(renderer);
 }
 
 

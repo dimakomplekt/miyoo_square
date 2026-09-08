@@ -290,23 +290,37 @@ void SDL_app_event(SDL_app_ctx* app, SDL_Event* event)
 
 bool SDL_app_cycle(SDL_app_ctx* app)
 {
+    APP_LOG("SDL_app_cycle ENTER");
 
     // ===== GLOBAL GUI ELEMENTS UPDATES =====
 
-    if (App_timer_1.can_execute(Execute_zone_ID::HZ_240) || !init)
+    const bool hz240_timer = App_timer_1.can_execute(Execute_zone_ID::HZ_240);
+    APP_LOG("init = " << (init ? "true" : "false")
+            << ", HZ_240 timer = " << (hz240_timer ? "true" : "false"));
+
+    if (hz240_timer || !init)
     {
+        APP_LOG("Global update ENTER");
+        APP_LOG("global initialization/update started");
         
         // Counter and flag update for language reset in dictionary-oriented textboxes
+        APP_LOG("App_lang update");
+
         App_lang.lang_reset_flag_state_loop_update();
 
         // Counter and flag update for palette reset in palette-oriented elements
+        APP_LOG("App_palette update");
+
         App_palette.palette_reset_flag_state_loop_update();
 
         // Font initialization in case of palette reset, to avoid constant reinitialization and related performance issues
+        APP_LOG("App_fonts update");
+        
         App_fonts.fonts_management_in_update_loop();
 
         App_fonts.fonts_palette_reset_flag_state_loop_update();
 
+        APP_LOG("Global update EXIT");
     }
     
     // ===== GLOBAL GUI ELEMENTS UPDATES =====
@@ -317,7 +331,10 @@ bool SDL_app_cycle(SDL_app_ctx* app)
     if (!init)
     {
         // 1st state
+        APP_LOG("BEFORE initial state transition");
+        APP_LOG("Requesting START_ID");
         if (this_app.app_sm.go_to(START_ID)) init = true;
+        APP_LOG("START_ID transition finished");
     }
 
     // Further
@@ -332,13 +349,19 @@ bool SDL_app_cycle(SDL_app_ctx* app)
             // ===== SDL3 AND SDL2 CONFLICT =====
 
             // state changed -> skip this frame to avoid mixed execution
+            APP_LOG("SDL_app_cycle EXIT");
             return app->app_state == true;
         }
 
     }
 
     // State update
-    if (app->app_sm.get_current_state()) app->app_sm.state_update();
+    if (app->app_sm.get_current_state())
+    {
+        APP_LOG("BEFORE state_update");
+        app->app_sm.state_update();
+        APP_LOG("AFTER state_update");
+    }
 
     // State rendering
     if (app->app_sm.get_current_state())
@@ -379,10 +402,13 @@ bool SDL_app_cycle(SDL_app_ctx* app)
             SDL_RenderClear(app->renderer);
 
             
+            APP_LOG("BEFORE state_render");
             app->app_sm.state_render(app->renderer);
+            APP_LOG("AFTER state_render");
 
-
+            APP_LOG("BEFORE SDL_RenderPresent");
             SDL_RenderPresent(app->renderer);
+            APP_LOG("AFTER SDL_RenderPresent");
 
         }
 
@@ -403,6 +429,7 @@ bool SDL_app_cycle(SDL_app_ctx* app)
     }
 
     // ===== SDL3 AND SDL2 CONFLICT =====
+    APP_LOG("SDL_app_cycle EXIT");
     return app->app_state == true;
 }
 
