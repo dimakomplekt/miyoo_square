@@ -15,8 +15,9 @@
 // Platform
 #include "../../base_modules/platform/platform.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+// SDL
+#include "../../sdl_include.h"
+
 
 // =========================================================================================== IMPORT
 

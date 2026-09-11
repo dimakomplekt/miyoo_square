@@ -14,20 +14,13 @@
 // ===== PLATFORM =====
 
 
+// ===== ASSET + SDL =====
 
-// ===== SDL =====
+#include "sdl_include.h"
 
-// Includes framework (library contains links to SDL2
-// TODO: IMPORT? LINUX?
+#include "logic_modules/asset/asset_include.h"
 
-#include <SDL2/SDL.h>
-
-#include <SDL2/SDL_ttf.h>
-
-#include <SDL2/SDL_image.h>
-
-
-// ===== SDL =====
+// ===== ASSET + SDL =====
 
 
 
