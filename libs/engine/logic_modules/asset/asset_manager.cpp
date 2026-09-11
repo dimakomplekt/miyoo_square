@@ -81,8 +81,11 @@ void Asset_manager::asset_manager_delete()
     // Stop delete operation
     if (!slots_list_free) return;
 
-    // Complete delete operation
-    else this->~Asset_manager();
+    // The caller owns the manager object and performs the final delete.
+    if (slots_list_free)
+    {
+        std::cout << "Asset_manager is ready for deletion\n";
+    }
 }
 
 Asset_manager::~Asset_manager() {};
@@ -216,6 +219,21 @@ bool Asset_manager::delete_asset_request(handle_ctx asset_handle)
     return false;
 }
 
+bool Asset_manager::is_asset_alive(handle_ctx asset_handle) const
+{
+    return get_asset(asset_handle) != nullptr;
+}
+
+int Asset_manager::get_asset_generation(int index) const
+{
+    if (index < 0 || index >= static_cast<int>(this->slots.size()))
+    {
+        return 0;
+    }
+
+    return this->slots[index].handle.generation;
+}
+
 
 void Asset_manager::unsub_operation(handle_ctx asset_handle)
 {
@@ -249,7 +267,7 @@ void Asset_manager::unsub_operation(handle_ctx asset_handle)
 
 
 
-asset_slot_ctx* Asset_manager::get_asset_slot(handle_ctx asset_handle) const
+asset_slot_ctx* Asset_manager::get_asset_slot(handle_ctx asset_handle)
 {
     if (asset_handle.index < 0 ||
         asset_handle.index >= static_cast<int>(this->slots.size()))

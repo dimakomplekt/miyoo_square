@@ -19,6 +19,8 @@
 
 SDL_app_ctx this_app;
 SDL_Event event;
+Asset_manager* App_asset_manager = nullptr;
+Instance_manager* App_instance_manager = nullptr;
 
 
 int SDL_app_init_and_run()
@@ -88,6 +90,9 @@ bool this_app_init()
     // SDL image init
     
     if (!SDL_Image_init()) return false;
+
+    App_asset_manager = new Asset_manager();
+    App_instance_manager = new Instance_manager(App_asset_manager);
 
 
     // ===== CONSOLE SETUP FOR GCC =====
@@ -444,6 +449,22 @@ void SDL_app_shutdown(SDL_app_ctx* app)
 
     if (app->renderer) SDL_DestroyRenderer(app->renderer);
     if (app->window) SDL_DestroyWindow(app->window);
+
+    if (App_instance_manager != nullptr)
+    {
+        App_instance_manager->instance_manager_delete();
+        delete App_instance_manager;
+        App_instance_manager = nullptr;
+    }
+
+    if (App_asset_manager != nullptr)
+    {
+        App_asset_manager->asset_manager_delete();
+        delete App_asset_manager;
+        App_asset_manager = nullptr;
+    }
+
+    std::cout << "Asset managers deleted\n";
 
     App_fonts.shutdown();
     TTF_Quit();

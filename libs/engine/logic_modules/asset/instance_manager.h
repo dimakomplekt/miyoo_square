@@ -94,6 +94,8 @@ class Instance_manager
         // Calles once per app cycle 
         Instance_manager(Asset_manager* used_asset_manager);
 
+        ~Instance_manager();
+
 
         // Extern destuctor caller with 
         // error handlers logic
@@ -142,6 +144,14 @@ class Instance_manager
          */
         void unsub(handle_ctx instance_handle);
 
+        /**
+         * @brief Subscribe one owner to an instance.
+         */
+        void sub(handle_ctx instance_handle);
+
+        bool is_instance_alive(handle_ctx instance_handle) const;
+        int get_instance_generation(int index) const;
+
 
         /**
          * @brief Asset instance getter
@@ -151,6 +161,8 @@ class Instance_manager
          * @return Pointer to the reqested Instance
          * 
          */
+        Instance* get_instance(handle_ctx instance_handle);
+
         const Instance* get_instance(handle_ctx instance_handle) const;
 
         /**
@@ -158,7 +170,7 @@ class Instance_manager
          *
          * The returned pointer is borrowed and remains owned by this manager.
          */
-        const Image_instance* get_image_instance(handle_ctx instance_handle) const;
+        Image_instance* get_image_instance(handle_ctx instance_handle);
 
         // ===== METHODS =====
 
@@ -171,10 +183,6 @@ class Instance_manager
 
         // ===== LIFETIME =====
     
-        // Instance manager destructor
-        // Calles once per app cycle 
-        ~Instance_manager();
-
         // ===== LIFETIME =====
 
 

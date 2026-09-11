@@ -1,5 +1,7 @@
 // instance.h
 
+#pragma once
+
 
 // =========================================================================================== IMPORT
 
@@ -118,6 +120,9 @@ class Instance
 
 // ===== Helpers =====
 
+namespace asset_instance_geometry
+{
+
 // Descartes coordinate for 2D space.
 struct desc_c_2D
 {
@@ -189,6 +194,7 @@ struct anchor_points {
 
 };
 
+}
 
 
 // ===== Helpers =====
@@ -328,7 +334,7 @@ class Image_instance : public Instance
          *  @return Current anchor points struct copy
          * 
          */
-        anchor_points get_anchor_points() const;
+        asset_instance_geometry::anchor_points get_anchor_points() const;
 
         /**
          * @brief Get the current image representation for rendering.
@@ -336,7 +342,7 @@ class Image_instance : public Instance
          * The surface is borrowed from the instance and must not be freed by
          * the caller. It is valid until the instance is changed or deleted.
          */
-        const SDL_Surface* get_surface() const;
+        SDL_Surface* get_surface() const;
 
         // === ANCHORS METHODS ===
 
@@ -427,7 +433,7 @@ class Image_instance : public Instance
         // ===== DATA =====
 
         // Current crop map by 2 points
-        crop_map_2D crop_map;
+        asset_instance_geometry::crop_map_2D crop_map;
 
 
         // Current image scale factor x-axes
@@ -446,7 +452,7 @@ class Image_instance : public Instance
 
         // Nine key anchor points of the image in local space
         // with scale and crop
-        anchor_points anchors; 
+        asset_instance_geometry::anchor_points anchors;
 
 
         // Ready instance surface for rendering

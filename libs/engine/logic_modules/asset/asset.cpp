@@ -139,6 +139,8 @@ void Image_asset::image_load()
         this->initial_width = 0;
         this->initial_height = 0;
 
+        std::cout << "Failed to load image '" << this->source_path
+                  << "': " << IMG_GetError() << std::endl;
         return;
     }
 

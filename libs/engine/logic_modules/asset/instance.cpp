@@ -286,7 +286,7 @@ const Image_asset* Image_instance::get_main_asset() const
 
 
 
-const SDL_Surface* Image_instance::get_surface() const
+SDL_Surface* Image_instance::get_surface() const
 {   
     return this->surface;
 }

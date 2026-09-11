@@ -20,8 +20,9 @@ surface through `Image_instance::get_surface()` and never frees it.
    `handle_ctx`.
 3. Create one or more image instances with
    `add_instance(IMAGE_AT, asset_handle)`.
-4. A game object keeps the instance handle and subscribes with `unsub()` /
-   `delete_instance_request()` according to its lifetime.
+4. A game object keeps the instance handle, calls `sub()` when it starts using
+   the instance, then calls `unsub()` and `delete_instance_request()` according
+   to its lifetime.
 5. The renderer reads the borrowed surface from
    `get_image_instance(instance_handle)->get_surface()`.
 6. Delete the asset only after all its instances have been deleted.
@@ -39,10 +40,15 @@ Implemented:
   surface regeneration;
 - generation-checked asset and instance handles;
 - reference counters preventing deletion of an asset while instances exist;
-- borrowed surface access suitable for a renderer or game object.
+- borrowed surface access suitable for a renderer or game object;
+- explicit instance subscription counting with `sub()` / `unsub()`.
 
 Audio, video and font enum values are reserved, but their concrete loaders and
 instances intentionally fail with an explicit diagnostic until implemented.
+
+Runtime paths are resolved relative to the executable directory. Engine-owned
+resources are staged under `content/`, while application-owned resources from
+`libs/app/global_data/app_content/` are staged under `app_content/`.
 
 ## SWOT analysis
 

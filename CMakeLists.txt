@@ -163,7 +163,7 @@ if(PROJECT_PLATFORM STREQUAL "WINDOWS")
     )
 
 
-      # Автоматический сбор системных DLL от конфликтов MinGW
+    # Автоматический сбор системных DLL от конфликтов MinGW
     get_filename_component(MINGW_BIN_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
     set(SYS_DLL_NAMES "libstdc++-6.dll" "libgcc_s_seh-1.dll" "libwinpthread-1.dll")
 
@@ -184,7 +184,9 @@ if(PROJECT_PLATFORM STREQUAL "WINDOWS")
     add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL_TTF/SDL2_ttf-2.24.0/lib/x64" "$<TARGET_FILE_DIR:MIYOO_SQUARE>")
     add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/libs/engine/base_modules/SDL/SDL_IMAGE/SDL2_image-2.8.10/lib/x64" "$<TARGET_FILE_DIR:MIYOO_SQUARE>")
     add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/libs/engine/logic_modules/program_gui/basic_content" "$<TARGET_FILE_DIR:MIYOO_SQUARE>/content")
-
+    if(EXISTS "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content")
+        add_custom_command(TARGET MIYOO_SQUARE POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content" "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content")
+    endif()
 
 
     target_compile_options(
@@ -318,6 +320,16 @@ elseif(PROJECT_PLATFORM STREQUAL "MIYOO")
         "$<TARGET_FILE_DIR:MIYOO_SQUARE>/content"
     )
 
+    if(EXISTS "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content")
+        add_custom_command(
+            TARGET MIYOO_SQUARE
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
+                "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+        )
+    endif()
+
 
 # ============================================================
 # LINUX
@@ -351,6 +363,24 @@ elseif(PROJECT_PLATFORM STREQUAL "LINUX")
         ${SDL2_IMAGE_LIBRARIES}
         ${SDL2_TTF_LIBRARIES}
     )
+
+    add_custom_command(
+        TARGET MIYOO_SQUARE
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${CMAKE_SOURCE_DIR}/libs/engine/logic_modules/program_gui/basic_content"
+            "$<TARGET_FILE_DIR:MIYOO_SQUARE>/content"
+    )
+
+    if(EXISTS "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content")
+        add_custom_command(
+            TARGET MIYOO_SQUARE
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
+                "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+        )
+    endif()
 
 endif()
 
@@ -400,5 +430,15 @@ if(PROJECT_PLATFORM STREQUAL "MIYOO")
             "${MIYOO_PACKAGE_DIR}/content"
 
     )
+
+    if(EXISTS "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content")
+        add_custom_command(
+            TARGET MIYOO_SQUARE
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
+                "${MIYOO_PACKAGE_DIR}/app_content"
+        )
+    endif()
 
 endif()

@@ -6,6 +6,8 @@
 // =========================================================================================== IMPORT
 
 #include "program_states/program_states.h"
+#include "../engine/logic_modules/asset/asset_manager.h"
+#include "../engine/logic_modules/asset/instance_manager.h"
 
 #include <string>
 
@@ -58,6 +60,9 @@ struct SDL_app_ctx
  * 
  */
 extern SDL_app_ctx this_app;
+
+extern Asset_manager* App_asset_manager;
+extern Instance_manager* App_instance_manager;
 
 // =========================================================================================== TYPES AND CONSTANTS
 

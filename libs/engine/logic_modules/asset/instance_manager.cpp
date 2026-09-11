@@ -48,8 +48,11 @@ void Instance_manager::instance_manager_delete()
     // Stop delete operation if there is some slots 
     if (!slots_list_free) return;
 
-    // Complete delete operation
-    else this->~Instance_manager();
+    // The caller owns the manager object and performs the final delete.
+    if (slots_list_free)
+    {
+        std::cout << "Instance_manager is ready for deletion\n";
+    }
 }
 
 
@@ -245,29 +248,61 @@ void Instance_manager::unsub(handle_ctx instance_handle)
     this->slots[instance_handle.index].subscribers_count -= 1;
 }
 
+void Instance_manager::sub(handle_ctx instance_handle)
+{
+    if (instance_handle.index < 0 ||
+        instance_handle.index >= static_cast<int>(this->slots.size()))
+    {
+        std::cout << "\nRequest to non existed instance\n" << std::endl;
+        return;
+    }
+
+    instance_slot_ctx& slot = this->slots[instance_handle.index];
+
+    if (instance_handle.generation != slot.handle.generation)
+    {
+        std::cout << "\nRequest to old generation instance\n" << std::endl;
+        return;
+    }
+
+    if (slot.instance == nullptr)
+    {
+        std::cout << "\nInstance does not exist already\n" << std::endl;
+        return;
+    }
+
+    slot.subscribers_count += 1;
+}
+
+bool Instance_manager::is_instance_alive(handle_ctx instance_handle) const
+{
+    return get_instance(instance_handle) != nullptr;
+}
+
+int Instance_manager::get_instance_generation(int index) const
+{
+    if (index < 0 || index >= static_cast<int>(this->slots.size()))
+    {
+        return 0;
+    }
+
+    return this->slots[index].handle.generation;
+}
 
 
-const Instance* Instance_manager::get_instance(handle_ctx instance_handle) const
+Instance* Instance_manager::get_instance(handle_ctx instance_handle)
 {
     if (
         
         instance_handle.index < 0 ||
-        instance_handle.index >= static_cast<int>(this->slots.size())
 
+        instance_handle.index >= static_cast<int>(this->slots.size())
     )
     {
         std::cout << "\nRequest to non existed instance\n" << std::endl;
 
         return nullptr;
     }
-
-
-    const Image_instance* Instance_manager::get_image_instance(handle_ctx instance_handle) const
-    {
-        const Instance* instance = this->get_instance(instance_handle);
-        return dynamic_cast<const Image_instance*>(instance);
-    }
-
 
     if (instance_handle.generation != this->slots[instance_handle.index].handle.generation)
     {
@@ -278,6 +313,37 @@ const Instance* Instance_manager::get_instance(handle_ctx instance_handle) const
 
 
     return this->slots[instance_handle.index].instance;
+}
+
+
+const Instance* Instance_manager::get_instance(handle_ctx instance_handle) const
+{
+    if (instance_handle.index < 0 || instance_handle.index >= static_cast<int>(this->slots.size()))
+    {
+        std::cout << "\nRequest to non existed instance\n" << std::endl;
+        return nullptr;
+    }
+
+    if (instance_handle.generation != this->slots[instance_handle.index].handle.generation)
+    {
+        std::cout << "\nRequest to old generation asset\n" << std::endl;
+        return nullptr;
+    }
+
+    return this->slots[instance_handle.index].instance;
+}
+
+
+Image_instance* Instance_manager::get_image_instance(handle_ctx instance_handle)
+{
+
+    Instance* instance = this->get_instance(instance_handle); 
+    
+    if (!instance) {
+        return nullptr;
+    }
+
+    return static_cast<Image_instance*>(instance);
 }
 
 

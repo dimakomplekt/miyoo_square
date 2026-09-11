@@ -48,6 +48,10 @@ My_SDL_button* Exit_button = nullptr;
 My_SDL_textbox* App_name_textbox = nullptr;
 
 My_SDL_panel* Elements_panel = nullptr;
+My_SDL_texture* Test_asset_texture = nullptr;
+
+handle_ctx Test_asset_handle;
+handle_ctx Test_instance_handle;
 
 
 // =========================================================================================== STATE DATA
@@ -163,6 +167,9 @@ void main_menu_elements_setup();
 
 void main_menu_elements_free_and_nullptr();
 
+void main_menu_asset_test_create();
+void main_menu_asset_test_destroy();
+
 void main_menu_elements_update();
 
 void reset_passed_by_dictionary_textboxes_if_language_switched_mm();
@@ -199,6 +206,7 @@ void main_menu_exit()
 {
     // ===== State deallocation =====
 
+    main_menu_asset_test_destroy();
     main_menu_elements_free_and_nullptr();
 
     // ===== State deallocation =====
@@ -345,6 +353,102 @@ void main_menu_elements_setup()
 
     );
 
+    main_menu_asset_test_create();
+
+}
+
+
+void main_menu_asset_test_create()
+{
+    if (App_asset_manager == nullptr || App_instance_manager == nullptr)
+    {
+        std::cout << "[ASSET TEST] managers are not initialized\n";
+        return;
+    }
+
+    const std::string image_path = absolute_by_relative_from_exe("app_content/images/test_asset.png");
+
+    Test_asset_handle = App_asset_manager->add_asset(IMAGE_AT, image_path);
+    Test_instance_handle = App_instance_manager->add_instance(IMAGE_AT, Test_asset_handle);
+
+    Image_instance* image_instance = App_instance_manager->get_image_instance(Test_instance_handle);
+
+
+    if (image_instance == nullptr || image_instance->get_surface() == nullptr)
+    {
+        std::cout << "[ASSET TEST] failed to create image instance\n";
+        return;
+    }
+
+    
+    image_instance->set_new_crop_map(50, 50, 200, 240);
+    image_instance->set_scaler(1.0f, 2.0f);
+    image_instance->set_width(300);
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(get_app_renderer(), image_instance->get_surface());
+
+    Test_asset_texture = new My_SDL_texture();
+
+    Test_asset_texture->set_texture(texture, true);
+
+
+    App_instance_manager->sub(Test_instance_handle);
+
+    Elements_panel->add_element(
+
+        Test_asset_texture,
+        panel_2_width / 2,
+        panel_2_height / 2,
+        1
+
+    );
+
+    std::cout << "[ASSET TEST] asset and instance created, instance subscribed\n";
+}
+
+
+void main_menu_asset_test_destroy()
+{
+    if (App_instance_manager == nullptr || App_asset_manager == nullptr)
+    {
+        return;
+    }
+
+    if (Test_asset_texture != nullptr)
+    {
+        Test_asset_texture->delete_element();
+        Test_asset_texture = nullptr;
+    }
+
+    App_instance_manager->unsub(Test_instance_handle);
+    const bool instance_deleted =
+        App_instance_manager->delete_instance_request(Test_instance_handle);
+    const bool asset_deleted =
+        App_asset_manager->delete_asset_request(Test_asset_handle);
+
+    std::cout
+        << "[ASSET TEST] instance alive after cleanup: "
+        << (App_instance_manager->is_instance_alive(Test_instance_handle) ? "yes" : "no")
+        << ", generation: "
+        << App_instance_manager->get_instance_generation(Test_instance_handle.index)
+        << '\n';
+
+    std::cout
+        << "[ASSET TEST] asset alive after cleanup: "
+        << (App_asset_manager->is_asset_alive(Test_asset_handle) ? "yes" : "no")
+        << ", generation: "
+        << App_asset_manager->get_asset_generation(Test_asset_handle.index)
+        << '\n';
+
+    std::cout
+        << "[ASSET TEST] delete results: instance="
+        << (instance_deleted ? "ok" : "failed")
+        << ", asset="
+        << (asset_deleted ? "ok" : "failed")
+        << '\n';
+
+    Test_asset_handle = {};
+    Test_instance_handle = {};
 }
 
 

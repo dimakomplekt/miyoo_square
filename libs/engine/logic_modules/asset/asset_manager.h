@@ -92,6 +92,8 @@ class Asset_manager
         // Calles once per app cycle 
         Asset_manager();
 
+        ~Asset_manager();
+
         // Outer destructor
         // with protection
         void asset_manager_delete();
@@ -126,6 +128,9 @@ class Asset_manager
          */
         bool delete_asset_request(handle_ctx asset_handle);
 
+        bool is_asset_alive(handle_ctx asset_handle) const;
+        int get_asset_generation(int index) const;
+
         // ===== METHODS =====
 
 
@@ -148,7 +153,7 @@ class Asset_manager
          * @return Link to asset slot
          * 
          */
-        asset_slot_ctx* get_asset_slot(handle_ctx asset_handle) const;
+        asset_slot_ctx* get_asset_slot(handle_ctx asset_handle);
 
 
 
@@ -186,11 +191,6 @@ class Asset_manager
 
 
         // ===== LIFETIME =====
-
-        // Manager destructor
-        // Calles once per app cycle 
-        // by outer delete function
-        ~Asset_manager();
 
         // ===== LIFETIME =====
 

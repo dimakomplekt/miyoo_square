@@ -5,36 +5,33 @@ $ErrorActionPreference = "Stop"
 # WINDOWS BUILD
 # ============================================================
 
-$BuildDir = "build_win"
+$RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$BuildDir = Join-Path $RepoRoot "build_win"
 
 
 # ============================================================
 # ENVIRONMENT
 # ============================================================
 
-$env:PATH = "$(Get-Location)\$BuildDir;C:\msys64\mingw64\bin;" + $env:PATH
+$env:PATH = "$BuildDir;C:\msys64\mingw64\bin;" + $env:PATH
 
 
 # ============================================================
 # CONFIGURE
 # ============================================================
 
-if (-not (Test-Path $BuildDir)) {
+Write-Host "Configuring Windows build in $BuildDir..." -ForegroundColor Cyan
 
-    Write-Host "Configuring Windows build..." -ForegroundColor Cyan
+cmake `
+    -S $RepoRoot `
+    -B $BuildDir `
+    -G "Ninja" `
+    -DCMAKE_BUILD_TYPE=Debug `
+    -DPROJECT_PLATFORM=WINDOWS
 
-    cmake `
-        -S . `
-        -B $BuildDir `
-        -G "Ninja" `
-        -DCMAKE_BUILD_TYPE=Debug `
-        -DPROJECT_PLATFORM=WINDOWS
-
-}
-else {
-
-    Write-Host "Windows build directory already exists." -ForegroundColor Green
-
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "CMake configuration failed!" -ForegroundColor Red
+    exit 1
 }
 
 
@@ -55,7 +52,7 @@ if ($LASTEXITCODE -eq 0) {
 
     Write-Host "Build successful!" -ForegroundColor Green
 
-    & ".\$BuildDir\MIYOO_SQUARE.exe"
+    & (Join-Path $BuildDir "MIYOO_SQUARE.exe")
 
 }
 else {
