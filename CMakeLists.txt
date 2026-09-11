@@ -53,11 +53,8 @@ file(GLOB_RECURSE PROJECT_SOURCES CONFIGURE_DEPENDS
 # SOURCE EXCLUSIONS
 # ============================================================
 
-# The asset subsystem is still under active development and is not part of
-# the SDL renderer smoke-test path. Keep it out of the build until it is ready.
-list(FILTER PROJECT_SOURCES EXCLUDE
-    REGEX "libs/engine/logic_modules/asset/.*"
-)
+# The legacy program_logic asset code is kept out of the build. The current
+# asset/instance module is compiled as part of the engine.
 
 list(FILTER PROJECT_SOURCES EXCLUDE
     REGEX "libs/engine/logic_modules/program_logic/asset/.*"

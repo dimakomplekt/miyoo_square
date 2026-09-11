@@ -5,7 +5,6 @@
 
 // =========================================================================================== IMPORT
 
-
 #include "instance.h"
 
 // =========================================================================================== IMPORT
@@ -20,8 +19,8 @@
     the instance slot)
     
     After that IM.delete_instance_request(used_instance_handle) (which will check subscribers_count == 0 and delete the
-    instance if its true). With instance delete, the instance destructor will be called, which must call 
-    AM.unsub(used_instance_handle), which will decrement instance_count inside the asset slot.
+    instance if its true). Instance deletion releases the corresponding asset reference, which decrements
+    instance_count inside the asset slot.
 
     If we want to delete the asset, we must call AM.delete_asset_request(used_asset_handle),
     which will check instance_count == 0 inside the asset slot and delete the asset itself if its true. 
@@ -30,7 +29,6 @@
     of it, and delete the instance.
 
     So with correct classes or correct use inside non-OOP code, we will not have any memory leaks or dangling pointers.
-
 
 */
 
@@ -68,7 +66,7 @@ struct instance_slot_ctx {
 
 // Predeclaration for friendship setting
 
-class Asset_instance;
+class Instance;
 
 // =========================================================================================== FRIEND CLASSES PREDECLARE
 
@@ -81,7 +79,9 @@ class Instance_manager
     // ===== Friendship ===== 
 
     friend Asset_manager;
+
     friend Instance;
+    friend Image_instance;
 
     // ===== Friendship ===== 
 
@@ -92,12 +92,13 @@ class Instance_manager
 
         // Instance manager constructor
         // Calles once per app cycle 
-        Instance_manager();
+        Instance_manager(Asset_manager* used_asset_manager);
 
-        // Instance manager destructor
-        // Calles once per app cycle 
-        ~Instance_manager();
 
+        // Extern destuctor caller with 
+        // error handlers logic
+        void instance_manager_delete();
+        
         // ===== LIFETIME =====
     
 
@@ -109,12 +110,13 @@ class Instance_manager
          * 
          * Serves to create asset instance and add it inside instance manager
          * 
+         * @param asset_type Type of asset instance / asset
          * @param asset_handle Link to the asset file inside build directory
          * 
          * @return handle_ctx of the instance constant copy to use 
          * 
          */
-        const handle_ctx add_instance(handle_ctx asset_handle);
+        const handle_ctx add_instance(asset_type type, handle_ctx asset_handle);
 
 
         /**
@@ -146,10 +148,17 @@ class Instance_manager
          * 
          * Serves to get the asset instance by handle
          * 
-         * @return Pointer to the reqested Asset_instance
+         * @return Pointer to the reqested Instance
          * 
          */
-        const Asset_instance* get_instance(handle_ctx instance_handle) const;
+        const Instance* get_instance(handle_ctx instance_handle) const;
+
+        /**
+         * @brief Get an image instance by handle.
+         *
+         * The returned pointer is borrowed and remains owned by this manager.
+         */
+        const Image_instance* get_image_instance(handle_ctx instance_handle) const;
 
         // ===== METHODS =====
 
@@ -160,7 +169,27 @@ class Instance_manager
 
     private:
 
+        // ===== LIFETIME =====
+    
+        // Instance manager destructor
+        // Calles once per app cycle 
+        ~Instance_manager();
+
+        // ===== LIFETIME =====
+
+
         // ===== METHODS =====
+
+
+        /**
+         * @brief Free handle in slots list getter
+         * 
+         * Provides the handle to the created asset instance
+         * 
+         * @return First met free handle
+         */
+        const handle_ctx get_free_handle();
+
 
         /**
          * @brief Asset instance delete from instances list method (+ instance destructor call)
@@ -173,12 +202,15 @@ class Instance_manager
          * @param instance Instance to delete
          * 
          */
-        void delete_instance(Asset_instance* instance);
+        void delete_instance(Instance* instance);
         
         // ===== METHODS =====
 
         
         // ===== Data =====
+
+        // Linked asset manager
+        Asset_manager* asset_manager;
 
         /**
          * 
@@ -215,6 +247,3 @@ class Instance_manager
 };
 
 // =========================================================================================== INSTANCE MANAGER CLASS
-
-
-

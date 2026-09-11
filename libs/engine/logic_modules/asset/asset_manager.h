@@ -21,8 +21,8 @@
     the instance slot)
     
     After that IM.delete_instance_request(used_instance_handle) (which will check subscribers_count == 0 and delete the
-    instance if its true). With instance delete, the instance destructor will be called, which must call 
-    AM.unsub(used_instance_handle), which will decrement instance_count inside the asset slot.
+    instance if its true). Instance deletion releases the corresponding asset reference, which decrements
+    instance_count inside the asset slot.
 
     If we want to delete the asset, we must call AM.delete_asset_request(used_asset_handle),
     which will check instance_count == 0 inside the asset slot and delete the asset itself if its true. 
@@ -58,7 +58,7 @@ struct asset_slot_ctx {
 
 // Predeclaration for friendship setting
 
-class Asset_instance;
+class Instance;
 class Image_instance;
 class Audio_instance;
 
@@ -76,7 +76,7 @@ class Asset_manager
 {
     // ===== Friendship ===== 
 
-    friend Asset_instance;
+    friend Instance;
     friend Image_instance;
     friend Audio_instance;
 
@@ -133,6 +133,25 @@ class Asset_manager
 
         // ===== METHODS =====
 
+
+        /**
+         * @brief Asset slot getter
+         * 
+         * Serves to get the asset's slot link by handle
+         * 
+         * Could be called only by INSTANCE MANAGERS (during
+         * the reason of "at least one instance to work with 
+         * asset" workflow).
+         * 
+         * @return Pointer to the requested asset slot
+         * 
+         * @return Link to asset slot
+         * 
+         */
+        asset_slot_ctx* get_asset_slot(handle_ctx asset_handle) const;
+
+
+
         /**
          * @brief Asset getter
          * 
@@ -147,7 +166,7 @@ class Asset_manager
          * @return Asset link
          * 
          */
-        Asset* get_asset(handle_ctx asset_handle) const;
+        const Asset* get_asset(handle_ctx asset_handle) const;
 
 
         /**

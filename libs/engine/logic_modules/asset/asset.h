@@ -25,18 +25,26 @@
     PARADIGM:
     
     Asset:
-
-        owns resource
+        owns the source resource loaded from disk and is shared by instances
 
     Instance:
-
-        uses Asset
-        owns calculated representation
+        references an Asset by a generation-checked handle and owns a
+        calculated/runtime representation
 
     Object:
+        references an Instance and owns gameplay/component data
 
-        uses Instance
-        owns inner data
+    Intended pipeline:
+        1. Asset_manager::add_asset() loads one source resource.
+        2. Instance_manager::add_instance() creates a typed representation.
+        3. A game object subscribes to the instance and reads its runtime data
+           (Image_instance::get_surface(), for example).
+        4. The object unsubscribes, then the instance is deleted.
+        5. The asset is deleted after its last instance is gone.
+
+    Handles contain a slot index and generation. Always pass the complete
+    handle back to the owning manager; never retain raw Asset or Instance
+    pointers after the corresponding delete request.
 */
 
 
@@ -90,7 +98,8 @@ struct handle_ctx
 
 // Predeclare for friendship
 class Asset_manager;
-
+class Instance;
+class Image_instance;
 
 /**
  * @brief Abstract base class for all assets in the engine.
@@ -156,7 +165,7 @@ class Asset
         // ===== DATA =====
 
         // Kind of this asset
-        asset_type type;    
+        asset_type type = UNKNOWN_AT;
 
 
         // Path to the file on disk
@@ -189,8 +198,10 @@ class Asset
 class Image_asset : public Asset 
 {
     friend Asset_manager;
+    friend Instance;
+    friend Image_instance;
 
-
+    
     public:
 
         // ===== METHODS =====
@@ -261,10 +272,10 @@ class Image_asset : public Asset
 
 
         // Original image w-dimension
-        unsigned int initial_width;
+        unsigned int initial_width = 0;
 
         // Original image h-dimension
-        unsigned int initial_height;
+        unsigned int initial_height = 0;
 
         // ===== DATA =====
 };

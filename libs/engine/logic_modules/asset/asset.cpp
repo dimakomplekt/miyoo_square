@@ -101,7 +101,8 @@ const SDL_Surface* Image_asset::provide_surface() const
 {
     if (this->surface != nullptr) return this->surface;
 
-    else std::cout << "Empty surface translation by asset.";
+    std::cout << "Empty surface translation by asset.";
+    return nullptr;
 }
 
 // ===== METHODS =====

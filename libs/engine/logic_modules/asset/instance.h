@@ -128,6 +128,16 @@ struct desc_c_2D
 };
 
 
+// Signed descartes coordinate for 2D space.
+struct s_desc_c_2D
+{
+
+    int x;    // Coordinate by x-axes (width).
+    int y;    // Coordinate by y-axes (height).
+
+};
+
+
 // Crop map for 2D space
 struct crop_map_2D 
 {
@@ -136,6 +146,9 @@ struct crop_map_2D
 
     desc_c_2D point_1;
     desc_c_2D point_2;
+    
+
+    desc_c_2D crop_center;
 
 };
 
@@ -158,18 +171,21 @@ struct crop_map_2D
  * This is useful for positioning sprites relative to
  * characters, physics bodies, or UI layout.
  * 
+ * 
+ * [CC] is always = 0,0 in this engine logic
+ * 
  */
 struct anchor_points {
 
-    desc_c_2D top_left;
-    desc_c_2D top_center;
-    desc_c_2D top_right;
-    desc_c_2D center_left;
-    desc_c_2D center_center;
-    desc_c_2D center_right;
-    desc_c_2D bottom_left;
-    desc_c_2D bottom_center;
-    desc_c_2D bottom_right;
+    s_desc_c_2D top_left;
+    s_desc_c_2D top_center;
+    s_desc_c_2D top_right;
+    s_desc_c_2D center_left;
+    s_desc_c_2D center_center;
+    s_desc_c_2D center_right;
+    s_desc_c_2D bottom_left;
+    s_desc_c_2D bottom_center;
+    s_desc_c_2D bottom_right;
 
 };
 
@@ -210,56 +226,6 @@ class Image_instance : public Instance
         */
 
 
-        // No need to getters for sizes - user only could use cropped (which could be same as original 
-        // without crop)
-
-
-        /**
-         * @brief Change image instance basic (not cropped) width size.
-         *
-         * Recalculates the instance parameters by the new width data.
-         * Linked with scaler
-         * 
-         * @param new_width New width value
-         * 
-         */
-        void set_width(unsigned int new_width);
-
-        
-        /**
-         * @brief Change image width basic (not cropped) size.
-         *
-         * Recalculates the instance parameters by the new height data.
-         * Linked with scaler
-         *
-         * @param new_height New height value
-         * 
-         */
-        void set_height(unsigned int new_height);
-
-
-        /**
-         * @brief Change image scale.
-         *
-         * Recomputes current width and height based on the original size.
-         *
-         * @param new_x_scaler Scale factor x-axes (1.0 = original size).
-         * @param new_y_scaler Scale factor y-axes (1.0 = original size).
-         * 
-         */
-        void set_scaler(float new_x_scaler, float new_y_scaler);
-
-
-        // Current x-axes scaler getter
-        float get_x_scaler() const;
-
-        // Current y-axes scaler getter
-        float get_y_scaler() const;
-
-
-        // === SCALER METHODS ===
-
-
         // === CROP METHODS ===
 
         /**
@@ -286,24 +252,53 @@ class Image_instance : public Instance
         void set_new_crop_map(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2);
 
 
-        /**
-         * @brief Current original asset instance crop width getter
-         * 
-         * @return Original (without scaling) asset-instance crop width
-         * 
-         */
-        unsigned int get_crop_width() const;
+        // === CROP METHODS ===
 
 
         /**
-         * @brief Current original asset instance crop height getter
-         * 
-         * @return Original (without scaling) asset-instance crop height
+         * @brief Change image scale.
+         *
+         * Recomputes current width and height based on the original size.
+         *
+         * @param new_x_scaler Scale factor x-axes (1.0 = original size).
+         * @param new_y_scaler Scale factor y-axes (1.0 = original size).
          * 
          */
-        unsigned int get_crop_height() const;
+        void set_scaler(float new_x_scaler, float new_y_scaler);
 
 
+        // Current x-axes scaler getter
+        float get_x_scaler() const;
+
+        // Current y-axes scaler getter
+        float get_y_scaler() const;
+
+
+        /**
+         * @brief Change image instance basic (not cropped) width size.
+         *
+         * Recalculates the instance parameters by the new width data.
+         * Linked with scaler
+         * 
+         * @param new_width New width value
+         * 
+         */
+        void set_width(unsigned int new_width);
+
+        
+        /**
+         * @brief Change image width basic (not cropped) size.
+         *
+         * Recalculates the instance parameters by the new height data.
+         * Linked with scaler
+         *
+         * @param new_height New height value
+         * 
+         */
+        void set_height(unsigned int new_height);
+
+
+        
         /**
          * @brief Get image instance width size (!!! cropped !!!).
          *
@@ -311,6 +306,7 @@ class Image_instance : public Instance
          * 
          */
         unsigned int get_width() const;
+
 
         /**
          * @brief Get image instance width size (!!! cropped !!!).
@@ -321,7 +317,7 @@ class Image_instance : public Instance
         unsigned int get_height() const;
 
 
-        // === CROP METHODS ===
+        // === SCALER METHODS ===
 
 
         // === ANCHORS METHODS ===
@@ -333,6 +329,14 @@ class Image_instance : public Instance
          * 
          */
         anchor_points get_anchor_points() const;
+
+        /**
+         * @brief Get the current image representation for rendering.
+         *
+         * The surface is borrowed from the instance and must not be freed by
+         * the caller. It is valid until the instance is changed or deleted.
+         */
+        const SDL_Surface* get_surface() const;
 
         // === ANCHORS METHODS ===
 
@@ -347,8 +351,9 @@ class Image_instance : public Instance
         /**
          * @brief Constructor - load an image asset instance.
          * 
-         * Calls only by the instance manager and passes the Image_asset handle of the main_asset, 
-         * then registers itself in the asset's internal list of active instances. After that it initializes
+         * Called only by the instance manager and receives the Image_asset handle of the main asset.
+         * The manager registers the instance in its slot and increments the asset reference count.
+         * After that it initializes
          * the scale factors to 1.0 (original size) and calculates the current_width, current_height
          * and anchor points.
          *
@@ -390,16 +395,6 @@ class Image_instance : public Instance
         const Image_asset* get_main_asset() const;
 
 
-        /**
-         * @brief Ready texture getter
-         * 
-         * Provides the access to precalculated texture
-         * 
-         * @return Non changeable SDL texture pointer
-         * 
-         */
-        const SDL_Texture* get_texture() const;
-
 
         // Inner recalculation
 
@@ -409,31 +404,20 @@ class Image_instance : public Instance
         // Can be unified later into a single rebuild step if dependencies grow.
 
         /*
-             ┌─────────┐
-             │ scaler  │
-             └────┬────┘
-                  ↕
-             ┌────┴────┐
-             │  size   │
-             └─────────┘
+            CROP -> SCALE -> SIZES
         */
 
-        // Recalculate the current_width and current_height by scaler
-        void reset_size();
 
-        // Recalculate the current scaler by new sizes
-        void reset_scaler();
 
-        
         // Recalculate the anchor points, based on the current width and height
         // Calls at the constructor and inside the set_scaler() method;
         void reset_anchor_points();
 
 
-        // Texture renewer - calls by the instance manager
+        // Surface renewer - calls by the instance manager
         // during the instance initialization, and by the 
         // image instance metadata control methods
-        void renew_texture();
+        void renew_surface();
 
 
         // ===== METHODS =====
@@ -442,28 +426,15 @@ class Image_instance : public Instance
 
         // ===== DATA =====
 
+        // Current crop map by 2 points
+        crop_map_2D crop_map;
+
+
         // Current image scale factor x-axes
         float x_scaler;
 
         // Current image scale factor y-axes
         float y_scaler;
-
-
-        // Scaled w-dimension
-        unsigned int scaled_width;
-
-        // Scaled h-dimension
-        unsigned int scaled_height;
-
-
-        // Current crop map by 2 points
-        crop_map_2D crop_map;
-
-        // Crop horizontal dimension (original size of the cropped image)
-        unsigned int crop_width;
-
-        // Crop vertical dimension (original size of the cropped image)
-        unsigned int crop_height;
 
 
         // Current width (with scale and crop)

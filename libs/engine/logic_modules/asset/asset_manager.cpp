@@ -1,8 +1,5 @@
 // asset_manager.cpp
 
-#pragma once
-
-
 // =========================================================================================== IMPORT
 
 #include "asset_manager.h"
@@ -74,7 +71,6 @@ void Asset_manager::asset_manager_delete()
 
             if (slot->asset != nullptr)
             {
-
                 slots_list_free = false;
 
                 break;
@@ -142,26 +138,27 @@ const handle_ctx Asset_manager::add_asset(asset_type type, std::string asset_lin
 
         case AUDIO_AT:
         {
-            //
-            break;
+            std::cout << "\nAudio assets are not implemented yet!\n" << std::endl;
+            return {};
         }
 
 
         case VIDEO_AT:
         {
-            //
-            break;
+            std::cout << "\nVideo assets are not implemented yet!\n" << std::endl;
+            return {};
         }
 
 
         case FONT_AT:
         {
-            // 
-            break;
+            std::cout << "\nFont assets are not implemented yet!\n" << std::endl;
+            return {};
         }
 
 
-        default: break;
+        default:
+            return {};
     }
 
 
@@ -174,7 +171,7 @@ bool Asset_manager::delete_asset_request(handle_ctx asset_handle)
 {
 
     if (asset_handle.index < 0 ||
-        asset_handle.index >= this->slots.size())
+        asset_handle.index >= static_cast<int>(this->slots.size()))
     {
         std::cout << "\nRequest to non existed asset\n" << std::endl;
 
@@ -224,7 +221,7 @@ void Asset_manager::unsub_operation(handle_ctx asset_handle)
 {
 
     if (asset_handle.index < 0 ||
-        asset_handle.index >= this->slots.size())
+        asset_handle.index >= static_cast<int>(this->slots.size()))
     {
         std::cout << "\nRequest to non existed asset\n" << std::endl;
 
@@ -252,11 +249,10 @@ void Asset_manager::unsub_operation(handle_ctx asset_handle)
 
 
 
-
-Asset* Asset_manager::get_asset(handle_ctx asset_handle) const
+asset_slot_ctx* Asset_manager::get_asset_slot(handle_ctx asset_handle) const
 {
     if (asset_handle.index < 0 ||
-        asset_handle.index >= this->slots.size())
+        asset_handle.index >= static_cast<int>(this->slots.size()))
     {
         std::cout << "\nRequest to non existed asset\n" << std::endl;
 
@@ -272,9 +268,31 @@ Asset* Asset_manager::get_asset(handle_ctx asset_handle) const
     }
 
 
-    return slots[asset_handle.index].asset;
+    return &this->slots[asset_handle.index];
 }
 
+
+const Asset* Asset_manager::get_asset(handle_ctx asset_handle) const
+{
+    if (asset_handle.index < 0 ||
+        asset_handle.index >= static_cast<int>(this->slots.size()))
+    {
+        std::cout << "\nRequest to non existed asset\n" << std::endl;
+
+        return nullptr;
+    }
+
+
+    if (asset_handle.generation != this->slots[asset_handle.index].handle.generation)
+    {
+        std::cout << "\nRequest to old generation asset\n" << std::endl;
+
+        return nullptr;
+    }
+
+
+    return this->slots[asset_handle.index].asset;
+}
 
 
 
@@ -351,6 +369,7 @@ const handle_ctx Asset_manager::get_free_handle()
 
 
     if(handle_found) return handle_for_return;
+
 
     else
     {
