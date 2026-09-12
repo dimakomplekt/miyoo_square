@@ -77,9 +77,8 @@ Background_sgo::Background_sgo()
     // Ordinary constructor - must create instanses
 
     background_instances.push_back(std::array<handle_ctx, 2>()); 
-
     background_instances[0][0] = App_instance_manager->add_instance(IMAGE_AT, background_1_ah);
-    background_instances[0][1] = App_instance_manager->add_instance(IMAGE_AT, background_1_ah);
+    background_instances[0][1] = App_instance_manager->add_instance(IMAGE_AT, background_2_ah);
 
 
     // Reinit data by base value
@@ -89,7 +88,7 @@ Background_sgo::Background_sgo()
         App_instance_manager->get_image_instance(this->background_instances[0][0])->get_width();
 
     this->height = 
-        App_instance_manager->get_image_instance(this->background_instances[0][0])->get_width();
+        App_instance_manager->get_image_instance(this->background_instances[0][0])->get_height();
 
 
     this->custom_surface_now = false;
@@ -152,7 +151,11 @@ Background_sgo::~Background_sgo()
     // it will be accept if this object was the last 
     // subscriber of instance and declined otherwise
     
-    if (!this->custom_surface_now) this->surface_to_use = nullptr;
+    if (this->custom_surface_now && this->surface_to_use != nullptr)
+    {
+        SDL_FreeSurface(this->surface_to_use);
+    }
+    this->surface_to_use = nullptr;
 
 
     App_instance_manager->unsub(
@@ -195,9 +198,12 @@ void Background_sgo::set_size(unsigned int width, unsigned int height)
         App_instance_manager->get_image_instance(this->background_instances[0][0])->get_width();
 
     unsigned int basic_height = 
-        App_instance_manager->get_image_instance(this->background_instances[0][0])->get_width();
+        App_instance_manager->get_image_instance(this->background_instances[0][0])->get_height();
 
-    if (basic_width != width || basic_height != height)
+    this->width = width;
+    this->height = height;
+
+    if (basic_width != this->width || basic_height != this->height)
     {
         // Custom surface need to be generated
 
@@ -240,8 +246,8 @@ void Background_sgo::render(SDL_Renderer* renderer)
         SDL_Rect dst_rect = 
         { 
 
-            this->x_render_point - 0.5 * this->width, // SDL LOGIC - to center-center render
-            this->y_render_point - 0.5 * this->width, // SDL LOGIC - to center-center render
+            this->x_render_point - static_cast<int>(this->width / 2), // SDL LOGIC - to center-center render
+            this->y_render_point - static_cast<int>(this->height / 2), // SDL LOGIC - to center-center render
             static_cast<int>(this->width), 
             static_cast<int>(this->height) 
 
@@ -268,7 +274,7 @@ void Background_sgo::switch_used_asset()
         App_instance_manager->get_image_instance(this->background_instances[0][this->current_instance])->get_width();
 
     unsigned int basic_height = 
-        App_instance_manager->get_image_instance(this->background_instances[0][this->current_instance])->get_width();
+        App_instance_manager->get_image_instance(this->background_instances[0][this->current_instance])->get_height();
 
 
     if (basic_width != this->width || basic_height != this->height)
@@ -294,10 +300,10 @@ void Background_sgo::switch_used_asset()
 void Background_sgo::reset_hitbox()
 {
     this->hitbox.top_left.x = this->x_render_point - 0.5 * this->width;
-    this->hitbox.top_left.y = this->y_render_point - 0.5 * this->width;      // SDL
+    this->hitbox.top_left.y = this->y_render_point - 0.5 * this->height;      // SDL
     
     this->hitbox.bottom_right.x = this->x_render_point + 0.5 * this->width;
-    this->hitbox.bottom_right.y = this->y_render_point + 0.5 * this->width;  // SDL
+    this->hitbox.bottom_right.y = this->y_render_point + 0.5 * this->height;  // SDL
 }
 
 

@@ -72,7 +72,7 @@ void state_game_objects_create()
 
 void state_game_objects_clear()
 {
-    scene_background->~Background_sgo();
+    delete scene_background;
     scene_background = nullptr;
 
 
@@ -326,7 +326,10 @@ void game_actions()
 void scene_actions()
 {
     // Actions with scene
-
+    if (App_inputs.is_just_released(Key_actions::SELECT_KA))
+    {
+        scene_background->switch_used_asset();
+    }
 
 
 }

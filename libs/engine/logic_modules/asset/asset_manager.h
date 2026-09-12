@@ -17,7 +17,8 @@
 
     So, the logic here:
 
-    Instance users must do IM.unsub(used_instance_handle) in their destructors (which will decrement subscribers_count inside
+    add_instance() registers the creating owner automatically. Additional instance users must call IM.sub().
+    Every instance user must do IM.unsub(used_instance_handle) in their destructors (which will decrement subscribers_count inside
     the instance slot)
     
     After that IM.delete_instance_request(used_instance_handle) (which will check subscribers_count == 0 and delete the

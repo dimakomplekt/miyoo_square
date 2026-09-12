@@ -151,6 +151,10 @@ const handle_ctx Instance_manager::add_instance(asset_type type, handle_ctx asse
     }
 
 
+    // The caller that creates an instance owns its first subscription.
+    // Additional owners must call sub(), and every owner must call unsub().
+    this->slots[handle_to_use.index].subscribers_count = 1;
+
     // Increment subscribed instances count inside asset slot
     asset_slot->instance_count += 1;
 
@@ -181,7 +185,7 @@ bool Instance_manager::delete_instance_request(handle_ctx instance_handle)
 
     if (this->slots[instance_handle.index].instance == nullptr)
     {
-        std::cout << "\nAsset does not exist already\n" << std::endl;
+        std::cout << "\nInstance does not exist already\n" << std::endl;
 
         return false;
     }
@@ -231,7 +235,7 @@ void Instance_manager::unsub(handle_ctx instance_handle)
 
     if (this->slots[instance_handle.index].instance == nullptr)
     {
-        std::cout << "\nAsset does not exist already\n" << std::endl;
+        std::cout << "\nInstance does not exist already\n" << std::endl;
 
         return;
     }

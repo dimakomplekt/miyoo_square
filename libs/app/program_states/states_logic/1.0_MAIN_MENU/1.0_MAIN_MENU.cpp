@@ -393,9 +393,6 @@ void main_menu_asset_test_create()
 
     Test_asset_texture->set_texture(texture, true);
 
-    // Sub before use
-    App_instance_manager->sub(Test_instance_handle);
-
     // TEST
 
     /*

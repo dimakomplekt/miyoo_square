@@ -19,10 +19,11 @@ surface through `Image_instance::get_surface()` and never frees it.
 2. Load a source with `add_asset(IMAGE_AT, path)` and retain its
    `handle_ctx`.
 3. Create one or more image instances with
-   `add_instance(IMAGE_AT, asset_handle)`.
-4. A game object keeps the instance handle, calls `sub()` when it starts using
-   the instance, then calls `unsub()` and `delete_instance_request()` according
-   to its lifetime.
+   `add_instance(IMAGE_AT, asset_handle)`. The creating caller is registered as
+   the first subscriber automatically.
+4. Additional game objects call `sub()` when they start using the instance.
+   Each owner calls `unsub()` when its lifetime ends; the creator then calls
+   `delete_instance_request()` after releasing its subscription.
 5. The renderer reads the borrowed surface from
    `get_image_instance(instance_handle)->get_surface()`.
 6. Delete the asset only after all its instances have been deleted.

@@ -1,3 +1,0 @@
-/mnt/c/creator/it/programs/games/miyoo_square/build_miyoo/CMakeFiles/rebuild_cache.dir
-/mnt/c/creator/it/programs/games/miyoo_square/build_miyoo/CMakeFiles/edit_cache.dir
-/mnt/c/creator/it/programs/games/miyoo_square/build_miyoo/CMakeFiles/MIYOO_SQUARE.dir
