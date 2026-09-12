@@ -55,6 +55,10 @@ handle_ctx square_2_ah;
 
 Background_sgo* scene_background = nullptr;
 
+Floor_sgo* scene_floor = nullptr;
+
+Wall_sgo* scene_wall_1 = nullptr;
+Wall_sgo* scene_wall_2 = nullptr;
 
 // =========================================================================================== STATE DATA
 
@@ -67,6 +71,17 @@ void state_game_objects_create()
 
     scene_background = new Background_sgo();
 
+
+    floor_assets_init();
+
+    scene_floor = new Floor_sgo();
+
+
+    wall_assets_init();
+
+    scene_wall_1 = new Wall_sgo();
+    scene_wall_2 = new Wall_sgo(*scene_wall_1);
+
 }
 
 
@@ -75,8 +90,23 @@ void state_game_objects_clear()
     delete scene_background;
     scene_background = nullptr;
 
+    delete scene_floor;
+    scene_floor = nullptr;
+
+    
+    delete scene_wall_1;
+    scene_wall_1 = nullptr;
+
+
+    delete scene_wall_2;
+    scene_wall_2 = nullptr;
+
 
     background_assets_clear();
+
+    floor_assets_clear();
+
+    wall_assets_clear();
 }
 
 
@@ -241,6 +271,14 @@ void scene_setup()
 
     scene_background->set_render_point(BACKGROUND_WIDTH / 2, BACKGROUND_HEIGHT / 2);
 
+    scene_floor->set_render_point(BACKGROUND_WIDTH / 2, BACKGROUND_HEIGHT - scene_floor->get_height() / 2); // SDL LOGIC - to center-center render
+
+
+    scene_wall_1->set_render_point(scene_wall_1->get_width() / 2,scene_wall_1->get_height() / 2); // SDL LOGIC - to center-center render
+
+    scene_wall_2->set_render_point(BACKGROUND_WIDTH - scene_wall_2->get_width() / 2, scene_wall_2->get_height() / 2); // SDL LOGIC - to center-center render
+
+
 
     // Floor init
 
@@ -329,6 +367,9 @@ void scene_actions()
     if (App_inputs.is_just_released(Key_actions::SELECT_KA))
     {
         scene_background->switch_used_asset();
+        scene_floor->switch_used_asset();
+        scene_wall_1->switch_used_asset();
+        scene_wall_2->switch_used_asset();
     }
 
 
@@ -344,6 +385,14 @@ void game_elements_render(SDL_Renderer* renderer)
 void scene_render(SDL_Renderer* renderer)
 {
     scene_background->render(renderer);
+
+
+    scene_floor->render(renderer);
+
+
+    scene_wall_1->render(renderer);
+
+    scene_wall_2->render(renderer);
 }
 
 // =========================================================================================== STATE INNER FUNCTIONS REALIZATION
