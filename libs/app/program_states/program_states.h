@@ -35,7 +35,13 @@ const State_ID START_ID                             = {0};           // Initial 
 
 const State_ID MAIN_MENU_ID                         = {1};           // Main functions basic state
 
+const State_ID GAME_ID                              = {2};           // Main functions basic state
+
 /*
+
+EXAMPLE
+
+
 const State_ID FILE_CHOOSE_ID                       = {1, 1};        // File choose state
 
 const State_ID MASKS_SETUP_ID                       = {1, 2};        // Masks setup state
@@ -68,8 +74,12 @@ const State_ID PROGRAM_END_ID                       = {2};           // Program 
 const std::vector<std::pair<State_ID, std::string>> state_defs = {
 
     {{0},               "START"},                              // Просто запуск программы, загрузка чего-то, подготовка к работе
-    {{1},               "MAIN_MENU"}                           // Дать возможность начать работу с программой или выйти
-    // {{1, 1},            "FILE_CHOOSE"},                     // Меню выбора файлов для обработки    
+    {{1},               "MAIN_MENU"},                          // Дать возможность начать работу с программой или выйти
+    {{2},               "GAME"}                                // Игра
+    
+    
+    // Примеры
+
     // {{1, 2},            "MASKS_SETUP"},                     // Меню выбора параметров масок для обработки видео
     // {{1, 2, 1},         "MASKS_SETUP_1"},                   // Меню выбора параметров масок для обработки видео
     // {{1, 2, 2},         "MASKS_SETUP_2"},                   // Меню выбора параметров масок для обработки видео

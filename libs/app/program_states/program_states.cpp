@@ -16,6 +16,8 @@
 
 #include "states_logic/0.0_START/0.0_START.h"
 #include "states_logic/1.0_MAIN_MENU/1.0_MAIN_MENU.h"
+#include "states_logic/2.0_GAME/2.0_GAME.h"
+
 // #include "states_logic/1.1_FILE_CHOOSE/1.1_FILE_CHOOSE.h"
 // #include "states_logic/1.2_MASKS_SETUP/1.2_MASKS_SETUP.h"
 // #include "states_logic/1.3_FLOW_PARAMETERS_CALCULATION/1.3_FLOW_PARAMETERS_CALCULATION.h"
@@ -71,6 +73,23 @@ void init_program_states(State_machine& app_state_machine)
     }
 
     // === MAIN_MENU ===
+
+
+    // === MAIN_MENU ===
+
+    app_state_machine.initiate_state(GAME_ID, "GAME");
+
+    if (auto* s = app_state_machine.get_state(GAME_ID))
+    {
+        s->on_enter = game_enter;          // Actions on the state entering 
+        s->on_exit  = game_exit;           // Actions on the state exit
+        s->state_update = game_update;     // Actions on the state update
+        s->state_render = game_render;     // Rendering for the state
+    }
+
+    // === MAIN_MENU ===
+
+
 
 
     // At this point, all states are registered in the state machine.

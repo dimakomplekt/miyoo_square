@@ -123,78 +123,107 @@ class Instance
 namespace asset_instance_geometry
 {
 
-// Descartes coordinate for 2D space.
-struct desc_c_2D
+    // Descartes coordinate for 2D space.
+    struct desc_c_2D
+    {
+
+        unsigned int x;    // Coordinate by x-axes (width).
+        unsigned int y;    // Coordinate by y-axes (height).
+
+    };
+
+
+    // Signed descartes coordinate for 2D space.
+    struct s_desc_c_2D
+    {
+
+        int x;    // Coordinate by x-axes (width).
+        int y;    // Coordinate by y-axes (height).
+
+    };
+
+
+    // Crop map for 2D space
+    struct crop_map_2D 
+    {
+
+        // Points choosen for width - height / x - y values coincidence
+
+        desc_c_2D point_1;
+        desc_c_2D point_2;
+        
+
+        desc_c_2D crop_center;
+
+    };
+
+
+    /**
+     * @brief Nine key anchor points of the image in local (not rotated) space.
+     *
+     * These points allow flexible alignment:
+     *
+     * 
+     *  [TL]---[TC]---[TR]
+     * 
+     * 
+     *  [CL]---[CC]---[CR]
+     * 
+     * 
+     *  [BL]---[BC]---[BR]
+     *
+     * 
+     * This is useful for positioning sprites relative to
+     * characters, physics bodies, or UI layout.
+     * 
+     * 
+     * [CC] is always = 0,0 in this engine logic
+     * 
+     */
+    struct anchor_points {
+
+        s_desc_c_2D top_left;
+        s_desc_c_2D top_center;
+        s_desc_c_2D top_right;
+        s_desc_c_2D center_left;
+        s_desc_c_2D center_center;
+        s_desc_c_2D center_right;
+        s_desc_c_2D bottom_left;
+        s_desc_c_2D bottom_center;
+        s_desc_c_2D bottom_right;
+
+    };
+
+}
+
+
+struct hitbox_points
 {
 
-    unsigned int x;    // Coordinate by x-axes (width).
-    unsigned int y;    // Coordinate by y-axes (height).
+    asset_instance_geometry::s_desc_c_2D top_left;
+    asset_instance_geometry::s_desc_c_2D bottom_right;
 
 };
 
 
-// Signed descartes coordinate for 2D space.
-struct s_desc_c_2D
+enum custom_surface_gen_mode
 {
-
-    int x;    // Coordinate by x-axes (width).
-    int y;    // Coordinate by y-axes (height).
-
-};
-
-
-// Crop map for 2D space
-struct crop_map_2D 
-{
-
-    // Points choosen for width - height / x - y values coincidence
-
-    desc_c_2D point_1;
-    desc_c_2D point_2;
     
-
-    desc_c_2D crop_center;
+    PATTERN_CSGM,
+    RESCALE_CSGM
 
 };
 
 
 /**
- * @brief Nine key anchor points of the image in local (not rotated) space.
+ * @brief Generates a custom surface from a basic surface.
  *
- * These points allow flexible alignment:
- *
- * 
- *  [TL]---[TC]---[TR]
- * 
- * 
- *  [CL]---[CC]---[CR]
- * 
- * 
- *  [BL]---[BC]---[BR]
- *
- * 
- * This is useful for positioning sprites relative to
- * characters, physics bodies, or UI layout.
- * 
- * 
- * [CC] is always = 0,0 in this engine logic
+ * @param basic_surface Source surface. Not modified by this function. Can't be announced as const(((
+ * @param target_surface Destination surface. Modified by this function.
+ * @param mode Surface generation mode.
  * 
  */
-struct anchor_points {
-
-    s_desc_c_2D top_left;
-    s_desc_c_2D top_center;
-    s_desc_c_2D top_right;
-    s_desc_c_2D center_left;
-    s_desc_c_2D center_center;
-    s_desc_c_2D center_right;
-    s_desc_c_2D bottom_left;
-    s_desc_c_2D bottom_center;
-    s_desc_c_2D bottom_right;
-
-};
-
-}
+void custom_surface_generation(SDL_Surface* basic_surface, SDL_Surface* target_surface, custom_surface_gen_mode mode);
 
 
 // ===== Helpers =====

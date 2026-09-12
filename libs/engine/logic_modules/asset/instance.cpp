@@ -14,6 +14,82 @@
 // =========================================================================================== IMPORT
 
 
+// =========================================================================================== HELPERS
+
+
+void custom_surface_generation(SDL_Surface* basic_surface, SDL_Surface* target_surface, custom_surface_gen_mode mode)
+{
+    // Pointers validation
+    if (basic_surface == nullptr || target_surface == nullptr) {
+        return;
+    }
+
+    // Clear basic surface
+    SDL_FillRect(target_surface, nullptr, 0x00000000);
+
+    // Generate custom surface
+    if (mode == RESCALE_CSGM) 
+    {
+        // Rescale
+        SDL_BlitScaled(basic_surface, nullptr, target_surface, nullptr);
+    } 
+    else if (mode == PATTERN_CSGM) 
+    {
+        int src_w = basic_surface->w;  // 200
+        int src_h = basic_surface->h;  // 200
+        int dst_w = target_surface->w; // 300
+        int dst_h = target_surface->h; // 200
+
+        // Цикл по вертикали. Идем с шагом в высоту плитки (200).
+        // Выполнится всего 1 раз (для current_y = 0), так как при следующем шаге 
+        // current_y станет 200, а это не меньше dst_h (200).
+        for (int current_y = 0; current_y < dst_h; current_y += src_h) 
+        {
+            // Цикл по горизонтали. Идем с шагом в ширину плитки (200).
+            // Сначала current_x = 0. На следующем шаге current_x = 200.
+            for (int current_x = 0; current_x < dst_w; current_x += src_w) 
+            {
+                /*
+                ИТЕРАЦИЯ 1 (current_x = 0):
+                dst_w - current_x  =>  300 - 0 = 300 (столько места осталось до правого края)
+                std::min(200, 300)  =>  выбирает 200. Значит fill_w = 200.
+                
+                ИТЕРАЦИЯ 2 (current_x = 200):
+                dst_w - current_x  =>  300 - 200 = 100 (остался хвостик в 100 пикселей до края!)
+                std::min(200, 100)  =>  выбирает 100. Значит fill_w = 100! Вот он, наш КРОП!
+                */
+                int fill_w = std::min(src_w, dst_w - current_x);
+                int fill_h = std::min(src_h, dst_h - current_y);
+
+                /*
+                src_rect указывает, КАКОЙ кусок мы вырезаем ИЗ оригинальной плитки.
+                ИТЕРАЦИЯ 1: {0, 0, 200, 200} -> берем всю плитку целиком.
+                ИТЕРАЦИЯ 2: {0, 0, 100, 200} -> берем только левую половинку плитки!
+                */
+                SDL_Rect src_rect = { 0, 0, fill_w, fill_h };
+
+                /*
+                dst_rect указывает, КУДА на финальном бэкграунде мы этот кусок вставляем.
+                ИТЕРАЦИЯ 1: {0, 0, 200, 200} -> вставляем в самое начало.
+                ИТЕРАЦИЯ 2: {200, 0, 100, 200} -> вставляем со смещением 200, 
+                            как раз туда, где закончилась первая плитка.
+                */
+                SDL_Rect dst_rect = { current_x, current_y, fill_w, fill_h };
+
+                // SDL копирует строго указанный в src_rect кусочек в указанное место dst_rect.
+                // Всё, что не влезло (правая половина второй плитки), просто игнорируется.
+                SDL_BlitSurface(basic_surface, &src_rect, target_surface, &dst_rect);
+            }
+        }
+    }
+}
+
+
+// =========================================================================================== HELPERS
+
+
+
+
 // =========================================================================================== INSTANCE BASIC CLASS
 
 // ===== LIFETIME =====
@@ -102,8 +178,8 @@ void Image_instance::set_new_crop_map(unsigned int x_1, unsigned int y_1, unsign
     if (y_1 > basic_height || y_2 > basic_height) return;
 
 
-    unsigned int cropped_width = abs(x_2 - x_1);
-    unsigned int cropped_height = abs(y_2 - y_1);
+    unsigned int cropped_width = abs(static_cast<int>(x_2) - static_cast<int>(x_1));
+    unsigned int cropped_height = abs(static_cast<int>(y_2) - static_cast<int>(y_1));
 
     if (cropped_width == 0) return;
     if (cropped_height == 0) return;
@@ -159,7 +235,7 @@ void Image_instance::set_width(unsigned int new_width)
     // Calculate scaler
 
     // Crop map always in basic scale
-    unsigned int cropped_width = abs(this->crop_map.point_2.x - this->crop_map.point_1.x);
+    unsigned int cropped_width = abs(static_cast<int>(this->crop_map.point_2.x) - static_cast<int>(this->crop_map.point_1.x));
 
 
     // We work by the previous scaler here, 
@@ -193,7 +269,7 @@ void Image_instance::set_height(unsigned int new_height)
     // Calculate scaler
 
     // Crop map always in basic scale
-    unsigned int cropped_height = abs(this->crop_map.point_2.y - this->crop_map.point_1.y);
+    unsigned int cropped_height = abs(static_cast<int>(this->crop_map.point_2.y) - static_cast<int>(this->crop_map.point_1.y));
 
 
     // We work by the previous scaler here, 
@@ -219,6 +295,21 @@ void Image_instance::set_height(unsigned int new_height)
 }
 
 
+
+
+
+unsigned int Image_instance::get_width() const
+{
+    return this->current_width;
+}
+
+
+unsigned int Image_instance::get_height() const
+{
+    return this->current_height;
+}
+
+
 void Image_instance::set_scaler(float new_x_scaler, float new_y_scaler)
 {
     if (new_x_scaler <= 0) return;
@@ -228,8 +319,8 @@ void Image_instance::set_scaler(float new_x_scaler, float new_y_scaler)
     // Check width and height difference 
 
     // Crop map always in basic scale
-    unsigned int basic_width = abs(this->crop_map.point_1.x - this->crop_map.point_2.x);
-    unsigned int basic_height = abs(this->crop_map.point_1.y - this->crop_map.point_2.y);
+    unsigned int basic_width = abs(static_cast<int>(this->crop_map.point_1.x) - static_cast<int>(this->crop_map.point_2.x));
+    unsigned int basic_height = abs(static_cast<int>(this->crop_map.point_1.y) - static_cast<int>(this->crop_map.point_2.y));
 
     unsigned int new_width = std::round(basic_width * new_x_scaler);
     unsigned int new_height = std::round(basic_height * new_y_scaler);
