@@ -2,6 +2,8 @@
 
 // TODO: SIMULATION TIMER
 
+#pragma once 
+
 // =========================================================================================== IMPORT
 
 #include "../../../engine/engine.h"
@@ -112,6 +114,17 @@ class App_timer
          */
         float get_current_time() const;
 
+
+                
+        /**
+         * @brief Returns the delta time in seconds since the last update.
+         *
+         * @return Delta time in seconds.
+         * 
+         */
+        float get_delta_time() const;
+
+
         // ===== Update and getter =====
 
 
@@ -173,7 +186,10 @@ class App_timer
 
         // REAL TIMER DATA
 
-        float current_time = 0.0f; // Current time in seconds since the application started
+        float prev_time = 0.0f;     // Prev time in seconds since the application started
+        float current_time = 0.0f;  // Current time in seconds since the application started
+        float delta_time = 0.0f;    // Delta time in seconds since the last update
+
 
         std::array<execute_zone, static_cast<size_t>(Execute_zone_ID::COUNT)> execute_zones;
 

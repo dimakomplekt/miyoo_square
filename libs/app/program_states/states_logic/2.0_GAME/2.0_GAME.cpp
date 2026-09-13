@@ -23,6 +23,8 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <random>
+#include <functional>
 
 // =========================================================================================== IMPORT
 
@@ -60,6 +62,8 @@ Floor_sgo* scene_floor = nullptr;
 Wall_sgo* scene_wall_1 = nullptr;
 Wall_sgo* scene_wall_2 = nullptr;
 
+Square_sgo* square_1 = nullptr;
+
 // =========================================================================================== STATE DATA
 
 
@@ -82,6 +86,11 @@ void state_game_objects_create()
     scene_wall_1 = new Wall_sgo();
     scene_wall_2 = new Wall_sgo(*scene_wall_1);
 
+
+    square_assets_init();
+
+    square_1 = new Square_sgo();
+
 }
 
 
@@ -102,11 +111,17 @@ void state_game_objects_clear()
     scene_wall_2 = nullptr;
 
 
+    delete square_1;
+    square_1 = nullptr;
+
+
     background_assets_clear();
 
     floor_assets_clear();
 
     wall_assets_clear();
+
+    square_assets_clear();
 }
 
 
@@ -279,6 +294,7 @@ void scene_setup()
     scene_wall_2->set_render_point(BACKGROUND_WIDTH - scene_wall_2->get_width() / 2, scene_wall_2->get_height() / 2); // SDL LOGIC - to center-center render
 
 
+    square_1->set_render_point(BACKGROUND_WIDTH / 2, BACKGROUND_HEIGHT / 2);
 
     // Floor init
 
@@ -330,10 +346,111 @@ void game_elements_update()
 
 }
 
+bool square_grounded = false;
+
 
 void scene_update()
 {
-    //
+    const movement_request y_request = square_1->movement.get_y_request();
+
+    const bool jump_requested = y_request.regime == JUMP_MR && y_request.direction < 0;
+
+    if (square_grounded && !jump_requested)
+    {
+        square_1->movement.move_y_request(0, MOVEMENT_MR);
+    }
+    else if (!jump_requested)
+    {
+        square_1->movement.move_y_request(1, JUMP_MR);
+    }
+
+    square_1->movement.update();
+
+    hitbox_points square_hitbox = square_1->get_hitbox();
+    hitbox_points floor_hitbox = scene_floor->get_hitbox();
+    hitbox_points left_wall_hitbox = scene_wall_1->get_hitbox();
+    hitbox_points right_wall_hitbox = scene_wall_2->get_hitbox();
+
+
+    collision_result square_to_floor = check_collision(square_hitbox, floor_hitbox);
+    collision_result square_to_l_wall = check_collision(square_hitbox, left_wall_hitbox);
+    collision_result square_to_r_wall = check_collision(square_hitbox, right_wall_hitbox);
+
+
+    if (square_to_floor.has_collision &&
+        square_to_floor.penetration_y > 0)
+    {
+        square_1->set_render_point_by_delta(
+            0, -std::abs(square_to_floor.penetration_y));
+
+        square_1->movement.move_y_request(0, MOVEMENT_MR);
+
+        square_grounded = true;
+    }
+    else
+    {
+        square_grounded = false;
+    }
+
+
+    const int horizontal_direction =
+        square_1->movement.get_x_request().direction;
+
+
+    const collision_result& wall_collision =
+
+        horizontal_direction < 0
+            ? square_to_l_wall
+            : horizontal_direction > 0
+                ? square_to_r_wall
+                : (square_1->get_x_render_point() <= BACKGROUND_WIDTH / 2
+                    ? square_to_l_wall
+                    : square_to_r_wall);
+
+
+    square_1->motion_processing(wall_collision);
+    
+
+    // Collision processing
+    if (square_1->get_motion_state() == RECOVERING_SMS)
+    {
+        // 1. Собираем функции в вектор лямбд
+        std::vector<std::function<void()>> functions = {
+            [&]() { scene_background->switch_used_asset(); },
+            [&]() { scene_floor->switch_used_asset(); },
+            [&]() { scene_wall_1->switch_used_asset(); },
+            [&]() { scene_wall_2->switch_used_asset(); },
+            [&]() { square_1->switch_used_asset(); }
+        };
+
+        // 2. Настраиваем генератор случайных чисел
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        // Бернауллиевское распределение: дает true или false с вероятностью 0.5 (50%)
+        std::bernoulli_distribution dist(0.5); 
+
+        int called_count = 0;
+
+        // 3. Пробуем вызвать каждую функцию с вероятностью 50%
+        for (auto& func : functions)
+        {
+            if (dist(gen)) // С вероятностью 50% условие выполнится
+            {
+                func();
+                called_count++;
+            }
+        }
+
+        // 4. Если за цикл ни одна функция не выпала, вызываем абсолютно ВСЕ
+        if (called_count == 0)
+        {
+            for (auto& func : functions)
+            {
+                func();
+            }
+        }
+    }
+
 }
 
 
@@ -363,16 +480,41 @@ void game_actions()
 
 void scene_actions()
 {
-    // Actions with scene
-    if (App_inputs.is_just_released(Key_actions::SELECT_KA))
+
+    if (App_inputs.is_held(Key_actions::LEFT_KA))
     {
-        scene_background->switch_used_asset();
-        scene_floor->switch_used_asset();
-        scene_wall_1->switch_used_asset();
-        scene_wall_2->switch_used_asset();
+        square_1->movement.move_x_request(-1, MOVEMENT_MR);
     }
 
 
+    if (App_inputs.is_just_released(Key_actions::LEFT_KA))
+    {
+        square_1->movement.move_x_request(0, MOVEMENT_MR);
+    }
+
+
+    if (App_inputs.is_held(Key_actions::RIGHT_KA))
+    {
+        square_1->movement.move_x_request(1, MOVEMENT_MR);
+    }
+
+
+    if (App_inputs.is_just_released(Key_actions::RIGHT_KA))
+    {
+        square_1->movement.move_x_request(0, MOVEMENT_MR);
+    }
+
+
+    if (App_inputs.is_pressed(Key_actions::UP_KA))
+    {
+        square_1->movement.move_y_request(-1, JUMP_MR);
+    }
+
+
+    if (App_inputs.is_just_released(Key_actions::UP_KA))
+    {
+        square_1->movement.move_y_request(0, MOVEMENT_MR);
+    }
 }
 
 
@@ -393,6 +535,8 @@ void scene_render(SDL_Renderer* renderer)
     scene_wall_1->render(renderer);
 
     scene_wall_2->render(renderer);
+
+    square_1->render(renderer);
 }
 
 // =========================================================================================== STATE INNER FUNCTIONS REALIZATION

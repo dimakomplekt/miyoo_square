@@ -54,7 +54,9 @@ void App_timer::update()
 
     float current_time_sec =  static_cast<float>(current_ms / 1000.0f); // Convert milliseconds to seconds
 
-    this->current_time = current_time_sec;
+    this->prev_time = this->current_time;                       // Store the previous time before updating
+    this->current_time = current_time_sec;                      // Set new time
+    this->delta_time = this->current_time - this->prev_time;    // Calculate delta time since last update
 
 
     // Update execute zones
@@ -97,6 +99,11 @@ void App_timer::end_cycle()
 float App_timer::get_current_time() const
 {
     return this->current_time;
+}
+
+float App_timer::get_delta_time() const
+{
+    return this->delta_time;
 }
 
 

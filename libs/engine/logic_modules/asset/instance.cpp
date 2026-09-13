@@ -16,6 +16,78 @@
 
 // =========================================================================================== HELPERS
 
+// ===== HITBOX and COLLISION =====
+
+
+collision_result check_collision(
+
+    const hitbox_points& penetrating,
+    const hitbox_points& penetrated
+
+)
+{
+
+    collision_result result{};
+
+
+    const int penetrating_left      = penetrating.top_left.x;
+    const int penetrating_top       = penetrating.top_left.y;
+    const int penetrating_right     = penetrating.bottom_right.x;
+    const int penetrating_bottom    = penetrating.bottom_right.y;
+
+    const int penetrated_left       = penetrated.top_left.x;
+    const int penetrated_top        = penetrated.top_left.y;
+    const int penetrated_right      = penetrated.bottom_right.x;
+    const int penetrated_bottom     = penetrated.bottom_right.y;
+
+
+    // =========================================================================
+    // CHECK COLLISION
+    // =========================================================================
+
+    const int overlap_x =
+        std::min(penetrating_right, penetrated_right)
+        - std::max(penetrating_left, penetrated_left);
+
+    const int overlap_y =
+        std::min(penetrating_bottom, penetrated_bottom)
+        - std::max(penetrating_top, penetrated_top);
+
+
+    if (overlap_x <= 0 || overlap_y <= 0)
+    {
+        return {};
+    }
+
+
+    // =========================================================================
+    // COLLISION DETECTED
+    // =========================================================================
+
+    result.has_collision = true;
+    const int penetrating_center_x = penetrating_left + penetrating_right;
+    const int penetrated_center_x = penetrated_left + penetrated_right;
+    const int penetrating_center_y = penetrating_top + penetrating_bottom;
+    const int penetrated_center_y = penetrated_top + penetrated_bottom;
+
+    // Positive means that the penetrating body is on the negative side
+    // of the obstacle and must move negatively to separate.
+    result.penetration_x =
+        penetrating_center_x < penetrated_center_x ? overlap_x : -overlap_x;
+    result.penetration_y =
+        penetrating_center_y < penetrated_center_y ? overlap_y : -overlap_y;
+
+
+    return result;
+
+}
+
+// ===== HITBOX and COLLISION =====
+
+
+
+
+// ===== CUSTOM SURFACE GENERATION =====
 
 void custom_surface_generation(SDL_Surface* basic_surface, SDL_Surface* target_surface, custom_surface_gen_mode mode)
 {
@@ -84,6 +156,7 @@ void custom_surface_generation(SDL_Surface* basic_surface, SDL_Surface* target_s
     }
 }
 
+// ===== CUSTOM SURFACE GENERATION =====
 
 // =========================================================================================== HELPERS
 

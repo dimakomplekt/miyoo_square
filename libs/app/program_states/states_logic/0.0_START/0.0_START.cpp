@@ -413,7 +413,7 @@ void start_actions()
     // =======================================================================================
     // START BUTTON
 
-    if (App_inputs.is_just_released(Key_actions::START_KA))
+    if (App_inputs.is_just_released(Key_actions::START_KA) || App_inputs.is_just_released(Key_actions::SELECT_KA))
     {
         START_LOG("INPUT: START released");
 
@@ -428,7 +428,7 @@ void start_actions()
     // =======================================================================================
     // SELECT BUTTON
 
-    if (App_inputs.is_just_released(Key_actions::SELECT_KA) || App_inputs.is_just_released(Key_actions::Y_KA))
+    if (App_inputs.is_just_released(Key_actions::EXIT_KA))
     {
         START_LOG("INPUT: SELECT released");
 

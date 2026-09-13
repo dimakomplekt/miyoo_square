@@ -530,14 +530,19 @@ void main_menu_actions()
 
 
     // Check click
-    if (App_inputs.is_held(Key_actions::A_KA) || App_inputs.is_held(Key_actions::SELECT_KA))
+    if (App_inputs.is_held(Key_actions::A_KA) || App_inputs.is_held(Key_actions::SELECT_KA) || App_inputs.is_held(Key_actions::START_KA))
     {
         control_selected_button_clicked(true);
     }
 
-    if (App_inputs.is_just_released(Key_actions::A_KA) || App_inputs.is_just_released(Key_actions::SELECT_KA))
+    if (App_inputs.is_just_released(Key_actions::A_KA) || App_inputs.is_just_released(Key_actions::SELECT_KA) || App_inputs.is_just_released(Key_actions::START_KA))
     {
         control_selected_button_clicked(false);
+    }
+
+    if (App_inputs.is_just_released(Key_actions::Y_KA))
+    {
+        App_palette.switch_to_the_next_palette();
     }
 
 

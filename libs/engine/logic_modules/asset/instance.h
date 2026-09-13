@@ -79,9 +79,6 @@ class Instance
 // =========================================================================================== INSTANCE BASIC CLASS
 
 
-// =========================================================================================== IMAGE INSTANCE 
-
-
 /*
 
             ┌──────────────────────────────┐
@@ -118,7 +115,9 @@ class Instance
 */
 
 
-// ===== Helpers =====
+// =========================================================================================== HELPERS
+
+
 
 namespace asset_instance_geometry
 {
@@ -197,6 +196,8 @@ namespace asset_instance_geometry
 }
 
 
+// ===== HITBOX and COLLISION =====
+
 struct hitbox_points
 {
 
@@ -205,6 +206,32 @@ struct hitbox_points
 
 };
 
+struct collision_result
+{
+
+    bool has_collision = false;
+
+    // Signed minimum translation direction: positive means the penetrating
+    // object is on the negative side of the penetrated object.
+    int penetration_x = 0;
+    int penetration_y = 0;
+    
+};
+
+
+collision_result check_collision(
+
+    const hitbox_points& penetrating,
+    const hitbox_points& penetrated
+
+);
+
+
+// ===== HITBOX and COLLISION ======
+
+
+
+// ===== CUSTOM SURFACE GENERATION =====
 
 enum custom_surface_gen_mode
 {
@@ -225,9 +252,13 @@ enum custom_surface_gen_mode
  */
 void custom_surface_generation(SDL_Surface* basic_surface, SDL_Surface* target_surface, custom_surface_gen_mode mode);
 
+// ===== CUSTOM SURFACE GENERATION =====
 
-// ===== Helpers =====
+// =========================================================================================== HELPERS
 
+
+
+// =========================================================================================== IMAGE INSTANCE 
 
 
 // ===== Class =====

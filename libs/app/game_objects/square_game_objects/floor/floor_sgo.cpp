@@ -298,6 +298,7 @@ void Floor_sgo::set_render_point(int x, int y)
 {
     this->x_render_point = x;
     this->y_render_point = y;
+    this->reset_hitbox();
 }
 
 

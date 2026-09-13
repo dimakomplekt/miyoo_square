@@ -276,7 +276,6 @@ if(PROJECT_PLATFORM STREQUAL "WINDOWS")
             "$<TARGET_FILE_DIR:MIYOO_SQUARE>/content"
     )
 
-
     if(EXISTS
         "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
     )
@@ -285,11 +284,15 @@ if(PROJECT_PLATFORM STREQUAL "WINDOWS")
             TARGET MIYOO_SQUARE
             POST_BUILD
 
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-
-                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
-
+            COMMAND ${CMAKE_COMMAND} -E remove_directory
                 "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
+                "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+
+            COMMENT
+                "Force copying app_content"
         )
 
     endif()
@@ -478,11 +481,15 @@ elseif(PROJECT_PLATFORM STREQUAL "MIYOO")
             TARGET MIYOO_SQUARE
             POST_BUILD
 
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-
-                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
-
+            COMMAND ${CMAKE_COMMAND} -E remove_directory
                 "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
+                "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+
+            COMMENT
+                "Force copying app_content"
         )
 
     endif()
@@ -550,11 +557,15 @@ elseif(PROJECT_PLATFORM STREQUAL "LINUX")
             TARGET MIYOO_SQUARE
             POST_BUILD
 
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-
-                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
-
+            COMMAND ${CMAKE_COMMAND} -E remove_directory
                 "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${CMAKE_SOURCE_DIR}/libs/app/global_data/app_content"
+                "$<TARGET_FILE_DIR:MIYOO_SQUARE>/app_content"
+
+            COMMENT
+                "Force copying app_content"
         )
 
     endif()
