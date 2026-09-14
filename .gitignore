@@ -1,3 +1,2 @@
 build/
-build_win/
-libs/engine/base_modules/Miyoo_toolchain
+libs/engine/base_modules/Miyoo_toolchain/src_miyoo/
